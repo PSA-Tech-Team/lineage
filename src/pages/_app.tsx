@@ -9,6 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ChakraProvider resetCSS theme={theme}>
       <Head>
         <title>Lineage</title>
+        <meta property="og:title" content="Lineage" key="title" />
       </Head>
       <Component {...pageProps} />
     </ChakraProvider>

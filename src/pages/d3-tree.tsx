@@ -15,6 +15,10 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack,
   Spacer,
   Switch,
   Text,
@@ -36,6 +40,9 @@ const D3Tree = () => {
   const [vertical, setVertical] = useState<boolean>(true);
   const [lineage, setLineage] = useState<RawNodeDatum>(lineages[0]);
   const [pathFn, setPathFn] = useState<string>('diagonal');
+  const [useTransitions, setTransitions] = useState<boolean>(true);
+  const [siblingSeparation, setSiblingSeparation] = useState<number>(2);
+  const [nonSibSeparation, setNonSibSeparation] = useState<number>(2);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -54,7 +61,7 @@ const D3Tree = () => {
             as={Button}
             rightIcon={<ChevronDownIcon />}
             onClick={() => console.log(lineage)}
-            bgColor="blue.800"
+            bgColor="gray.500"
             mr={2}
           >
             {`${lineage.name}'s Lineage`}
@@ -91,6 +98,17 @@ const D3Tree = () => {
                 />
               </Flex>
 
+              {/* Transitions switch */}
+              <Flex mb={3}>
+                <Text fontWeight="bold">Use transitions?</Text>
+                <Spacer />
+                <Switch
+                  id="set-transitions"
+                  size="lg"
+                  onChange={() => setTransitions(!useTransitions)}
+                />
+              </Flex>
+
               {/* Path function type */}
               <Text fontWeight="bold" my={2}>
                 Link type
@@ -106,6 +124,38 @@ const D3Tree = () => {
                   {fn}
                 </Button>
               ))}
+
+              {/* Sibling Separation */}
+              <Text fontWeight="bold" mt={5}>
+                Sibling Separation
+              </Text>
+              <Slider
+                name="siblings"
+                defaultValue={siblingSeparation}
+                min={1}
+                max={4}
+                onChange={setSiblingSeparation}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
+
+              {/* Non-sibling Separation */}
+              <Text fontWeight="bold">Non-sibling Separation</Text>
+              <Slider
+                name="siblings"
+                defaultValue={nonSibSeparation}
+                min={1}
+                max={4}
+                onChange={setNonSibSeparation}
+              >
+                <SliderTrack>
+                  <SliderFilledTrack />
+                </SliderTrack>
+                <SliderThumb />
+              </Slider>
             </DrawerBody>
 
             <DrawerFooter>
@@ -123,12 +173,12 @@ const D3Tree = () => {
           data={lineage}
           orientation={vertical ? 'vertical' : 'horizontal'}
           // @ts-ignore
-          pathFunc={pathFn || 'diagonal'}
+          pathFunc={pathFn}
           transitionDuration={400}
-          enableLegacyTransitions={true}
+          enableLegacyTransitions={useTransitions}
           separation={{
-            siblings: 2,
-            nonSiblings: 3,
+            siblings: siblingSeparation,
+            nonSiblings: nonSibSeparation,
           }}
         />
       </Box>
