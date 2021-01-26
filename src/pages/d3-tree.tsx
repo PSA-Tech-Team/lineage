@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Box,
   Button,
@@ -11,6 +12,7 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
+  Link as ChakraLink,
   Menu,
   MenuButton,
   MenuItem,
@@ -28,6 +30,7 @@ import Tree from 'react-d3-tree';
 import { CHARLES_LINEAGE } from '../fixtures/Charles';
 import { NEIL_LINEAGE } from '../fixtures/Neil';
 import { ChevronDownIcon } from '@chakra-ui/icons';
+import { DarkModeSwitch } from '../components/DarkModeSwitch';
 
 interface RawNodeDatum {
   name: string;
@@ -47,12 +50,11 @@ const D3Tree = () => {
 
   return (
     <Box>
-      <Flex p={5} align="center" borderColor="white">
-        <Text fontFamily="monospace">PSA UIUC</Text>
-        <Spacer />
-        <Heading as="h1" fontWeight="light">
-          Lineage
+      <Flex p={4} align="center" borderColor="white">
+        <Heading as="h1" fontSize="2xl" fontWeight="light">
+          <Link href="/">Lineage</Link>
         </Heading>
+
         <Spacer />
 
         {/* Select lineage */}
@@ -61,7 +63,6 @@ const D3Tree = () => {
             as={Button}
             rightIcon={<ChevronDownIcon />}
             onClick={() => console.log(lineage)}
-            bgColor="gray.500"
             mr={2}
           >
             {`${lineage.name}'s Lineage`}
@@ -76,7 +77,9 @@ const D3Tree = () => {
         </Menu>
 
         {/* Open options */}
-        <Button onClick={onOpen}>Options</Button>
+        <Button onClick={onOpen} variant="outline">
+          Options
+        </Button>
       </Flex>
 
       {/* Settings and options */}
@@ -106,6 +109,8 @@ const D3Tree = () => {
                   id="set-transitions"
                   size="lg"
                   onChange={() => setTransitions(!useTransitions)}
+                  checked={useTransitions}
+                  defaultChecked={useTransitions}
                 />
               </Flex>
 
@@ -113,7 +118,7 @@ const D3Tree = () => {
               <Text fontWeight="bold" my={2}>
                 Link type
               </Text>
-              {['Diagonal', 'Elbow', 'Straight', 'Step'].map((fn) => (
+              {['Diagonal', 'Straight', 'Step'].map((fn) => (
                 <Button
                   key={fn}
                   onClick={() => setPathFn(fn.toLowerCase())}
@@ -156,6 +161,12 @@ const D3Tree = () => {
                 </SliderTrack>
                 <SliderThumb />
               </Slider>
+
+              {/* Dark mode */}
+              <Text fontWeight="bold" mt={5}>
+                Use dark mode?
+              </Text>
+              <DarkModeSwitch fixed={false} />
             </DrawerBody>
 
             <DrawerFooter>
@@ -168,7 +179,7 @@ const D3Tree = () => {
       </Drawer>
 
       {/* Tree view */}
-      <Box bgColor="gray.100" height="85vh">
+      <Box bgColor="gray.100" height="90vh">
         <Tree
           data={lineage}
           orientation={vertical ? 'vertical' : 'horizontal'}
