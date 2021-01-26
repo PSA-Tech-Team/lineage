@@ -11,16 +11,30 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Spacer,
   Switch,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import Tree from 'react-d3-tree';
+import { CHARLES_LINEAGE } from '../fixtures/Charles';
 import { NEIL_LINEAGE } from '../fixtures/Neil';
+import { ChevronDownIcon } from '@chakra-ui/icons';
+
+interface RawNodeDatum {
+  name: string;
+  attributes?: Record<string, string>;
+  children?: RawNodeDatum[];
+}
 
 const D3Tree = () => {
+  const lineages = [NEIL_LINEAGE, CHARLES_LINEAGE];
   const [vertical, setVertical] = useState<boolean>(true);
+  const [lineage, setLineage] = useState<RawNodeDatum>(lineages[0]);
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -33,6 +47,28 @@ const D3Tree = () => {
           Lineage
         </Heading>
         <Spacer />
+
+        {/* Select lineage */}
+        <Menu>
+          <MenuButton
+            as={Button}
+            rightIcon={<ChevronDownIcon />}
+            onClick={() => console.log(lineage)}
+            bgColor="blue.800"
+            mr={2}
+          >
+            {`${lineage.name}'s Lineage`}
+          </MenuButton>
+          <MenuList>
+            {lineages.map((l, i) => (
+              <MenuItem key={i} onClick={() => setLineage(lineages[i])}>
+                {l.name}
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Menu>
+
+        {/* Open options */}
         <Button onClick={onOpen}>Options</Button>
       </Flex>
 
@@ -84,7 +120,7 @@ const D3Tree = () => {
       {/* Tree view */}
       <Box bgColor="gray.100" height="85vh">
         <Tree
-          data={NEIL_LINEAGE}
+          data={lineage}
           orientation={vertical ? 'vertical' : 'horizontal'}
           // @ts-ignore
           pathFunc={pathFn || 'diagonal'}
