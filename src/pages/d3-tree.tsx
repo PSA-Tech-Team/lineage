@@ -1,8 +1,7 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
-  Center,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -11,7 +10,6 @@ import {
   DrawerHeader,
   DrawerOverlay,
   Flex,
-  Grid,
   Heading,
   Spacer,
   Switch,
@@ -23,6 +21,7 @@ import { NEIL_LINEAGE } from '../fixtures/Neil';
 
 const D3Tree = () => {
   const [vertical, setVertical] = useState<boolean>(true);
+  const [pathFn, setPathFn] = useState<string>('diagonal');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -45,8 +44,9 @@ const D3Tree = () => {
             <DrawerHeader>Options</DrawerHeader>
 
             <DrawerBody>
-              <Flex>
-                <Text>Vertical/horizontal</Text>
+              {/* Vertical/horizontal switch */}
+              <Flex mb={3}>
+                <Text fontWeight="bold">Vertical/horizontal</Text>
                 <Spacer />
                 <Switch
                   id="set-vertical"
@@ -54,6 +54,22 @@ const D3Tree = () => {
                   onChange={() => setVertical(!vertical)}
                 />
               </Flex>
+
+              {/* Path function type */}
+              <Text fontWeight="bold" my={2}>
+                Link type
+              </Text>
+              {['Diagonal', 'Elbow', 'Straight', 'Step'].map((fn) => (
+                <Button
+                  key={fn}
+                  onClick={() => setPathFn(fn.toLowerCase())}
+                  isFullWidth
+                  m={1}
+                  variant={pathFn === fn.toLowerCase() ? 'solid' : 'outline'}
+                >
+                  {fn}
+                </Button>
+              ))}
             </DrawerBody>
 
             <DrawerFooter>
@@ -70,7 +86,8 @@ const D3Tree = () => {
         <Tree
           data={NEIL_LINEAGE}
           orientation={vertical ? 'vertical' : 'horizontal'}
-          pathFunc="diagonal"
+          // @ts-ignore
+          pathFunc={pathFn || 'diagonal'}
           transitionDuration={400}
           enableLegacyTransitions={true}
           separation={{
