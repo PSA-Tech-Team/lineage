@@ -12,7 +12,6 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
-  Link as ChakraLink,
   Menu,
   MenuButton,
   MenuItem,
