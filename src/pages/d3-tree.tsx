@@ -61,7 +61,7 @@ const D3Tree = () => {
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />} mr={2}>
             {`${MEMBERS[lineageId].name}'s Lineage`}
           </MenuButton>
-          <MenuList>
+          <MenuList overflowY="auto" maxH="70vh">
             {MEMBERS.map((member, i) => (
               <MenuItem key={i} onClick={() => changeLineage(i)}>
                 {member.name}
