@@ -41,6 +41,7 @@ export const PSA_MEMBERS: Member[] = [
   { name: 'Kim', classOf: '2023', hasAdings: false },
   { name: 'Angela', classOf: '2023', hasAdings: false },
   { name: 'Emil', classOf: '2023', hasAdings: false },
+  { name: 'Michael', classOf: '2021', hasAdings: true },
 ];
 
 /**

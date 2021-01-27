@@ -28,15 +28,20 @@ export const PAIRINGS: Pairing[] = [
   [6, 7],
   [6, 8],
   [6, 9],
-  [10, 11],  // Danielle's adings
+  [10, 11], // Danielle's adings
   [10, 12],
   [10, 13],
-  [14, 15],  // Tina's adings
+  [14, 15], // Tina's adings
   [14, 16],
   [14, 17],
-  [18, 1],  // Erica -> Charles
-  [19, 1],  // Ronell -> Charles
-  [20, 1],  // Joey -> Charles
+  [21, 22], // Inhoo's adings
+  [21, 23],
+  [21, 24],
+  [18, 1], // Erica -> Charles
+  [19, 1], // Ronell -> Charles
+  [20, 1], // Joey -> Charles
+  [19, 0], // Ronell -> Neil
+  [28, 0], // Michael -> Neil
 ].map((pair) => ({ akId: pair[0], adingId: pair[1] }));
 
 export interface RawNodeDatum {
@@ -62,7 +67,7 @@ export function memberToNode(
     for (const { akId, adingId } of PAIRINGS) {
       // Check if the member is an AK / ading, depending on search direction
       const inPairing = searchDown ? member.id === akId : member.id === adingId;
-      
+
       // If member is in pair, add their ading / AK
       if (inPairing) {
         const searchId = searchDown ? adingId : akId;

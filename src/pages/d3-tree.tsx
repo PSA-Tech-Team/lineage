@@ -26,25 +26,26 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import Tree from 'react-d3-tree';
-import { CHARLES_LINEAGE } from '../fixtures/Charles';
-import { NEIL_LINEAGE } from '../fixtures/Neil';
-import { ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, StarIcon } from '@chakra-ui/icons';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
-import { RawNodeDatum, getLineage } from '../fixtures/Pairings';
-import { PSA_MEMBERS_WITH_IDS } from '../fixtures/Members';
+import { getLineage } from '../fixtures/Pairings';
+import { PSA_MEMBERS_WITH_IDS as MEMBERS } from '../fixtures/Members';
 
 const D3Tree = () => {
-  const lineages = [NEIL_LINEAGE, CHARLES_LINEAGE];
+  const defaultLineageId = 1;
   const [vertical, setVertical] = useState<boolean>(true);
   const [searchAdings, setSearchAdings] = useState<boolean>(true);
-  const [lineage, setLineage] = useState<RawNodeDatum>(
-    getLineage(20, searchAdings)
-  );
+  // FIXME: the id may not be a number in the future
+  const [lineageId, setLineageId] = useState<number>(defaultLineageId);
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const [useTransitions, setTransitions] = useState<boolean>(true);
-  const [siblingSeparation, setSiblingSeparation] = useState<number>(2);
-  const [nonSibSeparation, setNonSibSeparation] = useState<number>(2);
+  const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
+  const [nonSibSeparation, setNonSibSeparation] = useState<number>(1);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const changeLineage = (newId: number) => {
+    setLineageId(newId);
+  };
 
   return (
     <Box>
@@ -57,25 +58,27 @@ const D3Tree = () => {
 
         {/* Select lineage */}
         <Menu>
-          <MenuButton
-            as={Button}
-            rightIcon={<ChevronDownIcon />}
-            onClick={() => console.log(lineage)}
-            mr={2}
-          >
-            {`${lineage.name}'s Lineage`}
+          <MenuButton as={Button} rightIcon={<ChevronDownIcon />} mr={2}>
+            {`${MEMBERS[lineageId].name}'s Lineage`}
           </MenuButton>
           <MenuList>
-            {PSA_MEMBERS_WITH_IDS.map((member, i) => (
-              <MenuItem
-                key={i}
-                onClick={() => setLineage(getLineage(i, searchAdings))}
-              >
+            {MEMBERS.map((member, i) => (
+              <MenuItem key={i} onClick={() => changeLineage(i)}>
                 {member.name}
               </MenuItem>
             ))}
           </MenuList>
         </Menu>
+
+        <Button
+          mr={2}
+          onClick={() => {
+            setSearchAdings(!searchAdings);
+            changeLineage(lineageId);
+          }}
+        >
+          {`Searching ${searchAdings ? 'Adings' : 'AKs'}`}
+        </Button>
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
@@ -91,6 +94,24 @@ const D3Tree = () => {
             <DrawerHeader>Options</DrawerHeader>
 
             <DrawerBody>
+              {/* Search adings/AKs switch */}
+              <Flex mb={3}>
+                <Text fontWeight="bold">
+                  <StarIcon /> Search AKs vs. adings
+                </Text>
+                <Spacer />
+                <Switch
+                  id="set-search"
+                  size="lg"
+                  onChange={() => {
+                    setSearchAdings(!searchAdings);
+                    changeLineage(lineageId);
+                  }}
+                  checked={searchAdings}
+                  defaultChecked={searchAdings}
+                />
+              </Flex>
+
               {/* Vertical/horizontal switch */}
               <Flex mb={3}>
                 <Text fontWeight="bold">Vertical/horizontal</Text>
@@ -182,7 +203,7 @@ const D3Tree = () => {
       {/* Tree view */}
       <Box bgColor="gray.100" height="90vh">
         <Tree
-          data={lineage}
+          data={getLineage(lineageId, searchAdings)}
           orientation={vertical ? 'vertical' : 'horizontal'}
           // @ts-ignore
           pathFunc={pathFn}
