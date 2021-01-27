@@ -12,6 +12,7 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
+  Input,
   Menu,
   MenuButton,
   MenuItem,
@@ -30,6 +31,7 @@ import { ChevronDownIcon, StarIcon } from '@chakra-ui/icons';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { getLineage } from '../fixtures/Pairings';
 import { PSA_MEMBERS_WITH_IDS as MEMBERS } from '../fixtures/Members';
+import SearchModal from '../components/SearchModal';
 
 const D3Tree = () => {
   const defaultLineageId = 1;
@@ -41,6 +43,7 @@ const D3Tree = () => {
   const [useTransitions, setTransitions] = useState<boolean>(true);
   const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
   const [nonSibSeparation, setNonSibSeparation] = useState<number>(1);
+  const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const changeLineage = (newId: number) => {
@@ -61,7 +64,7 @@ const D3Tree = () => {
           <MenuButton as={Button} rightIcon={<ChevronDownIcon />} mr={2}>
             {`${MEMBERS[lineageId].name}'s Lineage`}
           </MenuButton>
-          <MenuList overflowY="auto" maxH="70vh">
+          <MenuList overflowY="auto" overflowX="hidden" maxH="70vh">
             {MEMBERS.map((member, i) => (
               <MenuItem key={i} onClick={() => changeLineage(i)}>
                 {member.name}
@@ -69,6 +72,8 @@ const D3Tree = () => {
             ))}
           </MenuList>
         </Menu>
+
+        <SearchModal changeLineage={changeLineage} />
 
         <Button
           mr={2}
