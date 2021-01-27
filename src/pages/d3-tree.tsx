@@ -30,17 +30,16 @@ import { CHARLES_LINEAGE } from '../fixtures/Charles';
 import { NEIL_LINEAGE } from '../fixtures/Neil';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
-
-interface RawNodeDatum {
-  name: string;
-  attributes?: Record<string, string>;
-  children?: RawNodeDatum[];
-}
+import { RawNodeDatum, getLineage } from '../fixtures/Pairings';
+import { PSA_MEMBERS_WITH_IDS } from '../fixtures/Members';
 
 const D3Tree = () => {
   const lineages = [NEIL_LINEAGE, CHARLES_LINEAGE];
   const [vertical, setVertical] = useState<boolean>(true);
-  const [lineage, setLineage] = useState<RawNodeDatum>(lineages[0]);
+  const [searchAdings, setSearchAdings] = useState<boolean>(true);
+  const [lineage, setLineage] = useState<RawNodeDatum>(
+    getLineage(20, searchAdings)
+  );
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const [useTransitions, setTransitions] = useState<boolean>(true);
   const [siblingSeparation, setSiblingSeparation] = useState<number>(2);
@@ -67,9 +66,12 @@ const D3Tree = () => {
             {`${lineage.name}'s Lineage`}
           </MenuButton>
           <MenuList>
-            {lineages.map((l, i) => (
-              <MenuItem key={i} onClick={() => setLineage(lineages[i])}>
-                {l.name}
+            {PSA_MEMBERS_WITH_IDS.map((member, i) => (
+              <MenuItem
+                key={i}
+                onClick={() => setLineage(getLineage(i, searchAdings))}
+              >
+                {member.name}
               </MenuItem>
             ))}
           </MenuList>
