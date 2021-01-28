@@ -12,7 +12,6 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
-  Input,
   Menu,
   MenuButton,
   MenuItem,
@@ -43,7 +42,6 @@ const D3Tree = () => {
   const [useTransitions, setTransitions] = useState<boolean>(true);
   const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
   const [nonSibSeparation, setNonSibSeparation] = useState<number>(1);
-  const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const changeLineage = (newId: number) => {
