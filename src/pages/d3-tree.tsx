@@ -12,10 +12,6 @@ import {
   DrawerOverlay,
   Flex,
   Heading,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Slider,
   SliderFilledTrack,
   SliderThumb,
@@ -26,10 +22,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import Tree from 'react-d3-tree';
-import { ChevronDownIcon, StarIcon } from '@chakra-ui/icons';
+import { StarIcon } from '@chakra-ui/icons';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { getLineage } from '../fixtures/Pairings';
-import { PSA_MEMBERS_WITH_IDS as MEMBERS } from '../fixtures/Members';
 import SearchModal from '../components/SearchModal';
 
 const D3Tree = () => {
@@ -58,19 +53,6 @@ const D3Tree = () => {
         <Spacer />
 
         {/* Select lineage */}
-        <Menu>
-          <MenuButton as={Button} rightIcon={<ChevronDownIcon />} mr={2}>
-            {`${MEMBERS[lineageId].name}'s Lineage`}
-          </MenuButton>
-          <MenuList overflowY="auto" overflowX="hidden" maxH="70vh">
-            {MEMBERS.map((member, i) => (
-              <MenuItem key={i} onClick={() => changeLineage(i)}>
-                {member.name}
-              </MenuItem>
-            ))}
-          </MenuList>
-        </Menu>
-
         <SearchModal changeLineage={changeLineage} />
 
         <Button
