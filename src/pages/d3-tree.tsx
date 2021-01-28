@@ -37,10 +37,12 @@ const D3Tree = () => {
   const [useTransitions, setTransitions] = useState<boolean>(true);
   const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
   const [nonSibSeparation, setNonSibSeparation] = useState<number>(1);
+  const [collapseNeighbors, setCollapseNeighbors] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const changeLineage = (newId: number) => {
     setLineageId(newId);
+    // TODO: add tooltip to notify if person doesn't have AKAs/adings
   };
 
   return (
@@ -52,9 +54,7 @@ const D3Tree = () => {
 
         <Spacer />
 
-        {/* Select lineage */}
-        <SearchModal changeLineage={changeLineage} />
-
+        {/* Select search direction */}
         <Button
           mr={2}
           onClick={() => {
@@ -64,6 +64,9 @@ const D3Tree = () => {
         >
           {`Searching ${searchAdings ? 'Adings' : 'AKs'}`}
         </Button>
+
+        {/* Select lineage */}
+        <SearchModal changeLineage={changeLineage} />
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
@@ -118,6 +121,19 @@ const D3Tree = () => {
                   onChange={() => setTransitions(!useTransitions)}
                   checked={useTransitions}
                   defaultChecked={useTransitions}
+                />
+              </Flex>
+
+              {/* Collapse neighbors switch */}
+              <Flex mb={3}>
+                <Text fontWeight="bold">Collapse sibs?</Text>
+                <Spacer />
+                <Switch
+                  id="set-collapse-sibs"
+                  size="lg"
+                  onChange={() => setCollapseNeighbors(!collapseNeighbors)}
+                  checked={collapseNeighbors}
+                  defaultChecked={collapseNeighbors}
                 />
               </Flex>
 
@@ -198,6 +214,7 @@ const D3Tree = () => {
             siblings: siblingSeparation,
             nonSiblings: nonSibSeparation,
           }}
+          shouldCollapseNeighborNodes={collapseNeighbors}
         />
       </Box>
     </Box>
