@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Box,
@@ -15,6 +15,8 @@ import OptionsDrawer from '../components/OptionsDrawer';
 
 const Lineages = () => {
   const defaultLineageId = 1;
+  const [translateX, setTranslateX] = useState<number>(0);
+  const [translateY, setTranslateY] = useState<number>(0);
   const [vertical, setVertical] = useState<boolean>(true);
   const [searchAdings, setSearchAdings] = useState<boolean>(true);
   // FIXME: the id may not be a number in the future
@@ -26,10 +28,21 @@ const Lineages = () => {
   const [collapseNeighbors, setCollapseNeighbors] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const treeParentRef = useRef<HTMLDivElement>(null);
+
   const changeLineage = (newId: number) => {
     setLineageId(newId);
     // TODO: add tooltip to notify if person doesn't have AKAs/adings
   };
+
+  useEffect(() => {
+    if (treeParentRef.current) {
+      const width = treeParentRef.current.offsetWidth;
+      const height = treeParentRef.current.offsetHeight;
+      setTranslateX(width / 2);
+      setTranslateY(height / 4);
+    } 
+  }, [treeParentRef])
 
   return (
     <Box>
@@ -83,7 +96,7 @@ const Lineages = () => {
       />
 
       {/* Tree view */}
-      <Box bgColor="gray.100" height="90vh">
+      <Box bgColor="gray.100" height="90vh" ref={treeParentRef}>
         <Tree
           data={getLineage(lineageId, searchAdings)}
           orientation={vertical ? 'vertical' : 'horizontal'}
@@ -96,7 +109,10 @@ const Lineages = () => {
             nonSiblings: nonSibSeparation,
           }}
           shouldCollapseNeighborNodes={collapseNeighbors}
-          // TODO: translate tree to center of window
+          translate={{
+            x: translateX,
+            y: translateY,
+          }}
         />
       </Box>
     </Box>
