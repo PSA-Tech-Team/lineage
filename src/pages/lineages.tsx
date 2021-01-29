@@ -32,8 +32,7 @@ const Lineages = () => {
 
   const changeLineage = (newId: number) => {
     setLineageId(newId);
-    // TODO: add tooltip to notify if person doesn't have AKAs/adings
-  };
+  }
 
   useEffect(() => {
     if (treeParentRef.current) {
