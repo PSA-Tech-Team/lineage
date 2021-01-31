@@ -26,7 +26,7 @@ export const PSA_MEMBERS: Member[] = [
   { name: 'Danielle', classOf: '2023', hasAdings: true },
   { name: 'Jericho', classOf: '2024', hasAdings: false },
   { name: 'Adrian', classOf: '2024', hasAdings: false },
-  { name: 'Arielle', classOf: '2024', hasAdings: false },
+  { name: 'Arienne', classOf: '2024', hasAdings: false },
   { name: 'Tina', classOf: '2023', hasAdings: true },
   { name: 'Matthew', classOf: '2024', hasAdings: false },
   { name: 'Andreen', classOf: '2024', hasAdings: false },

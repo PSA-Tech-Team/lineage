@@ -94,6 +94,8 @@ const OptionsDrawer = ({
                 id="set-vertical"
                 size="lg"
                 onChange={() => setVertical(!vertical)}
+                checked={vertical}
+                defaultChecked={vertical}
               />
             </Flex>
 
