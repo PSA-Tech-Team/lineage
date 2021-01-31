@@ -4,8 +4,8 @@ import { Member, PSA_MEMBERS_WITH_IDS as members } from './Members';
  * Represents a pairing between an Ate/Kuya and Ading
  */
 export interface Pairing {
-  akId: number;
-  adingId: number;
+  akId: string;
+  adingId: string;
 }
 
 /**
@@ -42,7 +42,7 @@ export const PAIRINGS: Pairing[] = [
   [20, 1], // Joey -> Charles
   [19, 0], // Ronell -> Neil
   [28, 0], // Michael -> Neil
-].map((pair) => ({ akId: pair[0], adingId: pair[1] }));
+].map((pair) => ({ akId: pair[0].toString(), adingId: pair[1].toString() }));
 
 export interface RawNodeDatum {
   name: string;
@@ -71,7 +71,8 @@ export function memberToNode(
       // If member is in pair, add their ading / AK
       if (inPairing) {
         const searchId = searchDown ? adingId : akId;
-        children.push(memberToNode(members[searchId], searchDown));
+        // FIXME: fix this probably
+        children.push(memberToNode(members[parseInt(searchId)], searchDown));
       }
     }
   }

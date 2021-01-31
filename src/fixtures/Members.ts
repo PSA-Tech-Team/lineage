@@ -2,7 +2,7 @@
  * Represents a single PSA member
  */
 export interface Member {
-  id?: number | string;
+  id?: string;
   name: string;
   classOf: string;
   hasAdings: boolean;
@@ -12,7 +12,7 @@ export interface Member {
 /**
  * Array of all PSA members
  */
-export const PSA_MEMBERS: Member[] = [
+export const PSA_MEMBERS = [
   { name: 'Neil', classOf: '2022', hasAdings: true },
   { name: 'Charles', classOf: '2022', hasAdings: true },
   { name: 'Renzo', classOf: '2023', hasAdings: true },
@@ -48,7 +48,7 @@ export const PSA_MEMBERS: Member[] = [
  * All PSA members with unique IDs
  */
 export const PSA_MEMBERS_WITH_IDS: Member[] = PSA_MEMBERS.map((member, id) => ({
-  id,
+  id: id.toString(),
   ...member,
   // FIXME: temporary: '21 folks won't have Aks for now
   hasAks: member.classOf !== '2021'

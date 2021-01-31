@@ -1,15 +1,16 @@
 import { Member } from '../fixtures/Members';
 import firebase from './config';
 
+const db = firebase.firestore();
+
 export const addMember = async (member: Member) => {
-  const db = firebase.firestore();
   const collection = db.collection('members');
   const result = await collection.add(member);
   return result;
 };
 
 export const getMembers = async () => {
-  let collection = firebase.firestore().collection('members');
+  let collection = db.collection('members');
   let members: Member[] = [];
 
   await collection.get().then((snapshot) => {
@@ -29,4 +30,14 @@ export const getMembers = async () => {
   });
 
   return members;
+};
+
+export const updateMember = async (member: Member) => {
+  const doc = db.collection('members').doc(member.id);
+
+  await doc.get().then((d) => {
+    if (d.exists) {
+      doc.update(member);
+    }
+  });
 };
