@@ -9,6 +9,7 @@ import {
 import { Form, Formik } from 'formik';
 import * as yup from 'yup';
 import { addMember } from '../firebase/member';
+import { Member } from '../fixtures/Members';
 
 const memberSchema = yup.object().shape({
   name: yup.string().required(),
@@ -17,7 +18,7 @@ const memberSchema = yup.object().shape({
   hasAks: yup.boolean().required(),
 });
 
-const MemberForm = () => {
+const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
   const toast = useToast();
 
   return (
@@ -38,6 +39,7 @@ const MemberForm = () => {
         });
         actions.setSubmitting(false);
         actions.resetForm();
+        refresh();
       }}
     >
       {({
