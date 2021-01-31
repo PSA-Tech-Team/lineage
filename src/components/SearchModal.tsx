@@ -33,8 +33,7 @@ const SearchModal = ({ changeLineage }: { changeLineage: Function }) => {
   return (
     <>
       <Button onClick={onOpen} mx={4}>
-        <SearchIcon mr={2} />
-        Search lineages
+        <SearchIcon />
       </Button>
 
       <Modal isOpen={isOpen} onClose={closeModal}>

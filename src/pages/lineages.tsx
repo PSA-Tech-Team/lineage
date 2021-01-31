@@ -12,6 +12,7 @@ import Tree from 'react-d3-tree';
 import { getLineage } from '../fixtures/Pairings';
 import SearchModal from '../components/SearchModal';
 import OptionsDrawer from '../components/OptionsDrawer';
+import { SettingsIcon } from '@chakra-ui/icons';
 
 const Lineages = () => {
   const defaultLineageId = 1;
@@ -54,13 +55,12 @@ const Lineages = () => {
 
         {/* Select search direction */}
         <Button
-          mr={2}
           onClick={() => {
             setSearchAdings(!searchAdings);
             changeLineage(lineageId);
           }}
         >
-          {`Searching ${searchAdings ? 'Adings' : 'AKs'}`}
+          {`${searchAdings ? 'Adings' : 'AKs'}`}
         </Button>
 
         {/* Select lineage */}
@@ -68,7 +68,7 @@ const Lineages = () => {
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
-          Options
+          <SettingsIcon />
         </Button>
       </Flex>
 
