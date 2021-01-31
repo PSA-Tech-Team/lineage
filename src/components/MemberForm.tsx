@@ -7,6 +7,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
+import { useRef } from 'react';
 import * as yup from 'yup';
 import { addMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
@@ -19,6 +20,7 @@ const memberSchema = yup.object().shape({
 });
 
 const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
+  const nameInput = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
   return (
@@ -31,15 +33,21 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
       }}
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {
+        // Add member to database
         await addMember(values);
+
+        // Notify user through toast
         toast({
           title: 'Success!',
           description: `${values.name} has been added.`,
           status: 'success',
         });
+
+        // Update UI
         actions.setSubmitting(false);
         actions.resetForm();
         refresh();
+        nameInput.current?.focus();
       }}
     >
       {({
@@ -64,6 +72,7 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
               value={values.name}
               onChange={handleChange}
               onReset={handleReset}
+              ref={nameInput}
             />
             <FormErrorMessage>{errors.name}</FormErrorMessage>
           </FormControl>
@@ -84,8 +93,6 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
             />
             <FormErrorMessage>{errors.classOf}</FormErrorMessage>
           </FormControl>
-
-          {/* Adings/Aks */}
 
           <Button
             mt={4}
