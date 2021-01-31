@@ -12,11 +12,15 @@
     "@chakra-ui/theme-tools": "1.0.0",
     "@emotion/react": "11.1.1",
     "@emotion/styled": "11.0.0",
+    "@types/yup": "^0.29.11",
+    "firebase": "^8.2.5",
+    "formik": "^2.2.6",
     "framer-motion": "^2.9.4",
     "next": "latest",
     "react": "^17.0.1",
     "react-d3-tree": "^2.0.0",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "yup": "^0.32.8"
   },
   "devDependencies": {
     "@types/node": "^14.14.22",
