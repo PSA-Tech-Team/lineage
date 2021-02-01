@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import MemberForm from '../components/MemberForm';
-import { getMembers, updateMember } from '../firebase/member';
+import { deleteMember, getMembers, updateMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import MembersTable from '../components/MembersTable';
@@ -45,19 +45,55 @@ const EditPage = ({ members }: EditPageProps) => {
     return fetchedMembers;
   };
 
-  const changeMemberName = async (name: string, member: Member, i: number) => {
-    if (name.trim() === member.name.trim()) return;
+  const changeMember = async (updated: Member, i: number) => {
+    // If no change is present, skip
+    const original = membersList[i];
+    if (updated.name === original.name && updated.classOf === original.classOf)
+      return;
 
-    await updateMember({ ...member, name });
+    // Check schema
+    if (!Boolean(updated.name) || updated.classOf.length !== 4) {
+      toast({
+        title: 'Error',
+        status: 'error',
+        description:
+          'Name must be non-empty. Class must be exactly 4 digits long',
+      });
+      return;
+    }
+
+    // Update member in database
+    await updateMember(updated);
+
+    // Send toast
     toast({
       title: 'Success!',
-      description: `"${member.name}" renamed to "${name}"`,
       status: 'success',
+      description: `"${updated.name}" successfully updated`,
     });
 
-    const updated = [...membersList];
-    updated[i] = { ...member, name };
-    setMembersList(updated);
+    // Update member in state
+    const updatedList = [...membersList];
+    updatedList[i] = updated;
+    setMembersList(updatedList);
+  };
+
+  const removeMember = async (member: Member, i: number) => {
+    if (!member.id) return;
+
+    // Delete member from database
+    await deleteMember(member.id);
+
+    toast({
+      title: 'Deletion complete',
+      status: 'info',
+      description: `${member.name} has been deleted.`,
+    });
+
+    // Remove member from state
+    const updatedList = [...membersList];
+    updatedList.splice(i, 1);
+    setMembersList(updatedList);
   };
 
   return (
@@ -102,9 +138,10 @@ const EditPage = ({ members }: EditPageProps) => {
             <TabPanel>
               <MembersTable
                 membersList={membersList}
-                changeName={changeMemberName}
+                changeMember={changeMember}
                 loading={loading}
                 refresh={refreshMembers}
+                removeMember={removeMember}
               />
             </TabPanel>
             <TabPanel>Pairings!</TabPanel>
