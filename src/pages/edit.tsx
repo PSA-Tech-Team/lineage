@@ -19,6 +19,8 @@ import { deleteMember, getMembers, updateMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import MembersTable from '../components/MembersTable';
+import SearchModal from '../components/SearchModal';
+import PairingForm from '../components/PairingForm';
 
 interface EditPageProps {
   members: Member[];
@@ -98,35 +100,30 @@ const EditPage = ({ members }: EditPageProps) => {
 
   return (
     <Box>
-      <Flex
-        p={4}
-        align="center"
-        borderColor="white"
-        bgColor={isDark ? 'seagreen' : 'turquoise'}
-      >
+      <Flex p={4} align="center" borderColor="white">
         <Heading as="h1" fontSize="2xl" fontWeight="light">
           <Link href="/">Lineage</Link>
         </Heading>
       </Flex>
       <Grid templateColumns={['100%', '50% 50%']}>
+        {/* Member column */}
         <Container>
-          <Heading variant="h2" m={5} textAlign="center">
-            Edit Members
-          </Heading>
-
           <Heading variant="h3" my={5}>
             Add member
           </Heading>
           <MemberForm refresh={refreshMembers} />
         </Container>
+
+        {/* Pairing column */}
         <Container>
-          <Heading variant="h2" m={5} textAlign="center">
-            Edit Pairings
+          <Heading variant="h3" my={5}>
+            Add pairing
           </Heading>
+          <PairingForm members={membersList} />
         </Container>
       </Grid>
 
-      {/* List of members */}
+      {/* Table info for members/pairings */}
       <Container minW="80%" centerContent mt={20}>
         <Tabs w="100%">
           <TabList>
@@ -135,6 +132,7 @@ const EditPage = ({ members }: EditPageProps) => {
           </TabList>
 
           <TabPanels>
+            {/* Members tab */}
             <TabPanel>
               <MembersTable
                 membersList={membersList}
@@ -144,6 +142,8 @@ const EditPage = ({ members }: EditPageProps) => {
                 removeMember={removeMember}
               />
             </TabPanel>
+
+            {/* Pairings tab */}
             <TabPanel>Pairings!</TabPanel>
           </TabPanels>
         </Tabs>

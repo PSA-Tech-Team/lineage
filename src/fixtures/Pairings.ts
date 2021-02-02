@@ -6,6 +6,7 @@ import { Member, PSA_MEMBERS_WITH_IDS as members } from './Members';
 export interface Pairing {
   akId: string;
   adingId: string;
+  semesterAssigned?: string | undefined;
 }
 
 /**

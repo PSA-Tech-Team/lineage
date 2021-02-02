@@ -2,7 +2,7 @@ import { Member } from '../fixtures/Members';
 import firebase from './config';
 
 const db = firebase.firestore();
-const MEMBERS_COL = 'members';
+export const MEMBERS_COL = 'members';
 
 export const addMember = async (member: Member) => {
   const collection = db.collection(MEMBERS_COL);
@@ -38,7 +38,7 @@ export const updateMember = async (member: Member) => {
 
   await doc.get().then((d) => {
     if (d.exists) {
-      doc.update(member);
+      doc.update({ ...member, id: undefined });
     }
   });
 };

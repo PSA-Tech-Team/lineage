@@ -1,6 +1,8 @@
 import { CheckIcon, CloseIcon, DeleteIcon, LinkIcon } from '@chakra-ui/icons';
 import {
+  Box,
   Button,
+  Container,
   Editable,
   EditableInput,
   EditablePreview,
@@ -62,6 +64,18 @@ const MembersTable = ({
           <Spinner mx="auto" />
         </Flex>
       )}
+
+      {membersList.length === 0 && (
+        <Box
+          backgroundColor="darkred"
+          color="whitesmoke"
+          p={25}
+          borderRadius={20}
+        >
+          No members. Add some above!
+        </Box>
+      )}
+
       {!loading && membersList.length > 0 && (
         <Table maxW="100vw" overflowX="scroll">
           <TableCaption>PSA Members</TableCaption>

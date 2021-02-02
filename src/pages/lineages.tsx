@@ -13,6 +13,7 @@ import { getLineage } from '../fixtures/Pairings';
 import SearchModal from '../components/SearchModal';
 import OptionsDrawer from '../components/OptionsDrawer';
 import { SettingsIcon } from '@chakra-ui/icons';
+import { PSA_MEMBERS_WITH_IDS } from '../fixtures/Members';
 
 const Lineages = () => {
   const defaultLineageId = 1;
@@ -31,8 +32,8 @@ const Lineages = () => {
 
   const treeParentRef = useRef<HTMLDivElement>(null);
 
-  const changeLineage = (newId: number) => {
-    setLineageId(newId);
+  const changeLineage = (newId: string) => {
+    setLineageId(parseInt(newId));
   }
 
   useEffect(() => {
@@ -57,14 +58,14 @@ const Lineages = () => {
         <Button
           onClick={() => {
             setSearchAdings(!searchAdings);
-            changeLineage(lineageId);
+            changeLineage(lineageId.toString());
           }}
         >
           {`${searchAdings ? 'Adings' : 'AKs'}`}
         </Button>
 
         {/* Select lineage */}
-        <SearchModal changeLineage={changeLineage} />
+        <SearchModal members={PSA_MEMBERS_WITH_IDS} onSelect={changeLineage} />
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
