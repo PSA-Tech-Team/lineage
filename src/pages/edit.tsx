@@ -21,12 +21,16 @@ import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import MembersTable from '../components/MembersTable';
 import SearchModal from '../components/SearchModal';
 import PairingForm from '../components/PairingForm';
+import PairingsTable from '../components/PairingsTable';
+import { Pairing } from '../fixtures/Pairings';
+import { getPairings } from '../firebase/pairings';
 
 interface EditPageProps {
   members: Member[];
+  pairings: Pairing[];
 }
 
-const EditPage = ({ members }: EditPageProps) => {
+const EditPage = ({ members, pairings }: EditPageProps) => {
   const [membersList, setMembersList] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const toast = useToast();
@@ -119,7 +123,7 @@ const EditPage = ({ members }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add pairing
           </Heading>
-          <PairingForm members={membersList} />
+          <PairingForm members={membersList} refresh={refreshMembers} />
         </Container>
       </Grid>
 
@@ -144,7 +148,9 @@ const EditPage = ({ members }: EditPageProps) => {
             </TabPanel>
 
             {/* Pairings tab */}
-            <TabPanel>Pairings!</TabPanel>
+            <TabPanel>
+              <PairingsTable pairings={pairings} />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Container>
@@ -156,10 +162,12 @@ const EditPage = ({ members }: EditPageProps) => {
 
 export async function getStaticProps() {
   const members: Member[] = await getMembers();
+  const pairings: Pairing[] = await getPairings();
 
   return {
     props: {
       members,
+      pairings,
     },
   };
 }

@@ -2,7 +2,6 @@ import { CheckIcon, CloseIcon, DeleteIcon, LinkIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
-  Container,
   Editable,
   EditableInput,
   EditablePreview,
@@ -59,12 +58,7 @@ const MembersTable = ({
         </Button>
       </Flex>
 
-      {loading && (
-        <Flex flexDir="column">
-          <Spinner mx="auto" />
-        </Flex>
-      )}
-
+      {/* No members notice */}
       {membersList.length === 0 && (
         <Box
           backgroundColor="darkred"
@@ -74,6 +68,13 @@ const MembersTable = ({
         >
           No members. Add some above!
         </Box>
+      )}
+
+      {/* Loading spinner */}
+      {loading && (
+        <Flex flexDir="column">
+          <Spinner mx="auto" />
+        </Flex>
       )}
 
       {!loading && membersList.length > 0 && (

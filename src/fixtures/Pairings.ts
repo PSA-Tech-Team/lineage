@@ -4,8 +4,9 @@ import { Member, PSA_MEMBERS_WITH_IDS as members } from './Members';
  * Represents a pairing between an Ate/Kuya and Ading
  */
 export interface Pairing {
-  akId: string;
-  adingId: string;
+  id: string;
+  ak: Member;
+  ading: Member;
   semesterAssigned?: string | undefined;
 }
 
@@ -65,7 +66,7 @@ export function memberToNode(
   // Find all adings/AKs of member if they have any
   const shouldSearch = Boolean(searchDown ? member.hasAdings : member.hasAks);
   if (shouldSearch) {
-    for (const { akId, adingId } of PAIRINGS) {
+    for (const { ak: akId, ading: adingId } of PAIRINGS) {
       // Check if the member is an AK / ading, depending on search direction
       const inPairing = searchDown ? member.id === akId : member.id === adingId;
 

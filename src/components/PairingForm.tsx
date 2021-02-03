@@ -6,9 +6,10 @@ import SearchModal from './SearchModal';
 
 interface PairingFormProps {
   members: Member[];
+  refresh: () => Promise<Member[]>;
 }
 
-const PairingForm = ({ members }: PairingFormProps) => {
+const PairingForm = ({ members, refresh }: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
@@ -40,6 +41,9 @@ const PairingForm = ({ members }: PairingFormProps) => {
 
     setAk(undefined);
     setAding(undefined);
+
+    // Refresh the members list to reflect changes
+    await refresh();
   };
 
   return (
