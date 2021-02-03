@@ -1,15 +1,23 @@
 import { Member } from '../fixtures/Members';
+import { deletePairing, PAIRINGS_COL } from './pairings';
 import firebase from './config';
 
 const db = firebase.firestore();
 export const MEMBERS_COL = 'members';
 
+/**
+ * Add member to database
+ * @param member member to add
+ */
 export const addMember = async (member: Member) => {
   const collection = db.collection(MEMBERS_COL);
   const result = await collection.add(member);
   return result;
 };
 
+/**
+ * Returns all members from database
+ */
 export const getMembers = async () => {
   let collection = db.collection(MEMBERS_COL);
   let members: Member[] = [];
@@ -25,7 +33,7 @@ export const getMembers = async () => {
         name,
         classOf,
         adings,
-        aks
+        aks,
       });
     }
   });
@@ -33,6 +41,10 @@ export const getMembers = async () => {
   return members;
 };
 
+/**
+ * Updates member's data
+ * @param member member to update
+ */
 export const updateMember = async (member: Member) => {
   const doc = db.collection(MEMBERS_COL).doc(member.id);
 
@@ -49,14 +61,29 @@ export const updateMember = async (member: Member) => {
   });
 };
 
+/**
+ * Deletes member and any associated pairings
+ * @param memberId id of member to delete
+ */
 export const deleteMember = async (memberId: string) => {
-  const doc = db.collection(MEMBERS_COL).doc(memberId);
+  const memberRef = db.collection(MEMBERS_COL).doc(memberId);
 
-  await doc.get().then(async (d) => {
-    if (!d.exists) {
-      return;
-    }
+  const memberSnap = await memberRef.get();
 
-    await doc.delete();
-  })
-}
+  if (!memberSnap.exists) return;
+
+  // Get all pairings associated with that member
+  const pairingsCol = db.collection(PAIRINGS_COL);
+  const deletedWasAk = await pairingsCol.where('ak', '==', memberRef).get();
+
+  const deletedWasAding = await pairingsCol
+    .where('ading', '==', memberRef)
+    .get();
+
+  // Delete the pairings
+  deletedWasAk.forEach(async (pairing) => await deletePairing(pairing.id));
+  deletedWasAding.forEach(async (pairing) => await deletePairing(pairing.id));
+
+  // Delete member from database
+  await memberRef.delete();
+};

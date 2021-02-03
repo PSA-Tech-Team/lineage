@@ -5,7 +5,7 @@ import { Member } from '../fixtures/Members';
 import { disconnect } from 'process';
 
 const db = firebase.firestore();
-const PAIRINGS_COL = 'pairings';
+export const PAIRINGS_COL = 'pairings';
 const deletedMember: Member = {
   name: '[deleted]',
   classOf: '[deleted]',

@@ -149,6 +149,7 @@ const MembersTable = ({
                               setSubmitting(true);
                               await removeMember(member, i);
                               setSubmitting(false);
+                              await refresh();
                             }}
                             disabled={isSubmitting}
                           >
