@@ -10,7 +10,6 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  useColorMode,
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -29,19 +28,25 @@ interface EditPageProps {
   pairings: Pairing[];
 }
 
+/**
+ * Page to view and edit the PSA member database
+ */
 const EditPage = ({ members, pairings }: EditPageProps) => {
   const [membersList, setMembersList] = useState<Member[]>([]);
   const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPairs, setLoadingPairs] = useState<boolean>(false);
   const toast = useToast();
-  const { colorMode } = useColorMode();
 
+  // Load members and pairings lists from props upon render
   useEffect(() => {
     setMembersList(members);
     setPairingsList(pairings);
   }, []);
 
+  /**
+   * Refresh the members list from database
+   */
   const refreshMembers = async () => {
     setLoading(true);
 
@@ -52,6 +57,9 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     return fetchedMembers;
   };
 
+  /**
+   * Refresh the pairings list from database
+   */
   const refreshPairings = async () => {
     setLoadingPairs(true);
 
@@ -62,6 +70,19 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     return fetchedPairings;
   };
 
+  /**
+   * Refresh both members and pairings tables
+   */
+  const refreshTables = async () => {
+    await refreshMembers();
+    await refreshPairings();
+  }
+
+  /**
+   * Callback to update member's data in state and database
+   * @param updated member with new data
+   * @param i index of member in state
+   */
   const changeMember = async (updated: Member, i: number) => {
     // If no change is present, skip
     const original = membersList[i];
@@ -95,6 +116,11 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setMembersList(updatedList);
   };
 
+  /**
+   * Callback to delete member from database and state
+   * @param member member to delete
+   * @param i index of member in state
+   */
   const removeMember = async (member: Member, i: number) => {
     if (!member.id) return;
 
@@ -136,8 +162,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           </Heading>
           <PairingForm
             members={membersList}
-            refreshMembers={refreshMembers}
-            refreshPairings={refreshPairings}
+            refresh={refreshTables}
           />
         </Container>
       </Grid>

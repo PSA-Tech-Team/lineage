@@ -19,6 +19,9 @@ interface SearchModalProps {
   onSelect: (memberId: string) => void 
 }
 
+/**
+ * Popup modal to search for PSA members
+ */
 const SearchModal = ({ members, onSelect }: SearchModalProps) => {
   const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();

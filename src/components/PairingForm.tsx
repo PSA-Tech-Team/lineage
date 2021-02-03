@@ -2,25 +2,33 @@ import { Box, Button, Flex, Spacer, Text, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { addPairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
-import { Pairing } from '../fixtures/Pairings';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
   members: Member[];
-  refreshMembers: () => Promise<Member[]>;
-  refreshPairings: () => Promise<Pairing[]>;
+  refresh: () => Promise<void>;
 }
 
-const PairingForm = ({ members, refreshMembers, refreshPairings }: PairingFormProps) => {
+/**
+ * Form to create new AKA pairings between PSA members
+ */
+const PairingForm = ({ members, refresh }: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const toast = useToast();
 
+  /**
+   * Returns member of given id in members list
+   * @param memberId id of member
+   */
   const findMember = (memberId: string) => {
     return members.find((member) => member.id === memberId);
   };
 
+  /**
+   * Callback when submitting a pairing through form
+   */
   const submitPairing = async () => {
     if (!ak || !ading) {
       toast({
@@ -45,8 +53,7 @@ const PairingForm = ({ members, refreshMembers, refreshPairings }: PairingFormPr
     setAding(undefined);
 
     // Refresh the members + pairings list to reflect changes
-    await refreshMembers();
-    await refreshPairings();
+    await refresh();
   };
 
   return (

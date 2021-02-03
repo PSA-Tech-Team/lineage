@@ -40,6 +40,9 @@ interface OptionsDrawerProps {
   setNonSibSeparation: (value: number) => void;
 }
 
+/**
+ * Drawer in Lineage view to change tree settings
+ */
 const OptionsDrawer = ({
   isOpen,
   onClose,

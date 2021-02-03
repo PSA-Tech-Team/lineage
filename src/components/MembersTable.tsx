@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon, DeleteIcon, LinkIcon } from '@chakra-ui/icons';
+import { DeleteIcon, LinkIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -37,6 +37,9 @@ interface MembersTableProps {
   removeMember: (member: Member, i: number) => Promise<void>;
 }
 
+/**
+ * Table to display PSA members
+ */
 const MembersTable = ({
   refresh,
   loading,

@@ -19,6 +19,9 @@ const memberSchema = yup.object().shape({
   aks: yup.number().required(),
 });
 
+/**
+ * Form to add members to database
+ */
 const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
   const nameInput = useRef<HTMLInputElement>(null);
   const toast = useToast();

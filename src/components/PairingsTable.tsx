@@ -27,7 +27,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { deletePairing, getPairings, updatePairing } from '../firebase/pairings';
+import { deletePairing, updatePairing } from '../firebase/pairings';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
@@ -40,6 +40,11 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const toast = useToast();
 
+  /**
+   * Callback when changing the semester assigned field of a pairing
+   * @param semesterAssigned new semester assigned
+   * @param pairing pairing to update
+   */
   const onChangePairing = async (
     semesterAssigned: string,
     pairing: Pairing

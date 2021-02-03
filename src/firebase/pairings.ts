@@ -2,7 +2,6 @@ import { MEMBERS_COL } from './member';
 import firebase from './config';
 import { Pairing } from '../fixtures/Pairings';
 import { Member } from '../fixtures/Members';
-import { disconnect } from 'process';
 
 const db = firebase.firestore();
 export const PAIRINGS_COL = 'pairings';
