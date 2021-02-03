@@ -19,7 +19,6 @@ import { deleteMember, getMembers, updateMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import MembersTable from '../components/MembersTable';
-import SearchModal from '../components/SearchModal';
 import PairingForm from '../components/PairingForm';
 import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
@@ -32,13 +31,15 @@ interface EditPageProps {
 
 const EditPage = ({ members, pairings }: EditPageProps) => {
   const [membersList, setMembersList] = useState<Member[]>([]);
+  const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingPairs, setLoadingPairs] = useState<boolean>(false);
   const toast = useToast();
   const { colorMode } = useColorMode();
-  const isDark = colorMode === 'dark';
 
   useEffect(() => {
     setMembersList(members);
+    setPairingsList(pairings);
   }, []);
 
   const refreshMembers = async () => {
@@ -49,6 +50,16 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setMembersList(fetchedMembers);
     setLoading(false);
     return fetchedMembers;
+  };
+
+  const refreshPairings = async () => {
+    setLoadingPairs(true);
+
+    const fetchedPairings = await getPairings();
+
+    setPairingsList(fetchedPairings);
+    setLoadingPairs(false);
+    return fetchedPairings;
   };
 
   const changeMember = async (updated: Member, i: number) => {
@@ -128,7 +139,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       </Grid>
 
       {/* Table info for members/pairings */}
-      <Container minW="80%" centerContent mt={20}>
+      <Container minW="90%" centerContent mt={20}>
         <Tabs w="100%">
           <TabList>
             <Tab>Members</Tab>
@@ -149,7 +160,11 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
             {/* Pairings tab */}
             <TabPanel>
-              <PairingsTable pairings={pairings} />
+              <PairingsTable
+                pairings={pairingsList}
+                loading={loadingPairs}
+                refresh={refreshPairings}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

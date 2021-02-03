@@ -38,7 +38,13 @@ export const updateMember = async (member: Member) => {
 
   await doc.get().then((d) => {
     if (d.exists) {
-      doc.update({ ...member, id: undefined });
+      // Member Objects are given their `id` as a property when fetched
+      // from database. We don't need the id when updating Members, so
+      // we remove them before updating their values.
+      const idRemoved: Member = { ...member };
+      delete idRemoved.id;
+
+      doc.update(idRemoved);
     }
   });
 };
