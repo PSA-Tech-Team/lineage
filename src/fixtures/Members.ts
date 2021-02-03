@@ -5,8 +5,8 @@ export interface Member {
   id?: string;
   name: string;
   classOf: string;
-  hasAdings: boolean;
-  hasAks?: boolean;
+  adings: number;
+  aks: number;
 }
 
 /**

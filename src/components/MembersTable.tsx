@@ -77,91 +77,93 @@ const MembersTable = ({
         </Flex>
       )}
 
-      <Table maxW="100vw" overflowX="scroll">
-        <TableCaption>PSA Members</TableCaption>
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Class of</Th>
-            <Th>Has Adings?</Th>
-            <Th>Has AKs?</Th>
-            <Th />
-          </Tr>
-        </Thead>
-        <Tbody>
-          {membersList.map((member, i) => (
-            <Tr key={member.id}>
-              <Td>
-                {/* Name (editable) column */}
-                <Editable
-                  defaultValue={member.name}
-                  onSubmit={(name) => changeMember({ ...member, name }, i)}
-                >
-                  <EditablePreview />
-                  <EditableInput />
-                </Editable>
-              </Td>
-
-              {/* Class (editable) column */}
-              <Td>
-                <Editable
-                  defaultValue={member.classOf}
-                  onSubmit={(classOf) =>
-                    changeMember({ ...member, classOf }, i)
-                  }
-                >
-                  <EditablePreview />
-                  <EditableInput />
-                </Editable>
-              </Td>
-
-              {/* Has Adings/Aks column */}
-              <Td>{member.hasAdings ? <CheckIcon /> : <CloseIcon />}</Td>
-              <Td>{member.hasAks ? <CheckIcon /> : <CloseIcon />}</Td>
-
-              {/* Actions */}
-              <Td>
-                <HStack>
-                  <Button size="xs" colorScheme="teal">
-                    <LinkIcon />
-                  </Button>
-                  <Popover>
-                    <PopoverTrigger>
-                      <Button size="xs" colorScheme="red">
-                        <DeleteIcon />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverCloseButton />
-                      <PopoverArrow />
-                      <PopoverHeader>
-                        <Heading size="sm">Confirm deletion</Heading>
-                      </PopoverHeader>
-                      <PopoverBody>
-                        <Text mb={5}>
-                          {`Are you sure you want to delete "${member.name}"?`}
-                        </Text>
-                        <Button
-                          isFullWidth
-                          colorScheme="red"
-                          onClick={async () => {
-                            setSubmitting(true);
-                            await removeMember(member, i);
-                            setSubmitting(false);
-                          }}
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? 'Deleting...' : 'Yes, delete'}
-                        </Button>
-                      </PopoverBody>
-                    </PopoverContent>
-                  </Popover>
-                </HStack>
-              </Td>
+      {Boolean(membersList.length) && (
+        <Table maxW="100vw" overflowX="scroll">
+          <TableCaption>PSA Members</TableCaption>
+          <Thead>
+            <Tr>
+              <Th>Name</Th>
+              <Th>Class of</Th>
+              <Th># of adings</Th>
+              <Th># of aks</Th>
+              <Th />
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {membersList.map((member, i) => (
+              <Tr key={member.id}>
+                <Td>
+                  {/* Name (editable) column */}
+                  <Editable
+                    defaultValue={member.name}
+                    onSubmit={(name) => changeMember({ ...member, name }, i)}
+                  >
+                    <EditablePreview />
+                    <EditableInput />
+                  </Editable>
+                </Td>
+
+                {/* Class (editable) column */}
+                <Td>
+                  <Editable
+                    defaultValue={member.classOf}
+                    onSubmit={(classOf) =>
+                      changeMember({ ...member, classOf }, i)
+                    }
+                  >
+                    <EditablePreview />
+                    <EditableInput />
+                  </Editable>
+                </Td>
+
+                {/* Has Adings/Aks column */}
+                <Td isNumeric>{member.adings}</Td>
+                <Td isNumeric>{member.aks}</Td>
+
+                {/* Actions */}
+                <Td>
+                  <HStack>
+                    <Button size="xs" colorScheme="teal">
+                      <LinkIcon />
+                    </Button>
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button size="xs" colorScheme="red">
+                          <DeleteIcon />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverCloseButton />
+                        <PopoverArrow />
+                        <PopoverHeader>
+                          <Heading size="sm">Confirm deletion</Heading>
+                        </PopoverHeader>
+                        <PopoverBody>
+                          <Text mb={5}>
+                            {`Are you sure you want to delete "${member.name}"?`}
+                          </Text>
+                          <Button
+                            isFullWidth
+                            colorScheme="red"
+                            onClick={async () => {
+                              setSubmitting(true);
+                              await removeMember(member, i);
+                              setSubmitting(false);
+                            }}
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? 'Deleting...' : 'Yes, delete'}
+                          </Button>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </Popover>
+                  </HStack>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      )}
     </>
   );
 };

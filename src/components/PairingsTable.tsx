@@ -1,6 +1,9 @@
 import { DeleteIcon } from '@chakra-ui/icons';
 import {
   Button,
+  Editable,
+  EditableInput,
+  EditablePreview,
   Flex,
   Heading,
   HStack,
@@ -21,9 +24,10 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { getPairings } from '../firebase/pairings';
+import { deletePairing, getPairings, updatePairing } from '../firebase/pairings';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
@@ -34,8 +38,24 @@ interface PairingsTableProps {
 
 const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
+  const toast = useToast();
 
-  console.log(pairings);
+  const onChangePairing = async (
+    semesterAssigned: string,
+    pairing: Pairing
+  ) => {
+    if (semesterAssigned === pairing.semesterAssigned) return;
+
+    await updatePairing({ ...pairing, semesterAssigned });
+    await refresh();
+
+    toast({
+      title: 'Success!',
+      description: 'Pairing successfully updated',
+      status: 'success',
+    });
+  };
+
   return (
     <>
       <Flex my={5} alignItems="center" minW="100%">
@@ -71,7 +91,17 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
               <Td>{pairing.ak.classOf}</Td>
               <Td>{pairing.ading.name}</Td>
               <Td>{pairing.ading.classOf}</Td>
-              <Td>{pairing.semesterAssigned}</Td>
+              <Td>
+                <Editable
+                  defaultValue={pairing.semesterAssigned}
+                  onSubmit={(semesterAssigned) =>
+                    onChangePairing(semesterAssigned, pairing)
+                  }
+                >
+                  <EditablePreview />
+                  <EditableInput />
+                </Editable>
+              </Td>
               <Td>
                 <HStack>
                   <Popover>
@@ -87,13 +117,17 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
                         <Heading size="sm">Confirm deletion</Heading>
                       </PopoverHeader>
                       <PopoverBody>
-                        <Text mb={5}>
-                          {'test'}
-                        </Text>
+                        <Text mb={5}>Are you sure you want to delete this pairing?</Text>
                         <Button
                           isFullWidth
                           colorScheme="red"
                           disabled={isSubmitting}
+                          onClick={async () => {
+                            setSubmitting(true);
+                            await deletePairing(pairing.id);
+                            setSubmitting(false);
+                            await refresh();
+                          }}
                         >
                           {isSubmitting ? 'Deleting...' : 'Yes, delete'}
                         </Button>

@@ -18,14 +18,14 @@ export const getMembers = async () => {
     let docs = snapshot.docs;
 
     for (let member of docs) {
-      const { name, classOf, hasAdings, hasAks } = member.data();
+      const { name, classOf, adings, aks } = member.data();
 
       members.push({
         id: member.id,
         name,
         classOf,
-        hasAdings,
-        hasAks,
+        adings,
+        aks
       });
     }
   });
@@ -36,7 +36,7 @@ export const getMembers = async () => {
 export const updateMember = async (member: Member) => {
   const doc = db.collection(MEMBERS_COL).doc(member.id);
 
-  await doc.get().then((d) => {
+  await doc.get().then(async (d) => {
     if (d.exists) {
       // Member Objects are given their `id` as a property when fetched
       // from database. We don't need the id when updating Members, so
@@ -44,7 +44,7 @@ export const updateMember = async (member: Member) => {
       const idRemoved: Member = { ...member };
       delete idRemoved.id;
 
-      doc.update(idRemoved);
+      await doc.update(idRemoved);
     }
   });
 };

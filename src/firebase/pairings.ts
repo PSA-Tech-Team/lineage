@@ -1,10 +1,21 @@
 import { MEMBERS_COL } from './member';
 import firebase from './config';
 import { Pairing } from '../fixtures/Pairings';
+import { Member } from '../fixtures/Members';
+import { disconnect } from 'process';
 
 const db = firebase.firestore();
 const PAIRINGS_COL = 'pairings';
+const deletedMember: Member = {
+  name: '[deleted]',
+  classOf: '[deleted]',
+  adings: 0,
+  aks: 0,
+};
 
+/**
+ * Returns all pairings from database
+ */
 export const getPairings = async () => {
   const pairingsCollection = db.collection(PAIRINGS_COL);
 
@@ -20,8 +31,8 @@ export const getPairings = async () => {
     const pairing: any = {
       id: pairingSnapshot.id,
       semesterAssigned: pairingData.semesterAssigned,
-      ak: await akDoc.data(),
-      ading: await adingDoc.data(),
+      ak: akDoc.exists ? await akDoc.data() : deletedMember,
+      ading: adingDoc.exists ? await adingDoc.data() : deletedMember,
     };
 
     pairings.push(pairing);
@@ -30,6 +41,12 @@ export const getPairings = async () => {
   return pairings;
 }
 
+/**
+ * Adds a pairing to the database
+ * @param akId id of AK in database
+ * @param adingId id of ading in database
+ * @param semesterAssigned semester pairing was assigned
+ */
 export const addPairing = async (
   akId: string | undefined,
   adingId: string | undefined,
@@ -50,11 +67,9 @@ export const addPairing = async (
     return;
   }
 
-  // Update members to have AKs/adings
-  await akRef.update({ hasAdings: true });
-  await adingRef.update({ hasAks: true });
-
-  // TODO: migrate Members schema for the aks/adings to be numbers instead of booleans
+  // Update members to have additional AK/ading
+  await akRef.update({ adings: akDoc.data()?.adings + 1 });
+  await adingRef.update({ aks: adingDoc.data()?.aks + 1 });
 
   const pairing = {
     ak: akRef,
@@ -66,3 +81,43 @@ export const addPairing = async (
   const pairingsCollection = db.collection(PAIRINGS_COL);
   await pairingsCollection.add(pairing);
 };
+
+/**
+ * Updates pairing with new assigned semester
+ * @param pairing pairing to update
+ */
+export const updatePairing = async (pairing: Pairing) => {
+  const doc = db.collection(PAIRINGS_COL).doc(pairing.id);
+  const { semesterAssigned } = pairing;
+
+  const docSnap = await doc.get();
+  if (docSnap.exists) {
+    const idRemoved: any = {...docSnap.data(), semesterAssigned};
+    delete idRemoved.id;
+
+    await doc.update(idRemoved);
+  }
+}
+
+/**
+ * Deletes pairing from database and updates fields of members
+ * @param pairingId id of pairing
+ */
+export const deletePairing = async (pairingId: string) => {
+  const doc = db.collection(PAIRINGS_COL).doc(pairingId);
+
+  const docSnap = await doc.get();
+  if (!docSnap.exists) return;
+
+  // Delete document from database
+  await doc.delete();
+
+  // Update members in pairing
+  const akRef = await docSnap.data()?.ak;
+  const adingRef = await docSnap.data()?.ading;
+  const akSnap = await akRef.get();
+  const adingSnap = await adingRef.get();
+
+  if (akSnap.exists) await akRef.update({ adings: akSnap.data().adings - 1 });
+  if (adingSnap.exists) await adingRef.update({ aks: adingSnap.data().aks - 1 });
+}

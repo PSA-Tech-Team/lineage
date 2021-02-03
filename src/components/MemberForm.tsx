@@ -15,8 +15,8 @@ import { Member } from '../fixtures/Members';
 const memberSchema = yup.object().shape({
   name: yup.string().required(),
   classOf: yup.string().length(4).matches(RegExp('^[0-9]*$')).required(),
-  hasAdings: yup.boolean().required(),
-  hasAks: yup.boolean().required(),
+  adings: yup.number().required(),
+  aks: yup.number().required(),
 });
 
 const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
@@ -28,8 +28,8 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
       initialValues={{
         name: '',
         classOf: '',
-        hasAdings: false,
-        hasAks: false,
+        adings: 0,
+        aks: 0,
       }}
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {

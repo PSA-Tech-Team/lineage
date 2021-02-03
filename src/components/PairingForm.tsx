@@ -2,14 +2,16 @@ import { Box, Button, Flex, Spacer, Text, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { addPairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
+import { Pairing } from '../fixtures/Pairings';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
   members: Member[];
-  refresh: () => Promise<Member[]>;
+  refreshMembers: () => Promise<Member[]>;
+  refreshPairings: () => Promise<Pairing[]>;
 }
 
-const PairingForm = ({ members, refresh }: PairingFormProps) => {
+const PairingForm = ({ members, refreshMembers, refreshPairings }: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
@@ -42,8 +44,9 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
     setAk(undefined);
     setAding(undefined);
 
-    // Refresh the members list to reflect changes
-    await refresh();
+    // Refresh the members + pairings list to reflect changes
+    await refreshMembers();
+    await refreshPairings();
   };
 
   return (
