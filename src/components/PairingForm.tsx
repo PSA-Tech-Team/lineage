@@ -2,16 +2,16 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   Flex,
+  Select,
   Spacer,
   Text,
   useToast,
-  VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { addPairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
+import { SEMESTERS } from '../fixtures/Semesters';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
@@ -25,6 +25,7 @@ interface PairingFormProps {
 const PairingForm = ({ members, refresh }: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
+  const [semester, setSemester] = useState<string>('');
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [keepAk, setKeepAk] = useState<boolean>(false);
   const [keepAding, setKeepAding] = useState<boolean>(false);
@@ -42,6 +43,7 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
    * Callback when submitting a pairing through form
    */
   const submitPairing = async () => {
+    // Notify user if member is missing
     if (!ak || !ading) {
       toast({
         title: 'Error',
@@ -51,16 +53,26 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
       return;
     }
 
-    setSubmitting(true);
-    // TODO: allow to set semester
-    await addPairing(ak?.id, ading?.id, '2020');
+    // Notify user if semester is missing
+    if (!Boolean(semester)) {
+      toast({
+        title: 'Error',
+        description: 'Please select a semester for this pairing.',
+        status: 'error',
+      });
+      return;
+    }
 
-    setSubmitting(false);
+    setSubmitting(true);
+    await addPairing(ak?.id, ading?.id, semester);
+
     toast({
       title: 'Success!',
       description: 'Successfully added pairing.',
       status: 'success',
     });
+
+    setSubmitting(false);
 
     // Clear form only if specified
     if (!keepAk) setAk(undefined);
@@ -72,31 +84,57 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
 
   return (
     <Box>
+      {/* AK selection */}
       <Flex my={4} alignItems="center">
         <Box>
-          <Text mb={2}>Select AK: <b>{ak?.name}</b></Text>
-          <Checkbox onChange={() => setKeepAk(!keepAk)}>Keep AK after submission</Checkbox>
+          <Text mb={2}>
+            Select AK: <b>{ak?.name}</b>
+          </Text>
+          <Checkbox onChange={() => setKeepAk(!keepAk)}>
+            Keep AK after submission
+          </Checkbox>
         </Box>
         <Spacer />
         <SearchModal
           members={members}
           onSelect={(id) => setAk(findMember(id))}
+          buttonColorScheme={Boolean(ak) ? 'teal' : undefined}
         />
       </Flex>
 
-
+      {/* Ading selection */}
       <Flex my={6} alignItems="center">
         <Box>
-          <Text mb={2}>Select ading: <b>{ading?.name}</b></Text>
-          <Checkbox onChange={() => setKeepAding(!keepAding)}>Keep ading after submission</Checkbox>
+          <Text mb={2}>
+            Select ading: <b>{ading?.name}</b>
+          </Text>
+          <Checkbox onChange={() => setKeepAding(!keepAding)}>
+            Keep ading after submission
+          </Checkbox>
         </Box>
         <Spacer />
         <SearchModal
           members={members}
           onSelect={(id) => setAding(findMember(id))}
+          buttonColorScheme={Boolean(ading) ? 'teal' : undefined}
         />
       </Flex>
 
+      {/* Semester selection */}
+      <Select
+        my={2}
+        maxW="60%"
+        placeholder="Select semester assigned"
+        onChange={(e) => setSemester(e.currentTarget.value)}
+      >
+        {SEMESTERS.map((sem) => (
+          <option key={sem} value={sem}>
+            {sem}
+          </option>
+        ))}
+      </Select>
+
+      {/* Submit */}
       <Flex>
         <Button
           mt={2}

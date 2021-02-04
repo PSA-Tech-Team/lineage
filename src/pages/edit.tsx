@@ -110,10 +110,8 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       description: `"${updated.name}" successfully updated`,
     });
 
-    // Update member in state
-    const updatedList = [...membersList];
-    updatedList[i] = updated;
-    setMembersList(updatedList);
+    // Refresh to reflect changes
+    await refreshTables();
   };
 
   /**
@@ -121,7 +119,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
    * @param member member to delete
    * @param i index of member in state
    */
-  const removeMember = async (member: Member, i: number) => {
+  const removeMember = async (member: Member) => {
     if (!member.id) return;
 
     // Delete member from database

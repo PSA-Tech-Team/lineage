@@ -15,14 +15,15 @@ import { useState } from 'react';
 import { Member } from '../fixtures/Members';
 
 interface SearchModalProps { 
-  members: Member[], 
-  onSelect: (memberId: string) => void 
+  members: Member[];
+  onSelect: (memberId: string) => void;
+  buttonColorScheme: undefined | 'teal';
 }
 
 /**
  * Popup modal to search for PSA members
  */
-const SearchModal = ({ members, onSelect }: SearchModalProps) => {
+const SearchModal = ({ members, onSelect, buttonColorScheme }: SearchModalProps) => {
   const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -40,7 +41,7 @@ const SearchModal = ({ members, onSelect }: SearchModalProps) => {
 
   return (
     <>
-      <Button onClick={onOpen} mx={4}>
+      <Button onClick={onOpen} mx={4} colorScheme={buttonColorScheme}>
         <SearchIcon />
       </Button>
 
