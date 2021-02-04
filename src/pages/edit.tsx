@@ -12,14 +12,12 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import MemberForm from '../components/MemberForm';
 import { deleteMember, getMembers, updateMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
-import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import MembersTable from '../components/MembersTable';
 import PairingForm from '../components/PairingForm';
 import PairingsTable from '../components/PairingsTable';

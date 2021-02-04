@@ -57,7 +57,6 @@ export function getLineage(
   const memberMap: MemberMap = getMembersMap(members);
   const root = memberMap[id];
   const lineage = convertMemberToNode(root, pairings, searchAdings);
-  console.log(lineage);
   return lineage;
 }
 
