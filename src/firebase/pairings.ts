@@ -38,7 +38,7 @@ export const getPairings = async () => {
   }
 
   return pairings;
-}
+};
 
 /**
  * Adds a pairing to the database
@@ -91,12 +91,12 @@ export const updatePairing = async (pairing: Pairing) => {
 
   const docSnap = await doc.get();
   if (docSnap.exists) {
-    const idRemoved: any = {...docSnap.data(), semesterAssigned};
+    const idRemoved: any = { ...docSnap.data(), semesterAssigned };
     delete idRemoved.id;
 
     await doc.update(idRemoved);
   }
-}
+};
 
 /**
  * Deletes pairing from database and updates fields of members
@@ -117,6 +117,10 @@ export const deletePairing = async (pairingId: string) => {
   const akSnap = await akRef.get();
   const adingSnap = await adingRef.get();
 
-  if (akSnap.exists) await akRef.update({ adings: akSnap.data().adings - 1 });
-  if (adingSnap.exists) await adingRef.update({ aks: adingSnap.data().aks - 1 });
-}
+  if (akSnap.exists) {
+    await akRef.update({ adings: akSnap.data().adings - 1 });
+  }
+  if (adingSnap.exists) {
+    await adingRef.update({ aks: adingSnap.data().aks - 1 });
+  }
+};

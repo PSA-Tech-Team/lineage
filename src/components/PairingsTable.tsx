@@ -33,7 +33,7 @@ import { Pairing } from '../fixtures/Pairings';
 interface PairingsTableProps {
   pairings: Pairing[];
   loading: boolean;
-  refresh: () => Promise<Pairing[]>;
+  refresh: () => Promise<void>;
 }
 
 const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {

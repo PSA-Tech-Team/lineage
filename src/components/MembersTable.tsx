@@ -55,6 +55,9 @@ const MembersTable = ({
 
         <Spacer />
 
+        {/* Loading */}
+        {loading && <Spinner mr={3} />}
+
         {/* Refresh */}
         <Button onClick={refresh} my={5} disabled={loading}>
           Refresh
@@ -71,13 +74,6 @@ const MembersTable = ({
         >
           No members. Add some above!
         </Box>
-      )}
-
-      {/* Loading spinner */}
-      {loading && (
-        <Flex flexDir="column">
-          <Spinner mx="auto" />
-        </Flex>
       )}
 
       {Boolean(membersList.length) && (
@@ -120,8 +116,8 @@ const MembersTable = ({
                 </Td>
 
                 {/* Has Adings/Aks column */}
-                <Td isNumeric>{member.adings}</Td>
-                <Td isNumeric>{member.aks}</Td>
+                <Td>{member.adings}</Td>
+                <Td>{member.aks}</Td>
 
                 {/* Actions */}
                 <Td>
@@ -143,7 +139,8 @@ const MembersTable = ({
                         </PopoverHeader>
                         <PopoverBody>
                           <Text mb={5}>
-                            {`Are you sure you want to delete "${member.name}"?`}
+                            {`Are you sure you want to delete "${member.name}"?
+                            This will delete all pairings with ${member.name} as well.`}
                           </Text>
                           <Button
                             isFullWidth
@@ -152,7 +149,6 @@ const MembersTable = ({
                               setSubmitting(true);
                               await removeMember(member, i);
                               setSubmitting(false);
-                              await refresh();
                             }}
                             disabled={isSubmitting}
                           >

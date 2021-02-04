@@ -1,4 +1,14 @@
-import { Box, Button, Flex, Spacer, Text, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Divider,
+  Flex,
+  Spacer,
+  Text,
+  useToast,
+  VStack,
+} from '@chakra-ui/react';
 import { useState } from 'react';
 import { addPairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
@@ -16,6 +26,8 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
+  const [keepAk, setKeepAk] = useState<boolean>(false);
+  const [keepAding, setKeepAding] = useState<boolean>(false);
   const toast = useToast();
 
   /**
@@ -40,6 +52,7 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
     }
 
     setSubmitting(true);
+    // TODO: allow to set semester
     await addPairing(ak?.id, ading?.id, '2020');
 
     setSubmitting(false);
@@ -49,8 +62,9 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
       status: 'success',
     });
 
-    setAk(undefined);
-    setAding(undefined);
+    // Clear form only if specified
+    if (!keepAk) setAk(undefined);
+    if (!keepAding) setAding(undefined);
 
     // Refresh the members + pairings list to reflect changes
     await refresh();
@@ -58,30 +72,41 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
 
   return (
     <Box>
-      <Flex my={2} alignItems="center">
-        <Text>Select AK: {ak?.name}</Text>
+      <Flex my={4} alignItems="center">
+        <Box>
+          <Text mb={2}>Select AK: <b>{ak?.name}</b></Text>
+          <Checkbox onChange={() => setKeepAk(!keepAk)}>Keep AK after submission</Checkbox>
+        </Box>
         <Spacer />
         <SearchModal
           members={members}
           onSelect={(id) => setAk(findMember(id))}
         />
       </Flex>
-      <Flex my={2} alignItems="center">
-        <Text>Select ading: {ading?.name}</Text>
+
+
+      <Flex my={6} alignItems="center">
+        <Box>
+          <Text mb={2}>Select ading: <b>{ading?.name}</b></Text>
+          <Checkbox onChange={() => setKeepAding(!keepAding)}>Keep ading after submission</Checkbox>
+        </Box>
         <Spacer />
         <SearchModal
           members={members}
           onSelect={(id) => setAding(findMember(id))}
         />
       </Flex>
-      <Button
-        mt={2}
-        colorScheme="teal"
-        onClick={submitPairing}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Creating pairing...' : 'Create pairing'}
-      </Button>
+
+      <Flex>
+        <Button
+          mt={2}
+          colorScheme="teal"
+          onClick={submitPairing}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Creating pairing...' : 'Create pairing'}
+        </Button>
+      </Flex>
     </Box>
   );
 };

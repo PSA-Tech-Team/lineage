@@ -1,5 +1,7 @@
 import {
   Button,
+  Checkbox,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -7,7 +9,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import * as yup from 'yup';
 import { addMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
@@ -23,6 +25,7 @@ const memberSchema = yup.object().shape({
  * Form to add members to database
  */
 const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
+  const [keepClass, setKeepClass] = useState<boolean>(false);
   const nameInput = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
@@ -49,8 +52,12 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
         // Update UI
         actions.setSubmitting(false);
         actions.resetForm();
-        refresh();
+        
+        // Reset class only if specified
+        if (keepClass) actions.setFieldValue('classOf', values.classOf);
+
         nameInput.current?.focus();
+        await refresh();
       }}
     >
       {({
@@ -85,6 +92,7 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
             id="classOf"
             isRequired
             isInvalid={Boolean(errors.classOf && touched.classOf)}
+            mt={2}
           >
             <FormLabel>Class of</FormLabel>
             <Input
@@ -97,14 +105,20 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
             <FormErrorMessage>{errors.classOf}</FormErrorMessage>
           </FormControl>
 
-          <Button
-            mt={4}
-            colorScheme="teal"
-            isLoading={isSubmitting}
-            type="submit"
-          >
-            Submit
-          </Button>
+          <Checkbox my={2} onChange={() => setKeepClass(!keepClass)}>
+            Keep class after submission
+          </Checkbox>
+
+          <Flex>
+            <Button
+              mt={4}
+              colorScheme="teal"
+              isLoading={isSubmitting}
+              type="submit"
+            >
+              Submit
+            </Button>
+          </Flex>
         </Form>
       )}
     </Formik>

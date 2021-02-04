@@ -133,10 +133,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       description: `${member.name} has been deleted.`,
     });
 
-    // Remove member from state
-    const updatedList = [...membersList];
-    updatedList.splice(i, 1);
-    setMembersList(updatedList);
+    await refreshTables();
   };
 
   return (
@@ -192,7 +189,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
               <PairingsTable
                 pairings={pairingsList}
                 loading={loadingPairs}
-                refresh={refreshPairings}
+                refresh={refreshTables}
               />
             </TabPanel>
           </TabPanels>
