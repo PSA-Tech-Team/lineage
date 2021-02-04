@@ -51,8 +51,8 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   const refreshMembers = async () => {
     setLoading(true);
 
-    const fetchedMembers = await getMembers();
-
+    const fetchedMembers = await (await fetch(`/api/members`)).json();
+    
     setMembersList(fetchedMembers);
     setLoading(false);
     return fetchedMembers;
@@ -64,7 +64,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   const refreshPairings = async () => {
     setLoadingPairs(true);
 
-    const fetchedPairings = await getPairings();
+    const fetchedPairings = await (await fetch(`/api/pairings`)).json();
 
     setPairingsList(fetchedPairings);
     setLoadingPairs(false);
