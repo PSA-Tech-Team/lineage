@@ -32,7 +32,6 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   const [translateY, setTranslateY] = useState<number>(0);
   const [vertical, setVertical] = useState<boolean>(true);
   const [searchAdings, setSearchAdings] = useState<boolean>(true);
-  // FIXME: handle undefined or change Member schema to always be string
   const [lineageId, setLineageId] = useState<string>(defaultLineageId);
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const [useTransitions, setTransitions] = useState<boolean>(true);

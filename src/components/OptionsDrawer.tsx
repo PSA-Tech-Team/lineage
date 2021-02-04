@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { StarIcon } from '@chakra-ui/icons';
 import {
   Button,
@@ -184,6 +185,9 @@ const OptionsDrawer = ({
           </DrawerBody>
 
           <DrawerFooter>
+            <Button mr={2}>
+              <Link href="/edit">Edit</Link>
+            </Button>
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>

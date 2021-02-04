@@ -1,15 +1,18 @@
 import Link from 'next/link';
 import {
   Box,
+  Button,
   Container,
   Flex,
   Grid,
   Heading,
+  Spacer,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  Text,
   useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -76,7 +79,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   const refreshTables = async () => {
     await refreshMembers();
     await refreshPairings();
-  }
+  };
 
   /**
    * Callback to update member's data in state and database
@@ -140,6 +143,10 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
         <Heading as="h1" fontSize="2xl" fontWeight="light">
           <Link href="/">Lineage</Link>
         </Heading>
+        <Spacer />
+        <Button colorScheme="teal">
+          <Link href="/lineages">View lineages</Link>
+        </Button>
       </Flex>
       <Grid templateColumns={['100%', '50% 50%']}>
         {/* Member column */}
@@ -155,10 +162,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add pairing
           </Heading>
-          <PairingForm
-            members={membersList}
-            refresh={refreshTables}
-          />
+          <PairingForm members={membersList} refresh={refreshTables} />
         </Container>
       </Grid>
 
@@ -193,8 +197,6 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           </TabPanels>
         </Tabs>
       </Container>
-
-      <DarkModeSwitch />
     </Box>
   );
 };
