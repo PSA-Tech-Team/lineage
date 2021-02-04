@@ -9,7 +9,12 @@ export const MEMBERS_COL = 'members';
  * Add member to database
  * @param member member to add
  */
-export const addMember = async (member: Member) => {
+export const addMember = async (member: {
+  name: string;
+  classOf: string;
+  aks: number;
+  adings: number;
+}) => {
   const collection = db.collection(MEMBERS_COL);
   const result = await collection.add(member);
   return result;
@@ -53,7 +58,7 @@ export const updateMember = async (member: Member) => {
       // Member Objects are given their `id` as a property when fetched
       // from database. We don't need the id when updating Members, so
       // we remove them before updating their values.
-      const idRemoved: Member = { ...member };
+      const idRemoved: any = { ...member };
       delete idRemoved.id;
 
       await doc.update(idRemoved);

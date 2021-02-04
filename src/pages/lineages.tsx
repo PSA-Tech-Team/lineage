@@ -9,20 +9,31 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import Tree from 'react-d3-tree';
-import { getLineage } from '../fixtures/Pairings';
+import { getLineage, Pairing } from '../fixtures/Pairings';
 import SearchModal from '../components/SearchModal';
 import OptionsDrawer from '../components/OptionsDrawer';
 import { SettingsIcon } from '@chakra-ui/icons';
-import { PSA_MEMBERS_WITH_IDS } from '../fixtures/Members';
+import { Member } from '../fixtures/Members';
+import { getMembers } from '../firebase/member';
+import { getPairings } from '../firebase/pairings';
 
-const Lineages = () => {
-  const defaultLineageId = 1;
+interface LineagesPageProps {
+  members: Member[],
+  pairings: Pairing[];
+}
+
+/**
+ * Page to view lineages in a hierarchical view
+ */
+const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
+  // FIXME: for now, setting default lineage to that of first member in list
+  const defaultLineageId = members[0].id;
   const [translateX, setTranslateX] = useState<number>(0);
   const [translateY, setTranslateY] = useState<number>(0);
   const [vertical, setVertical] = useState<boolean>(true);
   const [searchAdings, setSearchAdings] = useState<boolean>(true);
-  // FIXME: the id may not be a number in the future
-  const [lineageId, setLineageId] = useState<number>(defaultLineageId);
+  // FIXME: handle undefined or change Member schema to always be string
+  const [lineageId, setLineageId] = useState<string>(defaultLineageId);
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const [useTransitions, setTransitions] = useState<boolean>(true);
   const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
@@ -33,7 +44,7 @@ const Lineages = () => {
   const treeParentRef = useRef<HTMLDivElement>(null);
 
   const changeLineage = (newId: string) => {
-    setLineageId(parseInt(newId));
+    setLineageId(newId);
   }
 
   useEffect(() => {
@@ -58,14 +69,14 @@ const Lineages = () => {
         <Button
           onClick={() => {
             setSearchAdings(!searchAdings);
-            changeLineage(lineageId.toString());
+            changeLineage(lineageId);
           }}
         >
           {`${searchAdings ? 'Adings' : 'AKs'}`}
         </Button>
 
         {/* Select lineage */}
-        <SearchModal members={PSA_MEMBERS_WITH_IDS} onSelect={changeLineage} />
+        <SearchModal members={members} onSelect={changeLineage} />
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
@@ -98,7 +109,7 @@ const Lineages = () => {
       {/* Tree view */}
       <Box bgColor="gray.100" height="90vh" ref={treeParentRef}>
         <Tree
-          data={getLineage(lineageId, searchAdings)}
+          data={getLineage(lineageId, members, pairings, searchAdings)}
           orientation={vertical ? 'vertical' : 'horizontal'}
           // @ts-ignore
           pathFunc={pathFn}
@@ -119,4 +130,16 @@ const Lineages = () => {
   );
 };
 
-export default Lineages;
+export async function getStaticProps() {
+  const members: Member[] = await getMembers();
+  const pairings: Pairing[] = await getPairings();
+
+  return {
+    props: {
+      members,
+      pairings,
+    },
+  };
+}
+
+export default LineagesPage;

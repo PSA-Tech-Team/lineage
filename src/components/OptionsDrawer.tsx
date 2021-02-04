@@ -24,7 +24,7 @@ interface OptionsDrawerProps {
   onClose: () => void;
   searchAdings: boolean;
   setSearchAdings: Function;
-  lineageId: number;
+  lineageId: string;
   changeLineage: Function;
   vertical: boolean;
   setVertical: Function;

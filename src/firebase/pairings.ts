@@ -5,7 +5,9 @@ import { Member } from '../fixtures/Members';
 
 const db = firebase.firestore();
 export const PAIRINGS_COL = 'pairings';
+
 const deletedMember: Member = {
+  id: '',
   name: '[deleted]',
   classOf: '[deleted]',
   adings: 0,
@@ -26,12 +28,20 @@ export const getPairings = async () => {
     const akDoc = await pairingData.ak.get();
     const adingDoc = await pairingData.ading.get();
 
+    // Add ids to members if they exist
+    const ak = akDoc.exists
+      ? { ...(await akDoc.data()), id: akDoc.id }
+      : deletedMember;
+    const ading = adingDoc.exists
+      ? { ...(await adingDoc.data()), id: adingDoc.id }
+      : deletedMember;
+
     // Fetch AK/ading data from document ref fields
     const pairing: any = {
       id: pairingSnapshot.id,
       semesterAssigned: pairingData.semesterAssigned,
-      ak: akDoc.exists ? await akDoc.data() : deletedMember,
-      ading: adingDoc.exists ? await adingDoc.data() : deletedMember,
+      ak,
+      ading,
     };
 
     pairings.push(pairing);

@@ -17,13 +17,13 @@ import { Member } from '../fixtures/Members';
 interface SearchModalProps { 
   members: Member[];
   onSelect: (memberId: string) => void;
-  buttonColorScheme: undefined | 'teal';
+  buttonColorScheme?: undefined | 'teal';
 }
 
 /**
  * Popup modal to search for PSA members
  */
-const SearchModal = ({ members, onSelect, buttonColorScheme }: SearchModalProps) => {
+const SearchModal = ({ members, onSelect, buttonColorScheme = undefined }: SearchModalProps) => {
   const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
