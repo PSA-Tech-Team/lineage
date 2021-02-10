@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { deleteMember, getMembers, updateMember } from '../../firebase/member';
+import { addMember, deleteMember, getMembers, updateMember } from '../../firebase/member';
 import { Member } from '../../fixtures/Members';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
       return apiGetMembers(res);
+    case 'POST':
+      return apiCreateMember(req, res);
     case 'PUT':
       return apiUpdateMember(req, res);
     case 'DELETE':
@@ -19,6 +21,12 @@ const apiGetMembers = async (res: NextApiResponse) => {
   const members = await getMembers();
   return res.status(200).json(members);
 };
+
+const apiCreateMember = async (req: NextApiRequest, res: NextApiResponse) => {
+  const values = await req.body;
+  await addMember(values);
+  return res.status(200).send({});
+}
 
 const apiUpdateMember = async (req: NextApiRequest, res: NextApiResponse) => {
   const member: Member = await req.body;

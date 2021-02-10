@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import MemberForm from '../components/MemberForm';
-import { getMembers, updateMember } from '../firebase/member';
+import { getMembers } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import MembersTable from '../components/MembersTable';
 import PairingForm from '../components/PairingForm';

@@ -11,7 +11,6 @@ import {
 import { Form, Formik } from 'formik';
 import { useRef, useState } from 'react';
 import * as yup from 'yup';
-import { addMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 
 const memberSchema = yup.object().shape({
@@ -40,7 +39,13 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {
         // Add member to database
-        await addMember(values);
+        await fetch(`/api/members`, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        });
 
         // Notify user through toast
         toast({
@@ -52,7 +57,7 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
         // Update UI
         actions.setSubmitting(false);
         actions.resetForm();
-        
+
         // Reset class only if specified
         if (keepClass) actions.setFieldValue('classOf', values.classOf);
 
