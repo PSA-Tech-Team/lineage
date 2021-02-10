@@ -23,6 +23,7 @@ import PairingForm from '../components/PairingForm';
 import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
 import { getPairings } from '../firebase/pairings';
+import { GetServerSideProps } from 'next';
 
 interface EditPageProps {
   members: Member[];
@@ -217,7 +218,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   );
 };
 
-export async function getStaticProps() {
+export const getServerSideProps: GetServerSideProps = async () => {
   const members: Member[] = await getMembers();
   const pairings: Pairing[] = await getPairings();
 

@@ -16,9 +16,10 @@ import { SettingsIcon } from '@chakra-ui/icons';
 import { Member } from '../fixtures/Members';
 import { getMembers } from '../firebase/member';
 import { getPairings } from '../firebase/pairings';
+import { GetServerSideProps } from 'next';
 
 interface LineagesPageProps {
-  members: Member[],
+  members: Member[];
   pairings: Pairing[];
 }
 
@@ -45,7 +46,7 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
 
   const changeLineage = (newId: string) => {
     setLineageId(newId);
-  }
+  };
 
   useEffect(() => {
     if (treeParentRef.current) {
@@ -53,8 +54,8 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
       const height = treeParentRef.current.offsetHeight;
       setTranslateX(width / 2);
       setTranslateY(height / 4);
-    } 
-  }, [treeParentRef])
+    }
+  }, [treeParentRef]);
 
   return (
     <Box>
@@ -136,7 +137,7 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   );
 };
 
-export async function getStaticProps() {
+export const getServerSideProps: GetServerSideProps = async () => {
   const members: Member[] = await getMembers();
   const pairings: Pairing[] = await getPairings();
 
