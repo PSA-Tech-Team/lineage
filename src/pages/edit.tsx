@@ -52,7 +52,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setLoading(true);
 
     const fetchedMembers = await (await fetch(`/api/members`)).json();
-    
+
     setMembersList(fetchedMembers);
     setLoading(false);
     return fetchedMembers;
@@ -124,7 +124,16 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     if (!member.id) return;
 
     // Delete member from database
-    await deleteMember(member.id);
+    const body = new FormData();
+    body.append('id', member.id);
+
+    await fetch(`/api/members`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ id: member.id }),
+    });
 
     toast({
       title: 'Deletion complete',
