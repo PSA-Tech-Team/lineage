@@ -32,11 +32,12 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   const [translateY, setTranslateY] = useState<number>(0);
   const [vertical, setVertical] = useState<boolean>(true);
   const [searchAdings, setSearchAdings] = useState<boolean>(true);
+  const [inBuffer, setBuffer] = useState<boolean>(false);
   const [lineageId, setLineageId] = useState<string>(defaultLineageId);
   const [pathFn, setPathFn] = useState<string>('diagonal');
   const [useTransitions, setTransitions] = useState<boolean>(true);
-  const [siblingSeparation, setSiblingSeparation] = useState<number>(1);
-  const [nonSibSeparation, setNonSibSeparation] = useState<number>(1);
+  const [siblingSeparation, setSiblingSeparation] = useState<number>(2);
+  const [nonSibSeparation, setNonSibSeparation] = useState<number>(2);
   const [collapseNeighbors, setCollapseNeighbors] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -66,9 +67,15 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
 
         {/* Select search direction */}
         <Button
+          disabled={inBuffer}
           onClick={() => {
-            setSearchAdings(!searchAdings);
-            changeLineage(lineageId);
+            // Prevent users from spamming button (breaks tree)
+            if (!inBuffer) {
+              setSearchAdings(!searchAdings);
+              changeLineage(lineageId);
+              setBuffer(true);
+              setTimeout(() => setBuffer(false), 500);
+            }
           }}
         >
           {`${searchAdings ? 'Adings' : 'AKs'}`}
