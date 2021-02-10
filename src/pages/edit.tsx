@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import MemberForm from '../components/MemberForm';
-import { deleteMember, getMembers, updateMember } from '../firebase/member';
+import { getMembers, updateMember } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import MembersTable from '../components/MembersTable';
 import PairingForm from '../components/PairingForm';
@@ -102,7 +102,14 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     }
 
     // Update member in database
-    await updateMember(updated);
+    await fetch(`/api/members`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(updated),
+    });
+    // await updateMember(updated);
 
     // Send toast
     toast({
@@ -118,15 +125,11 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   /**
    * Callback to delete member from database and state
    * @param member member to delete
-   * @param i index of member in state
    */
   const removeMember = async (member: Member) => {
     if (!member.id) return;
 
     // Delete member from database
-    const body = new FormData();
-    body.append('id', member.id);
-
     await fetch(`/api/members`, {
       method: 'DELETE',
       headers: {
