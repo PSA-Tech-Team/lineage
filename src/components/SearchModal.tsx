@@ -12,9 +12,18 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Member, PSA_MEMBERS_WITH_IDS } from '../fixtures/Members';
+import { Member } from '../fixtures/Members';
 
-const SearchModal = ({ changeLineage }: { changeLineage: Function }) => {
+interface SearchModalProps { 
+  members: Member[];
+  onSelect: (memberId: string) => void;
+  buttonColorScheme?: undefined | 'teal';
+}
+
+/**
+ * Popup modal to search for PSA members
+ */
+const SearchModal = ({ members, onSelect, buttonColorScheme = undefined }: SearchModalProps) => {
   const [nameQuery, setNameQuery] = useState<string>('');
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -32,7 +41,7 @@ const SearchModal = ({ changeLineage }: { changeLineage: Function }) => {
 
   return (
     <>
-      <Button onClick={onOpen} mx={4}>
+      <Button onClick={onOpen} mx={4} colorScheme={buttonColorScheme}>
         <SearchIcon />
       </Button>
 
@@ -41,17 +50,17 @@ const SearchModal = ({ changeLineage }: { changeLineage: Function }) => {
         <ModalContent overflowY="auto" maxH="70vh">
           <ModalBody>
             <Input
-              placeholder="Search lineages"
+              placeholder="Search members"
               my={4}
               size="sm"
               onChange={(e) => setNameQuery(e.target.value)}
             />
 
-            {PSA_MEMBERS_WITH_IDS.filter(filterMembers).map((member, i) => (
+            {members.filter(filterMembers).map((member, i) => (
               <Box key={i}>
                 <Button
                   onClick={() => {
-                    changeLineage(member.id);
+                    onSelect((member.id || i).toString());
                     onClose();
                     setNameQuery('');
                   }}

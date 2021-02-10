@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import Link from 'next/link';
 import { StarIcon } from '@chakra-ui/icons';
 import {
   Button,
@@ -24,7 +26,7 @@ interface OptionsDrawerProps {
   onClose: () => void;
   searchAdings: boolean;
   setSearchAdings: Function;
-  lineageId: number;
+  lineageId: string;
   changeLineage: Function;
   vertical: boolean;
   setVertical: Function;
@@ -40,6 +42,9 @@ interface OptionsDrawerProps {
   setNonSibSeparation: (value: number) => void;
 }
 
+/**
+ * Drawer in Lineage view to change tree settings
+ */
 const OptionsDrawer = ({
   isOpen,
   onClose,
@@ -60,6 +65,7 @@ const OptionsDrawer = ({
   nonSibSeparation,
   setNonSibSeparation,
 }: OptionsDrawerProps) => {
+  const [navDisabled, setNavDisabled] = useState<boolean>(false);
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
       <DrawerOverlay>
@@ -181,6 +187,15 @@ const OptionsDrawer = ({
           </DrawerBody>
 
           <DrawerFooter>
+            <Button
+              mr={2}
+              disabled={navDisabled}
+              onClick={() => setNavDisabled(true)}
+            >
+              <Link href="/edit">
+                {navDisabled ? 'Loading...' : 'Edit lineages'}
+              </Link>
+            </Button>
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
