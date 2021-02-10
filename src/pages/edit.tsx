@@ -37,6 +37,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingPairs, setLoadingPairs] = useState<boolean>(false);
+  const [navDisabled, setNavDisabled] = useState<boolean>(false);
   const toast = useToast();
 
   // Load members and pairings lists from props upon render
@@ -153,8 +154,14 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Link href="/">Lineage</Link>
         </Heading>
         <Spacer />
-        <Button colorScheme="teal">
-          <Link href="/lineages">View lineages</Link>
+        <Button
+          colorScheme="teal"
+          disabled={navDisabled}
+          onClick={() => setNavDisabled(true)}
+        >
+          <Link href="/lineages">
+            {navDisabled ? 'Loading...' : 'View lineages'}
+          </Link>
         </Button>
       </Flex>
       <Grid templateColumns={['100%', '50% 50%']}>

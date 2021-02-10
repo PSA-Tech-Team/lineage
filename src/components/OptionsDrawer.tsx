@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Link from 'next/link';
 import { StarIcon } from '@chakra-ui/icons';
 import {
@@ -64,6 +65,7 @@ const OptionsDrawer = ({
   nonSibSeparation,
   setNonSibSeparation,
 }: OptionsDrawerProps) => {
+  const [navDisabled, setNavDisabled] = useState<boolean>(false);
   return (
     <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
       <DrawerOverlay>
@@ -185,8 +187,14 @@ const OptionsDrawer = ({
           </DrawerBody>
 
           <DrawerFooter>
-            <Button mr={2}>
-              <Link href="/edit">Edit</Link>
+            <Button
+              mr={2}
+              disabled={navDisabled}
+              onClick={() => setNavDisabled(true)}
+            >
+              <Link href="/edit">
+                {navDisabled ? 'Loading...' : 'Edit lineages'}
+              </Link>
             </Button>
             <Button variant="outline" onClick={onClose}>
               Close
