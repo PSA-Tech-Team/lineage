@@ -27,7 +27,6 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { deletePairing, updatePairing } from '../firebase/pairings';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
@@ -51,7 +50,13 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
   ) => {
     if (semesterAssigned === pairing.semesterAssigned) return;
 
-    await updatePairing({ ...pairing, semesterAssigned });
+    await fetch(`/api/pairings`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ ...pairing, semesterAssigned }),
+    });
     await refresh();
 
     toast({
@@ -59,6 +64,31 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
       description: 'Pairing successfully updated',
       status: 'success',
     });
+  };
+
+  /**
+   * Callback when deleting a pairing from table
+   * @param pairing pairing to delete
+   */
+  const deletePairing = async (pairing: Pairing) => {
+    // Delete pairing from database
+    setSubmitting(true);
+    await fetch(`/api/pairings`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ id: pairing.id }),
+    });
+
+    // Send toast and refresh
+    await refresh();
+    toast({
+      title: 'Delete successful',
+      description: 'Pairing successfully deleted.',
+      status: 'info',
+    });
+    setSubmitting(false);
   };
 
   return (
@@ -98,6 +128,7 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
               <Td>{pairing.ading.classOf}</Td>
               <Td>
                 <Editable
+                  isDisabled={isSubmitting}
                   defaultValue={pairing.semesterAssigned}
                   onSubmit={(semesterAssigned) =>
                     onChangePairing(semesterAssigned, pairing)
@@ -122,17 +153,14 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
                         <Heading size="sm">Confirm deletion</Heading>
                       </PopoverHeader>
                       <PopoverBody>
-                        <Text mb={5}>Are you sure you want to delete this pairing?</Text>
+                        <Text mb={5}>
+                          Are you sure you want to delete this pairing?
+                        </Text>
                         <Button
                           isFullWidth
                           colorScheme="red"
                           disabled={isSubmitting}
-                          onClick={async () => {
-                            setSubmitting(true);
-                            await deletePairing(pairing.id);
-                            setSubmitting(false);
-                            await refresh();
-                          }}
+                          onClick={async () => await deletePairing(pairing)}
                         >
                           {isSubmitting ? 'Deleting...' : 'Yes, delete'}
                         </Button>

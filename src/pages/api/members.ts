@@ -5,13 +5,13 @@ import { Member } from '../../fixtures/Members';
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
-      return apiGetMembers(res);
+      return await apiGetMembers(res);
     case 'POST':
-      return apiCreateMember(req, res);
+      return await apiCreateMember(req, res);
     case 'PUT':
-      return apiUpdateMember(req, res);
+      return await apiUpdateMember(req, res);
     case 'DELETE':
-      return apiDeleteMember(req, res);
+      return await apiDeleteMember(req, res);
     default:
       return res.status(501).send({});
   }

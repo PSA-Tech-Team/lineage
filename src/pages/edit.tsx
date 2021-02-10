@@ -109,7 +109,6 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       },
       body: JSON.stringify(updated),
     });
-    // await updateMember(updated);
 
     // Send toast
     toast({

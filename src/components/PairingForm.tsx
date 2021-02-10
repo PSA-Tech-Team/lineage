@@ -9,7 +9,6 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { addPairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
 import { SEMESTERS } from '../fixtures/Semesters';
 import SearchModal from './SearchModal';
@@ -64,7 +63,18 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
     }
 
     setSubmitting(true);
-    await addPairing(ak?.id, ading?.id, semester);
+    // Create pairing in database
+    await fetch(`/api/pairings`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        akId: ak?.id,
+        adingId: ading?.id,
+        semester,
+      }),
+    });
 
     toast({
       title: 'Success!',
