@@ -55,7 +55,10 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
   // FIXME: temporary, this client side redirect should be handled on server side
   useEffect(() => {
-    if (!userLoading && !Boolean(user)) {
+    if (userLoading) return;
+
+    const isValidUser = Boolean(user) && user.email.endsWith('@psauiuc.org');
+    if (!isValidUser) {
       router.push('/login');
     }
   }, [user, userLoading]);
@@ -163,7 +166,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
   // FIXME: probably temporary
   // Loading splash screen
-  if (userLoading || !Boolean(user)) {
+  if (userLoading || !(Boolean(user) && user.email.endsWith('@psauiuc.org'))) {
     return <Splash />;
   }
 
@@ -237,7 +240,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getMembers();

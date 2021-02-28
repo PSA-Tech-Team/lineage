@@ -1,9 +1,10 @@
-import { Text } from '@chakra-ui/react';
+import { Button, Text, Flex, Spacer } from '@chakra-ui/react';
 import { Hero } from '../components/Hero';
 import { Container } from '../components/Container';
 import { Main } from '../components/Main';
 import { DarkModeSwitch } from '../components/DarkModeSwitch';
 import { Footer } from '../components/Footer';
+import Link from 'next/link';
 
 const Index = () => (
   <Container height="100vh">
@@ -13,9 +14,17 @@ const Index = () => (
         A visualizer for AKA (Ate, Kuya, Ading) families.
       </Text>
 
-      <Text textAlign="center" fontWeight="bold">
-        Coming soon
-      </Text>
+      <Flex w="100%">
+        <Link href="/lineages">
+          <Button w="40%" colorScheme="teal">
+            View lineages
+          </Button>
+        </Link>
+        <Spacer />
+        <Link href="/login">
+          <Button w="40%">Log in</Button>
+        </Link>
+      </Flex>
     </Main>
 
     <DarkModeSwitch />
