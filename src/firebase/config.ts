@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -18,4 +19,14 @@ try {
   console.error('Firebase initialization error', e);
 }
 
-export default firebase;
+export const db = firebase.firestore();
+export const auth = firebase.auth();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+export const signInWithGoogle = async () => {
+  await auth.signInWithPopup(googleProvider);
+}
+
+export const signOut = async () => {
+  await auth.signOut();
+}
