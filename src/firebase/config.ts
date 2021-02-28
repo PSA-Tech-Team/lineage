@@ -19,6 +19,7 @@ try {
   console.error('Firebase initialization error', e);
 }
 
+export const fb = firebase;
 export const db = firebase.firestore();
 export const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();

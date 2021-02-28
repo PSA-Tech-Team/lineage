@@ -24,6 +24,10 @@ import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
 import { getPairings } from '../firebase/pairings';
 import { GetServerSideProps } from 'next';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '../firebase/config';
+import Splash from '../components/Splash';
+import { useRouter } from 'next/router';
 
 interface EditPageProps {
   members: Member[];
@@ -34,6 +38,8 @@ interface EditPageProps {
  * Page to view and edit the PSA member database
  */
 const EditPage = ({ members, pairings }: EditPageProps) => {
+  const router = useRouter();
+  const [user, userLoading] = useAuthState(auth);
   const [membersList, setMembersList] = useState<Member[]>([]);
   const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,6 +52,13 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setMembersList(members);
     setPairingsList(pairings);
   }, []);
+
+  // FIXME: temporary, this client side redirect should be handled on server side
+  useEffect(() => {
+    if (!userLoading && !Boolean(user)) {
+      router.push('/login');
+    }
+  }, [user, userLoading]);
 
   /**
    * Refresh the members list from database
@@ -148,6 +161,12 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     await refreshTables();
   };
 
+  // FIXME: probably temporary
+  // Loading splash screen
+  if (userLoading || !Boolean(user)) {
+    return <Splash />;
+  }
+
   return (
     <Box>
       <Flex p={4} align="center" borderColor="white">
@@ -218,7 +237,9 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // FIXME: use server side authentication to prevent unnecessary reads
+  // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getMembers();
   const pairings: Pairing[] = await getPairings();
 
@@ -228,6 +249,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
       pairings,
     },
   };
-}
+};
 
 export default EditPage;
