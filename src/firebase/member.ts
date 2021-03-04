@@ -1,8 +1,7 @@
 import { Member } from '../fixtures/Members';
 import { deletePairing, PAIRINGS_COL } from './pairings';
-import firebase from './config';
+import { db } from './config';
 
-const db = firebase.firestore();
 export const MEMBERS_COL = 'members';
 
 /**

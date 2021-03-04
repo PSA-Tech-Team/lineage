@@ -1,9 +1,8 @@
 import { MEMBERS_COL } from './member';
-import firebase from './config';
+import { db } from './config';
 import { Pairing } from '../fixtures/Pairings';
 import { Member } from '../fixtures/Members';
 
-const db = firebase.firestore();
 export const PAIRINGS_COL = 'pairings';
 
 const deletedMember: Member = {
