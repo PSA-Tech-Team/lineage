@@ -39,7 +39,7 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {
         // Add member to database
-        await fetch(`/api/members`, {
+        const res = await fetch(`/api/members`, {
           method: 'POST',
           headers: {
             'Content-type': 'application/json',
@@ -48,11 +48,19 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
         });
 
         // Notify user through toast
-        toast({
-          title: 'Success!',
-          description: `${values.name} has been added.`,
-          status: 'success',
-        });
+        if (res.ok) {
+          toast({
+            title: 'Success!',
+            description: `${values.name} has been added.`,
+            status: 'success',
+          });
+        } else {
+          toast({
+            title: 'Error',
+            description: `Error in adding member ${values.name}.`,
+            status: 'error',
+          });
+        }
 
         // Update UI
         actions.setSubmitting(false);

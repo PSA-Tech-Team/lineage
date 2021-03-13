@@ -16,7 +16,12 @@ export const addMember = async (member: {
   adings: number;
 }) => {
   const collection = db.collection(MEMBERS_COL);
-  const result = await collection.add(member);
+  let result;
+  try {
+    result = await collection.add(member);
+  } catch (e) {
+    console.error('Error in adding member: ', e);
+  }
   return result;
 };
 

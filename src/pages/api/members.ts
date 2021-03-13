@@ -24,8 +24,9 @@ const apiGetMembers = async (res: NextApiResponse) => {
 
 const apiCreateMember = async (req: NextApiRequest, res: NextApiResponse) => {
   const values = await req.body;
-  await addMember(values);
-  return res.status(200).send({});
+  const response = await addMember(values);
+  const resCode = Boolean(response) ? 200 : 500;
+  return res.status(resCode).send({});
 }
 
 const apiUpdateMember = async (req: NextApiRequest, res: NextApiResponse) => {
