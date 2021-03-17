@@ -28,6 +28,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
+import { EDITORS } from '../fixtures/Editors';
 
 interface EditPageProps {
   members: Member[];
@@ -57,7 +58,12 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   useEffect(() => {
     if (userLoading) return;
 
-    const isValidUser = Boolean(user) && user.email.endsWith('@psauiuc.org');
+    // Checks if PSA board member or is allowed to edit
+    const isValidEmail =
+      user.email.endsWith('@psauiuc.org') ||
+      EDITORS.find((email) => user.email === email);
+    const isValidUser = Boolean(user) && isValidEmail;
+
     if (!isValidUser) {
       router.push('/login');
     }
@@ -166,7 +172,13 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
   // FIXME: probably temporary
   // Loading splash screen
-  if (userLoading || !(Boolean(user) && user.email.endsWith('@psauiuc.org'))) {
+  if (
+    userLoading ||
+    !(
+      (Boolean(user) && user.email.endsWith('@psauiuc.org')) ||
+      EDITORS.find((email) => user.email === email)
+    )
+  ) {
     return <Splash />;
   }
 
