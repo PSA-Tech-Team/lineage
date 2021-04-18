@@ -23,7 +23,7 @@ import PairingForm from '../components/PairingForm';
 import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
 import { getPairings } from '../firebase/pairings';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
@@ -252,7 +252,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getMembers();
@@ -263,6 +263,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
       members,
       pairings,
     },
+    // TODO: learn more about incremental static regeneration .. but hopefully this helps
+    // https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration
+    revalidate: 5  // in seconds
   };
 };
 
