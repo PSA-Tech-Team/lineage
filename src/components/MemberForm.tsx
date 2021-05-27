@@ -23,7 +23,13 @@ const memberSchema = yup.object().shape({
 /**
  * Form to add members to database
  */
-const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
+const MemberForm = ({
+  refresh,
+  membersList,
+}: {
+  refresh: () => Promise<Member[]>;
+  membersList: Member[];
+}) => {
   const [keepClass, setKeepClass] = useState<boolean>(false);
   const nameInput = useRef<HTMLInputElement>(null);
   const toast = useToast();
@@ -38,6 +44,25 @@ const MemberForm = ({ refresh }: { refresh: () => Promise<Member[]> }) => {
       }}
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {
+        // Verify that member does not already exist
+        const memberAlreadyExists = membersList.some(
+          (member: Member) =>
+            values.name.toLowerCase() === member.name.toLowerCase() &&
+            values.classOf === member.classOf
+        );
+
+        // Return error notification if member exists
+        if (memberAlreadyExists) {
+          toast({
+            title: 'Warning',
+            description: `Member already exists!`,
+            status: 'error',
+          });
+
+          // Prevent submission
+          return;
+        }
+
         // Add member to database
         const res = await fetch(`/api/members`, {
           method: 'POST',

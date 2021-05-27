@@ -205,7 +205,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add member
           </Heading>
-          <MemberForm refresh={refreshMembers} />
+          <MemberForm refresh={refreshMembers} membersList={membersList} />
         </Container>
 
         {/* Pairing column */}
@@ -265,7 +265,7 @@ export const getStaticProps: GetStaticProps = async () => {
     },
     // TODO: learn more about incremental static regeneration .. but hopefully this helps
     // https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration
-    revalidate: 5  // in seconds
+    revalidate: 5, // in seconds
   };
 };
 
