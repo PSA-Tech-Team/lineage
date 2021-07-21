@@ -56,7 +56,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
   // FIXME: temporary, this client side redirect should be handled on server side
   useEffect(() => {
-    if (userLoading) return;
+    if (userLoading || user === null) return;
 
     // Checks if PSA board member or is allowed to edit
     const isValidEmail =

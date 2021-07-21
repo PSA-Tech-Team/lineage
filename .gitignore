@@ -33,3 +33,9 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# log files
+*.log
+
+# firebase files
+.firebaserc

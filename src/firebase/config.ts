@@ -12,17 +12,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_APP_ID,
 };
 
+export const fb = firebase;
 
 try {
   firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  if (process.env.NODE_ENV === 'development') {
+    db.useEmulator('localhost', 8080);
+  }
 } catch (e) {
   console.error('Firebase initialization error', e);
 }
 
-export const fb = firebase;
-export const db = firebase.firestore();
-export const auth = firebase.auth();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
+export const auth = firebase.auth();
+export const db = firebase.firestore();
 
 export const signInWithGoogle = async () => {
   await auth.signInWithPopup(googleProvider);

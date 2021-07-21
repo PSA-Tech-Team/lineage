@@ -28,7 +28,14 @@ interface LineagesPageProps {
  */
 const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   // FIXME: for now, setting default lineage to that of first member in list
-  const defaultLineageId = members[0].id;
+  const defaultLineageId: string | null = members.length ? members[0].id : null;
+
+  if (defaultLineageId === null) {
+    return (
+      <h1>No lineages</h1>
+    );
+  }
+
   const [translateX, setTranslateX] = useState<number>(0);
   const [translateY, setTranslateY] = useState<number>(0);
   const [vertical, setVertical] = useState<boolean>(true);
