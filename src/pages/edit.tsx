@@ -28,7 +28,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
-import { EDITORS, isBoardMember, isEditor } from '../fixtures/Editors';
+import { isBoardMember, isEditor } from '../fixtures/Editors';
 
 interface EditPageProps {
   members: Member[];
