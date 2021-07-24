@@ -28,7 +28,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
-import { EDITORS } from '../fixtures/Editors';
+import { EDITORS, isBoardMember, isEditor } from '../fixtures/Editors';
 
 interface EditPageProps {
   members: Member[];
@@ -56,13 +56,15 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 
   // FIXME: temporary, this client side redirect should be handled on server side
   useEffect(() => {
-    if (userLoading || user === null) return;
+    if (userLoading) return;
+    if (user === null) {
+      router.push('/login');
+      return;
+    }
 
     // Checks if PSA board member or is allowed to edit
-    const isValidEmail =
-      user.email.endsWith('@psauiuc.org') ||
-      EDITORS.find((email) => user.email === email);
-    const isValidUser = Boolean(user) && isValidEmail;
+    const isValidEmail = isEditor(user.email) || isBoardMember(user.email);
+    const isValidUser = user !== null && isValidEmail;
 
     if (!isValidUser) {
       router.push('/login');
@@ -170,15 +172,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     await refreshTables();
   };
 
-  // FIXME: probably temporary
-  // Loading splash screen
-  if (
-    userLoading ||
-    !(
-      (Boolean(user) && user.email.endsWith('@psauiuc.org')) ||
-      EDITORS.find((email) => user.email === email)
-    )
-  ) {
+  if (userLoading || user === null) {
     return <Splash />;
   }
 
