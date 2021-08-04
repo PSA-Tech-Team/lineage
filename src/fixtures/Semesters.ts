@@ -1,5 +1,9 @@
 const seasons = ['Spring', 'Fall'];
-export const YEARS = [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+const MIN_YEAR = 2017;
+const MAX_YEAR = 2025;
+export const YEARS = [...Array(MAX_YEAR - MIN_YEAR + 1).keys()].map(
+  (year) => year + MIN_YEAR
+);
 
 const makeSemesters = () => {
   const semesters = [];
