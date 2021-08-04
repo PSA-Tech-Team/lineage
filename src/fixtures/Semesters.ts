@@ -1,9 +1,13 @@
 const seasons = ['Spring', 'Fall'];
-const years = [2017, 2018, 2019, 2020, 2021];
+const MIN_YEAR = 2017;
+const MAX_YEAR = 2025;
+export const YEARS = [...Array(MAX_YEAR - MIN_YEAR + 1).keys()].map(
+  (year) => year + MIN_YEAR
+);
 
 const makeSemesters = () => {
   const semesters = [];
-  for (const year of years) {
+  for (const year of YEARS) {
     for (const season of seasons) {
       semesters.push(`${season} ${year}`);
     }
