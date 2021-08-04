@@ -6,12 +6,14 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Select,
   useToast,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import { useRef, useState } from 'react';
 import * as yup from 'yup';
 import { Member } from '../fixtures/Members';
+import { YEARS } from '../fixtures/Semesters';
 
 const memberSchema = yup.object().shape({
   name: yup.string().required(),
@@ -133,13 +135,17 @@ const MemberForm = ({
             mt={2}
           >
             <FormLabel>Class of</FormLabel>
-            <Input
-              id="classOf"
-              placeholder="Ex: 2023"
+            <Select
               value={values.classOf}
               onChange={handleChange}
               onReset={handleReset}
-            />
+            >
+              {YEARS.map((year) => year.toString()).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </Select>
             <FormErrorMessage>{errors.classOf}</FormErrorMessage>
           </FormControl>
 
