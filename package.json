@@ -5,7 +5,11 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "test": "jest --setupFiles dotenv/config --verbose --detectOpenHandles"
+    "test": "jest --setupFiles dotenv/config --verbose --detectOpenHandles",
+    "cy:open-only": "cypress open",
+    "cy:run-only": "cypress run",
+    "cy:open": "start-server-and-test dev 3000 cy:open-only",
+    "cy:run": "start-server-and-test dev 3000 cy:run-only"
   },
   "dependencies": {
     "-": "0.0.1",
@@ -35,6 +39,8 @@
     "@types/nprogress": "^0.2.0",
     "@types/react": "^16.14.2",
     "@types/react-dom": "^16.9.8",
+    "cypress": "^8.2.0",
+    "start-server-and-test": "^1.13.1",
     "typescript": "^4.0.5"
   },
   "license": "MIT"

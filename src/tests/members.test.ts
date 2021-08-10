@@ -19,6 +19,8 @@ describe('addMember()', () => {
 
     const newMemberCount = (await collection.get()).size;
     expect(newMemberCount).toEqual(memberCount + 1);
+
+    // TODO: ensure that the member is actually in the database
   });
 
   afterAll(async () => {
