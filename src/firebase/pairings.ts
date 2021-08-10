@@ -60,7 +60,12 @@ export const addPairing = async (
   adingId: string | undefined,
   semesterAssigned: string
 ) => {
-  if (!akId || !adingId) return;
+  if (!akId || !adingId) {
+    return {
+      success: false,
+      message: 'AK or Ading ID is missing from arguments.',
+    };
+  }
 
   const membersCollection = db.collection(MEMBERS_COL);
 
@@ -70,12 +75,15 @@ export const addPairing = async (
   const adingRef = membersCollection.doc(adingId);
   const adingDoc = await adingRef.get();
 
-  // Check that members do exist; if not, TODO: throw error
+  // Check that members do exist
   if (!akDoc.exists || !adingDoc.exists) {
-    return;
+    return {
+      success: false,
+      message: 'AK or Ading document of specified ID does not exist.',
+    };
   }
 
-  // Check that pairing does not already exist; if so, TODO: throw error
+  // Check that pairing does not already exist
   const pairingsCollection = db.collection(PAIRINGS_COL);
   const pairingRef = pairingsCollection
     .where('ak', '==', akRef)
@@ -83,7 +91,10 @@ export const addPairing = async (
 
   const existingPairingResult = await pairingRef.get();
   if (!existingPairingResult.empty) {
-    return;
+    return {
+      success: false,
+      message: 'Pairing with specified AK and ading already exists',
+    };
   }
 
   // Update members to have additional AK/ading
@@ -98,6 +109,12 @@ export const addPairing = async (
 
   // Add pairing to db
   await pairingsCollection.add(pairing);
+
+  return {
+    success: true,
+    message: 'Successfully added pairing.',
+    pairing,
+  };
 };
 
 /**

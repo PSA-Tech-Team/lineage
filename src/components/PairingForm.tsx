@@ -64,7 +64,7 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
 
     setSubmitting(true);
     // Create pairing in database
-    await fetch(`/api/pairings`, {
+    const response = await fetch(`/api/pairings`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
@@ -75,11 +75,14 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
         semester,
       }),
     });
+    const result = await response.json();
 
     toast({
-      title: 'Success!',
-      description: 'Successfully added pairing.',
-      status: 'success',
+      title: result.success ? 'Success!' : 'Error',
+      description: result.success
+        ? 'Successfully added pairing.'
+        : result.message,
+      status: result.success ? 'success' : 'error',
     });
 
     setSubmitting(false);
