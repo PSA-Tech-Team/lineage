@@ -6,6 +6,7 @@ describe('addMember()', () => {
 
   it('should add the passed-in member to the database', async () => {
     const memberCount = (await collection.get()).size;
+    expect(memberCount).toBe(0);
 
     const param = {
       name: 'Renzo',
