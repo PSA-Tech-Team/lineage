@@ -1,5 +1,5 @@
 import { addMember, MEMBERS_COL } from '../firebase/member';
-import { db } from '../firebase/config';
+import { db, fb } from '../firebase/config';
 
 describe('addMember()', () => {
   const collection = db.collection(MEMBERS_COL);
@@ -23,8 +23,7 @@ describe('addMember()', () => {
 
   afterAll(async () => {
     const result = await collection.where('name', '==', 'Renzo').get();
-    result.docs.forEach(async (doc) => {
-      await collection.doc(doc.id).delete();
-    });
+    await Promise.all(result.docs.map((doc) => collection.doc(doc.id).delete()));
+    return await Promise.all(fb.apps.map((app) => app.delete()));
   });
 });

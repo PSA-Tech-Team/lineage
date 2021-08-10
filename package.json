@@ -5,7 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "test": "jest --setupFiles dotenv/config --verbose"
+    "test": "jest --setupFiles dotenv/config --verbose --detectOpenHandles"
   },
   "dependencies": {
     "-": "0.0.1",
