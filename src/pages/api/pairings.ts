@@ -24,8 +24,10 @@ const apiGetPairings = async (res: NextApiResponse) => {
 
 const apiCreatePairing = async (req: NextApiRequest, res: NextApiResponse) => {
   const { akId, adingId, semester } = req.body;
-  await addPairing(akId, adingId, semester);
-  return res.status(200).send({});
+  const result = await addPairing(akId, adingId, semester);
+  const status = result.success ? 200 : 400;
+  
+  return res.status(status).send(result);
 }
 
 const apiUpdatePairing = async (req: NextApiRequest, res: NextApiResponse) => {
