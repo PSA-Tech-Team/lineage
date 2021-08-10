@@ -5,7 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "test": "jest --verbose"
+    "test": "jest --setupFiles dotenv/config --verbose"
   },
   "dependencies": {
     "-": "0.0.1",
@@ -15,6 +15,7 @@
     "@emotion/react": "11.1.1",
     "@emotion/styled": "11.0.0",
     "@types/yup": "^0.29.11",
+    "dotenv": "^10.0.0",
     "firebase": "^8.2.5",
     "formik": "^2.2.6",
     "framer-motion": "^2.9.4",

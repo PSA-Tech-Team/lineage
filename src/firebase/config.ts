@@ -17,7 +17,7 @@ export const fb = firebase;
 try {
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     db.useEmulator('localhost', 8080);
   }
 } catch (e) {
