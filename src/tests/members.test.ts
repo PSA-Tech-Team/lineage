@@ -1,6 +1,8 @@
 import { addMember, MEMBERS_COL } from '../firebase/member';
 import { db, fb } from '../firebase/config';
 
+const TEST_MEMBER = 'Member1';
+
 describe('addMember()', () => {
   const collection = db.collection(MEMBERS_COL);
 
@@ -8,7 +10,7 @@ describe('addMember()', () => {
     const memberCount = (await collection.get()).size;
 
     const param = {
-      name: 'Renzo',
+      name: TEST_MEMBER,
       classOf: '2023',
       adings: 0,
       aks: 0,
@@ -24,7 +26,8 @@ describe('addMember()', () => {
   });
 
   afterAll(async () => {
-    const result = await collection.where('name', '==', 'Renzo').get();
+    // Delete all test members
+    const result = await collection.where('name', '==', TEST_MEMBER).get();
     await Promise.all(result.docs.map((doc) => collection.doc(doc.id).delete()));
     return await Promise.all(fb.apps.map((app) => app.delete()));
   });

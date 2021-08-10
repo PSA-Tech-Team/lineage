@@ -1,4 +1,5 @@
 module.exports = {
+  bail: 0,
   // https://dev.to/ashconnolly/how-to-quickly-add-jest-to-your-next-js-app-1h32
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   modulePathIgnorePatterns: ['./cypress'],
