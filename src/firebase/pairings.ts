@@ -54,6 +54,7 @@ export const getPairings = async () => {
  * @param akId id of AK in database
  * @param adingId id of ading in database
  * @param semesterAssigned semester pairing was assigned
+ * @returns status of operation and, if successful, the added pairing
  */
 export const addPairing = async (
   akId: string | undefined,

@@ -12,6 +12,7 @@ const MEMBERS = ['Ate', 'Kuya', 'Ading1', 'Ading2'].map((name) => {
 });
 
 describe('addPairing()', () => {
+  const semesterAssigned = '2020';
   const pairingsCollection = db.collection(PAIRINGS_COL);
   const membersCollection = db.collection(MEMBERS_COL);
   let testMemberDocs: any[] = []; // array of Firestore documents
@@ -26,9 +27,17 @@ describe('addPairing()', () => {
   });
 
   it('should return unsuccessful if ading or AK id is not included', async () => {
-    const missingBothResult = await addPairing(undefined, undefined, '2020');
-    const missingAdingResult = await addPairing('1', undefined, '2020');
-    const missingAkResult = await addPairing(undefined, '1', '2020');
+    const missingBothResult = await addPairing(
+      undefined,
+      undefined,
+      semesterAssigned
+    );
+    const missingAdingResult = await addPairing(
+      '1',
+      undefined,
+      semesterAssigned
+    );
+    const missingAkResult = await addPairing(undefined, '1', semesterAssigned);
 
     expect(missingBothResult.success).toBe(false);
     expect(missingAdingResult.success).toBe(false);
@@ -36,7 +45,23 @@ describe('addPairing()', () => {
   });
 
   it('should return unsuccessful if ading or AK does not exist', async () => {
-    expect(true).toBe(false);
+    const invalidId = '';
+    const [ateId, , ading1Id] = testMemberDocs.map((doc) => doc?.id);
+    const [missingAdingResult, missingAkResult, missingBothResult] =
+      await Promise.all([
+        addPairing(ateId, invalidId, semesterAssigned),
+        addPairing(invalidId, ading1Id, semesterAssigned),
+        addPairing(invalidId, invalidId, semesterAssigned),
+      ]);
+
+    expect(missingAdingResult.success).toBe(false);
+    expect(missingAdingResult.pairing).toBeUndefined();
+
+    expect(missingAkResult.success).toBe(false);
+    expect(missingAkResult.pairing).toBeUndefined();
+
+    expect(missingBothResult.success).toBe(false);
+    expect(missingBothResult.pairing).toBeUndefined();
   });
 
   it('should return unsuccessful if pairing already exists', async () => {
@@ -47,7 +72,6 @@ describe('addPairing()', () => {
     const [ateId, , ading1Id] = testMemberDocs.map((doc) => doc?.id);
     const initialPairingCount = (await pairingsCollection.get()).docs.length;
 
-    const semesterAssigned = '2021';
     const { success, pairing } = await addPairing(
       ateId,
       ading1Id,
