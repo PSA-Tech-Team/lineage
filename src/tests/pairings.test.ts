@@ -2,7 +2,7 @@ import { db, fb } from '../firebase/config';
 import { addMember, MEMBERS_COL } from '../firebase/member';
 import { addPairing, PAIRINGS_COL } from '../firebase/pairings';
 
-const MEMBERS = ['Ate', 'Kuya', 'Ading1', 'Ading2'].map((name) => {
+const MEMBERS = ['Ate', 'Kuya', 'Ading1', 'Ading2', 'Ading3'].map((name) => {
   return {
     name,
     classOf: '2021',
@@ -65,18 +65,18 @@ describe('addPairing()', () => {
   });
 
   it('should return added pairing if successful', async () => {
-    const [ateId, , ading1Id] = testMemberDocs.map((doc) => doc?.id);
+    const [, kuyaId, ading1Id] = testMemberDocs.map((doc) => doc?.id);
     const initialPairingCount = (await pairingsCollection.get()).docs.length;
 
     const { success, pairing } = await addPairing(
-      ateId,
+      kuyaId,
       ading1Id,
       semesterAssigned
     );
     expect(success).toBe(true);
     expect(pairing).not.toBeUndefined();
     expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
-    expect(pairing?.ak.id).toEqual(ateId);
+    expect(pairing?.ak.id).toEqual(kuyaId);
     expect(pairing?.ading.id).toEqual(ading1Id);
 
     const newPairingCount = (await pairingsCollection.get()).docs.length;
@@ -98,6 +98,7 @@ describe('addPairing()', () => {
 
     expect(pairing?.ak.id).toEqual(kuyaId);
     expect(pairing?.ading.id).toEqual(ading2Id);
+    expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
 
     // Try adding pairing again
     const { success: repeatSuccess, pairing: repeatPairing } = await addPairing(
@@ -111,7 +112,35 @@ describe('addPairing()', () => {
   });
 
   it('should update associated Member documents if successful', async () => {
-    expect(true).toBe(false);
+    const initialCount = 0;
+
+    // Make pairing between Ate and Ading3
+    const [ateId, , , , ading3Id] = testMemberDocs.map((doc) => doc?.id);
+    const { success, pairing } = await addPairing(
+      ateId,
+      ading3Id,
+      semesterAssigned
+    );
+
+    // Ensure pairing was added successfully
+    expect(success).toBe(true);
+    expect(pairing).not.toBeUndefined();
+    expect(pairing?.ak.id).toEqual(ateId);
+    expect(pairing?.ading.id).toEqual(ading3Id);
+    expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
+
+    // Fetch member documents
+    const ateDocData: any = (await membersCollection.doc(ateId).get()).data();
+    const ading3DocData: any = (
+      await membersCollection.doc(ading3Id).get()
+    ).data();
+
+    const { adings } = ateDocData;
+    const { aks } = ading3DocData;
+
+    // Check that # of ading/AKs is updated correctly
+    expect(adings).toEqual(initialCount + 1);
+    expect(aks).toEqual(initialCount + 1);
   });
 
   afterAll(async () => {
