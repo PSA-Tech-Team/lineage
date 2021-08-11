@@ -64,10 +64,6 @@ describe('addPairing()', () => {
     expect(missingBothResult.pairing).toBeUndefined();
   });
 
-  it('should return unsuccessful if pairing already exists', async () => {
-    expect(true).toBe(false);
-  });
-
   it('should return added pairing if successful', async () => {
     const [ateId, , ading1Id] = testMemberDocs.map((doc) => doc?.id);
     const initialPairingCount = (await pairingsCollection.get()).docs.length;
@@ -85,6 +81,33 @@ describe('addPairing()', () => {
 
     const newPairingCount = (await pairingsCollection.get()).docs.length;
     expect(newPairingCount).toBe(initialPairingCount + 1);
+  });
+
+  it('should return unsuccessful if pairing already exists', async () => {
+    const [, kuyaId, , ading2Id] = testMemberDocs.map((doc) => doc?.id);
+
+    // Add pairing
+    const { success, pairing } = await addPairing(
+      kuyaId,
+      ading2Id,
+      semesterAssigned
+    );
+
+    expect(success).toBe(true);
+    expect(pairing).not.toBeUndefined();
+
+    expect(pairing?.ak.id).toEqual(kuyaId);
+    expect(pairing?.ading.id).toEqual(ading2Id);
+
+    // Try adding pairing again
+    const { success: repeatSuccess, pairing: repeatPairing } = await addPairing(
+      kuyaId,
+      ading2Id,
+      semesterAssigned
+    );
+
+    expect(repeatSuccess).toBe(false);
+    expect(repeatPairing).toBeUndefined();
   });
 
   it('should update associated Member documents if successful', async () => {
