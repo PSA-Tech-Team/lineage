@@ -14,26 +14,16 @@ export const getPairings = async () => {
   const pairingsColRef = await pairingsCollection.get();
   const pairings: Pairing[] = [];
 
-  pairingsColRef.forEach((pairingSnapshot) => {
+  for (const pairingSnapshot of pairingsColRef.docs) {
     const pairingData = pairingSnapshot.data();
     const { semesterAssigned, ak: akRef, ading: adingRef } = pairingData;
 
-    // Turn Firestore references into JSON
-    const ak: Member = {
-      id: akRef.id,
-      name: akRef.name,
-      classOf: akRef.classOf,
-      aks: akRef.aks,
-      adings: akRef.adings,
-    };
+    const akData = (await akRef.get()).data();
+    const adingData = (await adingRef.get()).data();
 
-    const ading: Member = {
-      id: adingRef.id,
-      name: adingRef.name,
-      classOf: adingRef.classOf,
-      aks: adingRef.aks,
-      adings: adingRef.adings,
-    }
+    // Turn Firestore references into JSON
+    const ak: Member = { id: akRef.id, ...akData };
+    const ading: Member = { id: adingRef.id, ...adingData };
 
     const pairing: Pairing = {
       id: pairingSnapshot.id,
@@ -43,7 +33,7 @@ export const getPairings = async () => {
     };
 
     pairings.push(pairing);
-  });
+  };
 
   return pairings;
 };
