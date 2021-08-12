@@ -16,7 +16,24 @@ export const getPairings = async () => {
 
   pairingsColRef.forEach((pairingSnapshot) => {
     const pairingData = pairingSnapshot.data();
-    const { semesterAssigned, ak, ading } = pairingData;
+    const { semesterAssigned, ak: akRef, ading: adingRef } = pairingData;
+
+    // Turn Firestore references into JSON
+    const ak: Member = {
+      id: akRef.id,
+      name: akRef.name,
+      classOf: akRef.classOf,
+      aks: akRef.aks,
+      adings: akRef.adings,
+    };
+
+    const ading: Member = {
+      id: adingRef.id,
+      name: adingRef.name,
+      classOf: adingRef.classOf,
+      aks: adingRef.aks,
+      adings: adingRef.adings,
+    }
 
     const pairing: Pairing = {
       id: pairingSnapshot.id,
