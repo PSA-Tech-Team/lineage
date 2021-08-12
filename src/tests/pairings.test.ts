@@ -16,6 +16,7 @@ describe('addPairing()', () => {
   const pairingsCollection = db.collection(PAIRINGS_COL);
   const membersCollection = db.collection(MEMBERS_COL);
   let testMemberDocs: any[] = []; // array of Firestore documents
+  let testPairingIds: (string | undefined)[] = [];
 
   beforeAll(async () => {
     // Add 4 members
@@ -75,12 +76,16 @@ describe('addPairing()', () => {
     );
     expect(success).toBe(true);
     expect(pairing).not.toBeUndefined();
+
+    testPairingIds.push(pairing?.id);
+
     expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
     expect(pairing?.ak.id).toEqual(kuyaId);
     expect(pairing?.ading.id).toEqual(ading1Id);
 
     const newPairingCount = (await pairingsCollection.get()).docs.length;
     expect(newPairingCount).toBe(initialPairingCount + 1);
+
   });
 
   it('should return unsuccessful if pairing already exists', async () => {
@@ -96,9 +101,12 @@ describe('addPairing()', () => {
     expect(success).toBe(true);
     expect(pairing).not.toBeUndefined();
 
+    testPairingIds.push(pairing?.id);
+
     expect(pairing?.ak.id).toEqual(kuyaId);
     expect(pairing?.ading.id).toEqual(ading2Id);
     expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
+
 
     // Try adding pairing again
     const { success: repeatSuccess, pairing: repeatPairing } = await addPairing(
@@ -125,6 +133,9 @@ describe('addPairing()', () => {
     // Ensure pairing was added successfully
     expect(success).toBe(true);
     expect(pairing).not.toBeUndefined();
+
+    testPairingIds.push(pairing?.id);
+
     expect(pairing?.ak.id).toEqual(ateId);
     expect(pairing?.ading.id).toEqual(ading3Id);
     expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
@@ -151,9 +162,6 @@ describe('addPairing()', () => {
     );
 
     // Delete test pairings
-    const testPairingIds = (await pairingsCollection.get()).docs.map(
-      (doc) => doc?.id
-    );
     await Promise.all(
       testPairingIds.map((id) => pairingsCollection.doc(id).delete())
     );
