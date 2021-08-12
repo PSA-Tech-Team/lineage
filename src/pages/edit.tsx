@@ -257,8 +257,6 @@ export const getStaticProps: GetStaticProps = async () => {
   const members: Member[] = await getMembers();
   const pairings: Pairing[] = await getPairings();
 
-  console.log('from get static props ', JSON.stringify(pairings));
-
   return {
     props: {
       members,

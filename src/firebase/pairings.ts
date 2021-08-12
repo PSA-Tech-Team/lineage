@@ -86,8 +86,8 @@ export const addPairing = async (
   // Check that pairing does not already exist
   const pairingsCollection = db.collection(PAIRINGS_COL);
   const pairingRef = pairingsCollection
-    .where('ak.id', '==', akRef.id)
-    .where('ading.id', '==', adingRef.id);
+    .where('ak', '==', akRef)
+    .where('ading', '==', adingRef);
 
   const existingPairingResult = await pairingRef.get();
   if (!existingPairingResult.empty) {
@@ -121,7 +121,7 @@ export const addPairing = async (
     classOf: adingData.classOf,
   };
 
-  const pairing: Pairing = {
+  const pairingResponse: Pairing = {
     id: '',
     ak: ak,
     ading: ading,
@@ -129,13 +129,17 @@ export const addPairing = async (
   };
 
   // Add pairing to db
-  const result = await pairingsCollection.add(pairing);
-  pairing.id = result.id;
+  const result = await pairingsCollection.add({
+    ak: akRef,
+    ading: adingRef,
+    semesterAssigned
+  });
+  pairingResponse.id = result.id;
 
   return {
     success: true,
     message: 'Successfully added pairing.',
-    pairing,
+    pairing: pairingResponse,
   };
 };
 
