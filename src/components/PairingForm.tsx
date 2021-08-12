@@ -47,33 +47,38 @@ const PairingForm = ({
     return members.find((member) => member.id === memberId);
   };
 
+  const displayErrorToast = (description: string) => {
+    toast({
+      title: 'Error',
+      description,
+      status: 'error',
+    });
+  };
+
   /**
    * Callback when submitting a pairing through form
    */
   const submitPairing = async () => {
     // Notify user if member is missing
     if (!ak || !ading) {
-      toast({
-        title: 'Error',
-        description: 'Please select both an AK and an ading.',
-        status: 'error',
-      });
+      displayErrorToast('Please select both an AK and an ading.');
       return;
     }
 
     // Notify user if semester is missing
     if (!Boolean(semester)) {
-      toast({
-        title: 'Error',
-        description: 'Please select a semester for this pairing.',
-        status: 'error',
-      });
+      displayErrorToast('Please select a semester for this pairing.');
       return;
     }
 
-    setSubmitting(true);
+    // Prevent adding pairing with self
+    if (ak.id === ading.id) {
+      displayErrorToast('Pairing cannot be made with the same member.');
+      return;
+    }
 
     // Create pairing in database
+    setSubmitting(true);
     const { success, message, pairing } = await addPairing(
       ak.id,
       ading.id,
@@ -88,21 +93,20 @@ const PairingForm = ({
 
     setSubmitting(false);
 
-    // TODO: reflect changes in state after adding pairing
     if (success && pairing !== undefined) {
       // Clear form only if specified
       if (!keepAk) setAk(undefined);
       if (!keepAding) setAding(undefined);
 
       // Add pairing to list
-      setPairings([ ...pairings, pairing ]);
+      setPairings([...pairings, pairing]);
 
       // Change fields of Members
       const { ak: updatedAk, ading: updatedAding } = pairing;
       const akIndex = members.findIndex((m) => m.id === updatedAk.id);
       const adingIndex = members.findIndex((m) => m.id === updatedAding.id);
 
-      const updatedMembers = [ ...members ];
+      const updatedMembers = [...members];
       updatedMembers[akIndex].adings = updatedAk.adings;
       updatedMembers[adingIndex].aks = updatedAding.aks;
       setMembers(updatedMembers);
