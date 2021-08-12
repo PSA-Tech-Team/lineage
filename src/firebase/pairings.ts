@@ -5,14 +5,6 @@ import { Member } from '../fixtures/Members';
 
 export const PAIRINGS_COL = 'pairings';
 
-const deletedMember: Member = {
-  id: '',
-  name: '[deleted]',
-  classOf: '[deleted]',
-  adings: 0,
-  aks: 0,
-};
-
 /**
  * Returns all pairings from database
  */
@@ -22,29 +14,26 @@ export const getPairings = async () => {
   const pairingsColRef = await pairingsCollection.get();
   const pairings: Pairing[] = [];
 
-  for (let pairingSnapshot of pairingsColRef.docs) {
-    const pairingData: any = pairingSnapshot.data();
-    const akDoc = await pairingData.ak.get();
-    const adingDoc = await pairingData.ading.get();
+  for (const pairingSnapshot of pairingsColRef.docs) {
+    const pairingData = pairingSnapshot.data();
+    const { semesterAssigned, ak: akRef, ading: adingRef } = pairingData;
 
-    // Add ids to members if they exist
-    const ak = akDoc.exists
-      ? { ...(await akDoc.data()), id: akDoc.id }
-      : deletedMember;
-    const ading = adingDoc.exists
-      ? { ...(await adingDoc.data()), id: adingDoc.id }
-      : deletedMember;
+    const akData = (await akRef.get()).data();
+    const adingData = (await adingRef.get()).data();
 
-    // Fetch AK/ading data from document ref fields
-    const pairing: any = {
+    // Turn Firestore references into JSON
+    const ak: Member = { id: akRef.id, ...akData };
+    const ading: Member = { id: adingRef.id, ...adingData };
+
+    const pairing: Pairing = {
       id: pairingSnapshot.id,
-      semesterAssigned: pairingData.semesterAssigned,
       ak,
       ading,
+      semesterAssigned,
     };
 
     pairings.push(pairing);
-  }
+  };
 
   return pairings;
 };
@@ -54,6 +43,7 @@ export const getPairings = async () => {
  * @param akId id of AK in database
  * @param adingId id of ading in database
  * @param semesterAssigned semester pairing was assigned
+ * @returns status of operation and, if successful, the added pairing
  */
 export const addPairing = async (
   akId: string | undefined,
@@ -101,19 +91,45 @@ export const addPairing = async (
   await akRef.update({ adings: akDoc.data()?.adings + 1 });
   await adingRef.update({ aks: adingDoc.data()?.aks + 1 });
 
-  const pairing = {
-    ak: akRef,
-    ading: adingRef,
+  const akData: any = (await akRef.get()).data();
+  const adingData: any = (await adingRef.get()).data();
+
+  // Get response data from documents
+  const ak: Member = {
+    id: akRef.id,
+    name: akData.name,
+    adings: akData.adings,
+    aks: akData.aks,
+    classOf: akData.classOf,
+  };
+
+  const ading: Member = {
+    id: adingRef.id,
+    name: adingData.name,
+    adings: adingData.adings,
+    aks: adingData.aks,
+    classOf: adingData.classOf,
+  };
+
+  const pairingResponse: Pairing = {
+    id: '',
+    ak: ak,
+    ading: ading,
     semesterAssigned,
   };
 
   // Add pairing to db
-  await pairingsCollection.add(pairing);
+  const result = await pairingsCollection.add({
+    ak: akRef,
+    ading: adingRef,
+    semesterAssigned
+  });
+  pairingResponse.id = result.id;
 
   return {
     success: true,
     message: 'Successfully added pairing.',
-    pairing,
+    pairing: pairingResponse,
   };
 };
 

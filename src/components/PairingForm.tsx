@@ -8,20 +8,29 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { addPairing } from '../client/pairingsService';
 import { Member } from '../fixtures/Members';
+import { Pairing } from '../fixtures/Pairings';
 import { SEMESTERS } from '../fixtures/Semesters';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
   members: Member[];
-  refresh: () => Promise<void>;
+  pairings: Pairing[];
+  setMembers: Dispatch<SetStateAction<Member[]>>;
+  setPairings: Dispatch<SetStateAction<Pairing[]>>;
 }
 
 /**
  * Form to create new AKA pairings between PSA members
  */
-const PairingForm = ({ members, refresh }: PairingFormProps) => {
+const PairingForm = ({
+  members,
+  pairings,
+  setMembers,
+  setPairings,
+}: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [semester, setSemester] = useState<string>('');
@@ -38,61 +47,70 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
     return members.find((member) => member.id === memberId);
   };
 
+  const displayErrorToast = (description: string) => {
+    toast({
+      title: 'Error',
+      description,
+      status: 'error',
+    });
+  };
+
   /**
    * Callback when submitting a pairing through form
    */
   const submitPairing = async () => {
     // Notify user if member is missing
     if (!ak || !ading) {
-      toast({
-        title: 'Error',
-        description: 'Please select both an AK and an ading.',
-        status: 'error',
-      });
+      displayErrorToast('Please select both an AK and an ading.');
       return;
     }
 
     // Notify user if semester is missing
     if (!Boolean(semester)) {
-      toast({
-        title: 'Error',
-        description: 'Please select a semester for this pairing.',
-        status: 'error',
-      });
+      displayErrorToast('Please select a semester for this pairing.');
       return;
     }
 
-    setSubmitting(true);
+    // Prevent adding pairing with self
+    if (ak.id === ading.id) {
+      displayErrorToast('Pairing cannot be made with the same member.');
+      return;
+    }
+
     // Create pairing in database
-    const response = await fetch(`/api/pairings`, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        akId: ak?.id,
-        adingId: ading?.id,
-        semester,
-      }),
-    });
-    const result = await response.json();
+    setSubmitting(true);
+    const { success, message, pairing } = await addPairing(
+      ak.id,
+      ading.id,
+      semester
+    );
 
     toast({
-      title: result.success ? 'Success!' : 'Error',
-      description: result.success
-        ? 'Successfully added pairing.'
-        : result.message,
-      status: result.success ? 'success' : 'error',
+      title: success ? 'Success!' : 'Error',
+      description: success ? 'Successfully added pairing.' : message,
+      status: success ? 'success' : 'error',
     });
 
     setSubmitting(false);
 
-    // Clear form only if specified
-    if (!keepAk) setAk(undefined);
-    if (!keepAding) setAding(undefined);
+    if (success && pairing !== undefined) {
+      // Clear form only if specified
+      if (!keepAk) setAk(undefined);
+      if (!keepAding) setAding(undefined);
 
-    // Refresh the members + pairings list to reflect changes
-    await refresh();
+      // Add pairing to list
+      setPairings([...pairings, pairing]);
+
+      // Change fields of Members
+      const { ak: updatedAk, ading: updatedAding } = pairing;
+      const akIndex = members.findIndex((m) => m.id === updatedAk.id);
+      const adingIndex = members.findIndex((m) => m.id === updatedAding.id);
+
+      const updatedMembers = [...members];
+      updatedMembers[akIndex].adings = updatedAk.adings;
+      updatedMembers[adingIndex].aks = updatedAding.aks;
+      setMembers(updatedMembers);
+    }
   };
 
   return (
