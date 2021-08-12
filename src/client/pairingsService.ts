@@ -1,4 +1,4 @@
-import { CreatePairingResult } from "../pages/api/types/pairings";
+import { CreatePairingResult } from '../pages/api/types/pairings';
 
 const PAIRINGS_ENDPOINT = '/api/pairings';
 

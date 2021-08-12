@@ -89,10 +89,23 @@ const PairingForm = ({
     setSubmitting(false);
 
     // TODO: reflect changes in state after adding pairing
-    if (success) {
+    if (success && pairing !== undefined) {
       // Clear form only if specified
       if (!keepAk) setAk(undefined);
       if (!keepAding) setAding(undefined);
+
+      // Add pairing to list
+      setPairings([ ...pairings, pairing ]);
+
+      // Change fields of Members
+      const { ak: updatedAk, ading: updatedAding } = pairing;
+      const akIndex = members.findIndex((m) => m.id === updatedAk.id);
+      const adingIndex = members.findIndex((m) => m.id === updatedAding.id);
+
+      const updatedMembers = [ ...members ];
+      updatedMembers[akIndex].adings = updatedAk.adings;
+      updatedMembers[adingIndex].aks = updatedAding.aks;
+      setMembers(updatedMembers);
     }
   };
 

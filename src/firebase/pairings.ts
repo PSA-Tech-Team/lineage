@@ -5,14 +5,6 @@ import { Member } from '../fixtures/Members';
 
 export const PAIRINGS_COL = 'pairings';
 
-const deletedMember: Member = {
-  id: '',
-  name: '[deleted]',
-  classOf: '[deleted]',
-  adings: 0,
-  aks: 0,
-};
-
 /**
  * Returns all pairings from database
  */
@@ -22,29 +14,19 @@ export const getPairings = async () => {
   const pairingsColRef = await pairingsCollection.get();
   const pairings: Pairing[] = [];
 
-  for (let pairingSnapshot of pairingsColRef.docs) {
-    const pairingData: any = pairingSnapshot.data();
-    const akDoc = await pairingData.ak.get();
-    const adingDoc = await pairingData.ading.get();
+  pairingsColRef.forEach((pairingSnapshot) => {
+    const pairingData = pairingSnapshot.data();
+    const { semesterAssigned, ak, ading } = pairingData;
 
-    // Add ids to members if they exist
-    const ak = akDoc.exists
-      ? { ...(await akDoc.data()), id: akDoc.id }
-      : deletedMember;
-    const ading = adingDoc.exists
-      ? { ...(await adingDoc.data()), id: adingDoc.id }
-      : deletedMember;
-
-    // Fetch AK/ading data from document ref fields
-    const pairing: any = {
+    const pairing: Pairing = {
       id: pairingSnapshot.id,
-      semesterAssigned: pairingData.semesterAssigned,
       ak,
       ading,
+      semesterAssigned,
     };
 
     pairings.push(pairing);
-  }
+  });
 
   return pairings;
 };
