@@ -8,21 +8,29 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { addPairing } from '../client/pairingsService';
 import { Member } from '../fixtures/Members';
+import { Pairing } from '../fixtures/Pairings';
 import { SEMESTERS } from '../fixtures/Semesters';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
   members: Member[];
-  refresh: () => Promise<void>;
+  pairings: Pairing[];
+  setMembers: Dispatch<SetStateAction<Member[]>>;
+  setPairings: Dispatch<SetStateAction<Pairing[]>>;
 }
 
 /**
  * Form to create new AKA pairings between PSA members
  */
-const PairingForm = ({ members, refresh }: PairingFormProps) => {
+const PairingForm = ({
+  members,
+  pairings,
+  setMembers,
+  setPairings,
+}: PairingFormProps) => {
   const [ak, setAk] = useState<Member | undefined>();
   const [ading, setAding] = useState<Member | undefined>();
   const [semester, setSemester] = useState<string>('');
@@ -66,24 +74,26 @@ const PairingForm = ({ members, refresh }: PairingFormProps) => {
     setSubmitting(true);
 
     // Create pairing in database
-    const result = await addPairing(ak.id, ading.id, semester);
+    const { success, message, pairing } = await addPairing(
+      ak.id,
+      ading.id,
+      semester
+    );
 
     toast({
-      title: result.success ? 'Success!' : 'Error',
-      description: result.success
-        ? 'Successfully added pairing.'
-        : result.message,
-      status: result.success ? 'success' : 'error',
+      title: success ? 'Success!' : 'Error',
+      description: success ? 'Successfully added pairing.' : message,
+      status: success ? 'success' : 'error',
     });
 
     setSubmitting(false);
 
-    // Clear form only if specified
-    if (!keepAk) setAk(undefined);
-    if (!keepAding) setAding(undefined);
-
-    // Refresh the members + pairings list to reflect changes
-    await refresh();
+    // TODO: reflect changes in state after adding pairing
+    if (success) {
+      // Clear form only if specified
+      if (!keepAk) setAk(undefined);
+      if (!keepAding) setAding(undefined);
+    }
   };
 
   return (

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getPairings, addPairing, updatePairing, deletePairing } from '../../firebase/pairings';
 import { Pairing } from '../../fixtures/Pairings';
+import { CreatePairingResult } from './types/pairings';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
@@ -22,9 +23,9 @@ const apiGetPairings = async (res: NextApiResponse) => {
   return res.status(200).json(pairings);
 }
 
-const apiCreatePairing = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiCreatePairing = async (req: NextApiRequest, res: NextApiResponse<CreatePairingResult>) => {
   const { akId, adingId, semester } = req.body;
-  const result = await addPairing(akId, adingId, semester);
+  const result: CreatePairingResult = await addPairing(akId, adingId, semester);
   const status = result.success ? 200 : 400;
   
   return res.status(status).send(result);

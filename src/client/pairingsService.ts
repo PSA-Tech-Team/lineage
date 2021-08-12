@@ -1,3 +1,5 @@
+import { CreatePairingResult } from "../pages/api/types/pairings";
+
 const PAIRINGS_ENDPOINT = '/api/pairings';
 
 const addPairing = async (akId: string, adingId: string, semester: string) => {
@@ -12,7 +14,7 @@ const addPairing = async (akId: string, adingId: string, semester: string) => {
       semester,
     }),
   });
-  const result = await response.json();
+  const result: CreatePairingResult = await response.json();
   return result;
 };
 

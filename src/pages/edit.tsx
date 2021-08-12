@@ -207,7 +207,12 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add pairing
           </Heading>
-          <PairingForm members={membersList} refresh={refreshTables} />
+          <PairingForm
+            members={membersList}
+            pairings={pairingsList}
+            setMembers={setMembersList}
+            setPairings={setPairingsList}
+          />
         </Container>
       </Grid>
 
