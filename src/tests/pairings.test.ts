@@ -106,7 +106,7 @@ describe('addPairing()', () => {
       ading2Id,
       semesterAssigned
     );
-
+    
     expect(repeatSuccess).toBe(false);
     expect(repeatPairing).toBeUndefined();
   });
