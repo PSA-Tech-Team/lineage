@@ -18,35 +18,56 @@ describe('addMember()', () => {
       aks: INITIAL_COUNT,
     };
 
-    const resultDoc = await addMember(param);
-    expect(resultDoc).not.toBeUndefined();
-    const resultId = resultDoc?.id;
-    expect(resultId).not.toBeUndefined();
+    const result = await addMember(param);
+    expect(result).not.toBeUndefined();
+    const { success, member } = result;
+    expect(success).toBe(true);
+    
+    const newMemberCount = (await collection.get()).size;
+    expect(newMemberCount).toEqual(memberCount + 1);
+    
+    // Ensure that the member is correctly added into the database
+    expect(member).not.toBeUndefined();
+    expect(member?.name).toEqual(MEMBER_1);
+    expect(member?.classOf).toEqual(CLASS_OF);
+    expect(member?.aks).toEqual(INITIAL_COUNT);
+    expect(member?.adings).toEqual(INITIAL_COUNT);
+  });
+
+  it('should prevent members of duplicate names to be added', async () => {
+    const memberCount = (await collection.get()).size;
+
+    const param = {
+      name: MEMBER_2,
+      classOf: CLASS_OF,
+      adings: INITIAL_COUNT,
+      aks: INITIAL_COUNT,
+    };
+
+    const result = await addMember(param);
+    expect(result).not.toBeUndefined();
+    const { success, member } = result;
+    expect(success).toBe(true);
 
     const newMemberCount = (await collection.get()).size;
     expect(newMemberCount).toEqual(memberCount + 1);
 
-    // Ensure that the member is correctly added into the database
-    const addedMemberSnapshot = await collection.doc(resultId).get();
-    expect(addedMemberSnapshot.exists).toBe(true);
-    expect(addedMemberSnapshot.id).toEqual(resultId);
+    // Check that the member was added correctly
+    expect(member).not.toBeUndefined();
+    expect(member?.name).toEqual(MEMBER_2);
+    expect(member?.classOf).toEqual(CLASS_OF);
+    expect(member?.aks).toEqual(INITIAL_COUNT);
+    expect(member?.adings).toEqual(INITIAL_COUNT);
 
-    const addedMemberData: any = addedMemberSnapshot.data();
-    expect(addedMemberData.name).toEqual(MEMBER_1);
-    expect(addedMemberData.classOf).toEqual(CLASS_OF);
-    expect(addedMemberData.aks).toEqual(INITIAL_COUNT);
-    expect(addedMemberData.adings).toEqual(INITIAL_COUNT);
-  });
+    // Try adding duplicate member
+    const duplicateResult = await addMember(param);
+    expect(duplicateResult).not.toBeUndefined();
+    const { success: duplicateSuccess, member: duplicateMember } = duplicateResult;
 
-  it('should prevent members of duplicate names to be added', async () => {
-    // const memberCount = (await collection.get()).size;
-    // const param = {
-    //   name: MEMBER_2,
-    //   classOf: CLASS_OF,
-    //   adings: INITIAL_COUNT,
-    //   aks: INITIAL_COUNT,
-    // };
-    expect(false).toBe(true);
+    expect(duplicateSuccess).toBe(false);
+    expect(duplicateMember).toBeUndefined();
+    const memberCountAfterDuplicate = (await collection.get()).size;
+    expect(memberCountAfterDuplicate).toEqual(memberCount + 1);
   });
 
   afterAll(async () => {
