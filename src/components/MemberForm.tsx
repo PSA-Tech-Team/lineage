@@ -12,6 +12,7 @@ import {
 import { Form, Formik } from 'formik';
 import { useRef, useState } from 'react';
 import * as yup from 'yup';
+import { addMember } from '../client/membersService';
 import { Member } from '../fixtures/Members';
 import { YEARS } from '../fixtures/Semesters';
 
@@ -66,25 +67,20 @@ const MemberForm = ({
         }
 
         // Add member to database
-        const res = await fetch(`/api/members`, {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+        const { name, classOf } = values;
+        const { success, message, /* result */ } = await addMember(name, classOf);
 
         // Notify user through toast
-        if (res.ok) {
+        if (success) {
           toast({
             title: 'Success!',
-            description: `${values.name} has been added.`,
+            description: message,
             status: 'success',
           });
         } else {
           toast({
             title: 'Error',
-            description: `Error in adding member ${values.name}.`,
+            description: message,
             status: 'error',
           });
         }
@@ -97,7 +93,7 @@ const MemberForm = ({
         if (keepClass) actions.setFieldValue('classOf', values.classOf);
 
         nameInput.current?.focus();
-        await refresh();
+        await refresh();  // TODO: instead of refreshing, add member to state
       }}
     >
       {({

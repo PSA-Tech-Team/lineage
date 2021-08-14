@@ -1,8 +1,8 @@
-import { CreateMemberResult } from "../pages/api/types/members";
+import { CreateMemberResult } from '../pages/api/types/members';
 
 const MEMBERS_ENDPOINT = '/api/members';
 
-const addPairing = async (
+const addMember = async (
   name: string,
   classOf: string,
   adings: number = 0,
@@ -24,4 +24,4 @@ const addPairing = async (
   return result;
 };
 
-export { addPairing };
+export { addMember };

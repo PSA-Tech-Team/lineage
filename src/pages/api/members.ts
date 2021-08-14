@@ -1,6 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { addMember, deleteMember, getMembers, updateMember } from '../../firebase/member';
+import {
+  addMember,
+  deleteMember,
+  getMembers,
+  updateMember,
+} from '../../firebase/member';
 import { Member } from '../../fixtures/Members';
+import { CreateMemberResult } from './types/members';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
@@ -22,18 +28,22 @@ const apiGetMembers = async (res: NextApiResponse) => {
   return res.status(200).json(members);
 };
 
-const apiCreateMember = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiCreateMember = async (
+  req: NextApiRequest,
+  res: NextApiResponse<CreateMemberResult>
+) => {
   const values = await req.body;
-  const response = await addMember(values);
-  const resCode = Boolean(response) ? 200 : 500;
-  return res.status(resCode).send({});
-}
+  const result: CreateMemberResult = await addMember(values);
+  const status = result.success ? 200 : 500;
+
+  return res.status(status).send(result);
+};
 
 const apiUpdateMember = async (req: NextApiRequest, res: NextApiResponse) => {
   const member: Member = await req.body;
   await updateMember(member);
   return res.status(200).send({});
-}
+};
 
 const apiDeleteMember = async (req: NextApiRequest, res: NextApiResponse) => {
   // Delete a single member
