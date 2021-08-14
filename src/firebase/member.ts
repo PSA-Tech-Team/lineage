@@ -126,6 +126,11 @@ export const deleteMember = async (memberId: string) => {
   deletedWasAk.forEach(async (pairing) => await deletePairing(pairing.id));
   deletedWasAding.forEach(async (pairing) => await deletePairing(pairing.id));
 
+  // TODO: update `ak` field in member documents who had the deleted member as an ak
+  // TODO: update `ading` field in member documents who had the deleted member as an ading
+
   // Delete member from database
   await memberRef.delete();
+
+  // TODO: return something
 };
