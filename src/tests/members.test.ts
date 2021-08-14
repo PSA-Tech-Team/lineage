@@ -1,34 +1,83 @@
 import { addMember, MEMBERS_COL } from '../firebase/member';
 import { db, fb } from '../firebase/config';
 
-const TEST_MEMBER = 'Member1';
+const MEMBER_1 = 'Member1';
+const MEMBER_2 = 'Member2';
+const INITIAL_COUNT = 0;
+const CLASS_OF = '2023';
+const collection = db.collection(MEMBERS_COL);
 
 describe('addMember()', () => {
-  const collection = db.collection(MEMBERS_COL);
-
   it('should add the passed-in member to the database', async () => {
     const memberCount = (await collection.get()).size;
 
     const param = {
-      name: TEST_MEMBER,
-      classOf: '2023',
-      adings: 0,
-      aks: 0,
+      name: MEMBER_1,
+      classOf: CLASS_OF,
+      adings: INITIAL_COUNT,
+      aks: INITIAL_COUNT,
     };
 
-    const resultDoc = await addMember(param);
-    expect(resultDoc).not.toBe(undefined);
+    const result = await addMember(param);
+    expect(result).not.toBeUndefined();
+    const { success, member } = result;
+    expect(success).toBe(true);
+    
+    const newMemberCount = (await collection.get()).size;
+    expect(newMemberCount).toEqual(memberCount + 1);
+    
+    // Ensure that the member is correctly added into the database
+    expect(member).not.toBeUndefined();
+    expect(member?.name).toEqual(MEMBER_1);
+    expect(member?.classOf).toEqual(CLASS_OF);
+    expect(member?.aks).toEqual(INITIAL_COUNT);
+    expect(member?.adings).toEqual(INITIAL_COUNT);
+  });
+
+  it('should prevent members of duplicate names to be added', async () => {
+    const memberCount = (await collection.get()).size;
+
+    const param = {
+      name: MEMBER_2,
+      classOf: CLASS_OF,
+      adings: INITIAL_COUNT,
+      aks: INITIAL_COUNT,
+    };
+
+    const result = await addMember(param);
+    expect(result).not.toBeUndefined();
+    const { success, member } = result;
+    expect(success).toBe(true);
 
     const newMemberCount = (await collection.get()).size;
     expect(newMemberCount).toEqual(memberCount + 1);
 
-    // TODO: ensure that the member is actually in the database
+    // Check that the member was added correctly
+    expect(member).not.toBeUndefined();
+    expect(member?.name).toEqual(MEMBER_2);
+    expect(member?.classOf).toEqual(CLASS_OF);
+    expect(member?.aks).toEqual(INITIAL_COUNT);
+    expect(member?.adings).toEqual(INITIAL_COUNT);
+
+    // Try adding duplicate member
+    const duplicateResult = await addMember(param);
+    expect(duplicateResult).not.toBeUndefined();
+    const { success: duplicateSuccess, member: duplicateMember } = duplicateResult;
+
+    expect(duplicateSuccess).toBe(false);
+    expect(duplicateMember).toBeUndefined();
+    const memberCountAfterDuplicate = (await collection.get()).size;
+    expect(memberCountAfterDuplicate).toEqual(memberCount + 1);
   });
 
   afterAll(async () => {
     // Delete all test members
-    const result = await collection.where('name', '==', TEST_MEMBER).get();
-    await Promise.all(result.docs.map((doc) => collection.doc(doc.id).delete()));
+    const deleteMemberQuery = await collection
+      .where('name', 'in', [MEMBER_1, MEMBER_2])
+      .get();
+    await Promise.all(
+      deleteMemberQuery.docs.map((doc) => collection.doc(doc.id).delete())
+    );
     return await Promise.all(fb.apps.map((app) => app.delete()));
   });
 });

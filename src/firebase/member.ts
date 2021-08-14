@@ -16,12 +16,45 @@ export const addMember = async (member: {
 }) => {
   const collection = db.collection(MEMBERS_COL);
   let result;
+
+  const duplicateMemberQuery = collection
+    .where('name', '==', member.name)
+    .where('classOf', '==', member.classOf);
+  const duplicateMemberResult = await duplicateMemberQuery.get();
+
+  // Prevent duplicate members from being created
+  if (!duplicateMemberResult.empty) {
+    return {
+      success: false,
+      message: `A member of name: "${member.name}" and class: ${member.classOf} already exists.`,
+    };
+  }
+
+  // Add member to database
   try {
     result = await collection.add(member);
   } catch (e) {
-    console.error('Error in adding member: ', e);
+    return {
+      success: false,
+      message:
+        'A server error occurred while trying to add member to database.',
+    };
   }
-  return result;
+
+  const resultData: any = (await result.get()).data();
+  const memberResponse: Member = {
+    id: result.id,
+    name: resultData.name,
+    classOf: resultData.classOf,
+    aks: resultData.aks,
+    adings: resultData.adings,
+  };
+
+  return {
+    success: true,
+    message: `Successfully added ${member.name}`,
+    member: memberResponse,
+  };
 };
 
 /**

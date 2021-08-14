@@ -199,7 +199,10 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add member
           </Heading>
-          <MemberForm refresh={refreshMembers} membersList={membersList} />
+          <MemberForm
+            members={membersList}
+            setMembers={setMembersList}
+          />
         </Container>
 
         {/* Pairing column */}

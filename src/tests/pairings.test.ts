@@ -20,9 +20,9 @@ describe('addPairing()', () => {
 
   beforeAll(async () => {
     // Add 4 members
-    const addedMembers = await Promise.all(
-      MEMBERS.map((member) => addMember(member))
-    );
+    const addedMembers = (
+      await Promise.all(MEMBERS.map((member) => addMember(member)))
+    ).map((result) => result.member);
 
     testMemberDocs = addedMembers;
   });
@@ -85,7 +85,6 @@ describe('addPairing()', () => {
 
     const newPairingCount = (await pairingsCollection.get()).docs.length;
     expect(newPairingCount).toBe(initialPairingCount + 1);
-
   });
 
   it('should return unsuccessful if pairing already exists', async () => {
@@ -107,14 +106,13 @@ describe('addPairing()', () => {
     expect(pairing?.ading.id).toEqual(ading2Id);
     expect(pairing?.semesterAssigned).toEqual(semesterAssigned);
 
-
     // Try adding pairing again
     const { success: repeatSuccess, pairing: repeatPairing } = await addPairing(
       kuyaId,
       ading2Id,
       semesterAssigned
     );
-    
+
     expect(repeatSuccess).toBe(false);
     expect(repeatPairing).toBeUndefined();
   });

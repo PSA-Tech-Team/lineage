@@ -10,8 +10,9 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
-import { useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import * as yup from 'yup';
+import { addMember } from '../client/membersService';
 import { Member } from '../fixtures/Members';
 import { YEARS } from '../fixtures/Semesters';
 
@@ -22,16 +23,15 @@ const memberSchema = yup.object().shape({
   aks: yup.number().required(),
 });
 
+interface MemberFormProps {
+  members: Member[];
+  setMembers: Dispatch<SetStateAction<Member[]>>;
+}
+
 /**
  * Form to add members to database
  */
-const MemberForm = ({
-  refresh,
-  membersList,
-}: {
-  refresh: () => Promise<Member[]>;
-  membersList: Member[];
-}) => {
+const MemberForm = ({ members, setMembers }: MemberFormProps) => {
   const [keepClass, setKeepClass] = useState<boolean>(false);
   const nameInput = useRef<HTMLInputElement>(null);
   const toast = useToast();
@@ -47,7 +47,7 @@ const MemberForm = ({
       validationSchema={memberSchema}
       onSubmit={async (values, actions) => {
         // Verify that member does not already exist
-        const memberAlreadyExists = membersList.some(
+        const memberAlreadyExists = members.some(
           (member: Member) =>
             values.name.toLowerCase() === member.name.toLowerCase() &&
             values.classOf === member.classOf
@@ -66,25 +66,23 @@ const MemberForm = ({
         }
 
         // Add member to database
-        const res = await fetch(`/api/members`, {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify(values),
-        });
+        const { name, classOf } = values;
+        const { success, message, member } = await addMember(name, classOf);
 
         // Notify user through toast
-        if (res.ok) {
+        if (success) {
           toast({
             title: 'Success!',
-            description: `${values.name} has been added.`,
+            description: message,
             status: 'success',
           });
+
+          // Add member to state
+          if (member !== undefined) setMembers([ ...members, member ]);
         } else {
           toast({
             title: 'Error',
-            description: `Error in adding member ${values.name}.`,
+            description: message,
             status: 'error',
           });
         }
@@ -96,8 +94,8 @@ const MemberForm = ({
         // Reset class only if specified
         if (keepClass) actions.setFieldValue('classOf', values.classOf);
 
+        // Focus back on name field
         nameInput.current?.focus();
-        await refresh();
       }}
     >
       {({
