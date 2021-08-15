@@ -22,10 +22,10 @@ describe('addMember()', () => {
     expect(result).not.toBeUndefined();
     const { success, member } = result;
     expect(success).toBe(true);
-    
+
     const newMemberCount = (await collection.get()).size;
     expect(newMemberCount).toEqual(memberCount + 1);
-    
+
     // Ensure that the member is correctly added into the database
     expect(member).not.toBeUndefined();
     expect(member?.name).toEqual(MEMBER_1);
@@ -62,7 +62,8 @@ describe('addMember()', () => {
     // Try adding duplicate member
     const duplicateResult = await addMember(param);
     expect(duplicateResult).not.toBeUndefined();
-    const { success: duplicateSuccess, member: duplicateMember } = duplicateResult;
+    const { success: duplicateSuccess, member: duplicateMember } =
+      duplicateResult;
 
     expect(duplicateSuccess).toBe(false);
     expect(duplicateMember).toBeUndefined();
@@ -79,5 +80,11 @@ describe('addMember()', () => {
       deleteMemberQuery.docs.map((doc) => collection.doc(doc.id).delete())
     );
     return await Promise.all(fb.apps.map((app) => app.delete()));
+  });
+});
+
+describe('deleteMember()', () => {
+  it('should successfully delete a member of valid ID', async () => {
+    expect(true).toBe(false); // TODO: complete test
   });
 });
