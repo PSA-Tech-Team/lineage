@@ -29,7 +29,7 @@ import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
 import { isBoardMember, isEditor } from '../fixtures/Editors';
-import { deleteMember } from '../client/membersService';
+import { deleteMember, updateMember } from '../client/membersService';
 
 interface EditPageProps {
   members: Member[];
@@ -129,21 +129,16 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     }
 
     // Update member in database
-    await fetch(`/api/members`, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(updated),
-    });
+    const { success, message, /* member */ } = await updateMember(updated);
 
     // Send toast
     toast({
-      title: 'Success!',
-      status: 'success',
-      description: `"${updated.name}" successfully updated`,
+      title: success ? 'Success!' : 'Error',
+      status: success ? 'success' : 'error',
+      description: message,
     });
 
+    // TODO: update member directly in state
     // Refresh to reflect changes
     await refreshTables();
   };

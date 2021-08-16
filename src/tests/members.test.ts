@@ -12,6 +12,7 @@ const [MEMBER_1, MEMBER_2, MEMBER_3] = ['member1', 'member2', 'member3'];
 
 // Names for `updateMember()` tests
 const MEMBER_TO_UPDATE = 'memberToUpdate';
+const UPDATED_MEMBER = 'updatedMember';
 
 // Names for `deleteMember()` tests
 const [AK, ADING_1, ADING_2] = ['ak', 'ading1', 'ading2'];
@@ -123,7 +124,7 @@ describe('updateMember()', () => {
   });
 
   it('should allow editing of name and class', async () => {
-    const updatedName = 'updatedName';
+    const updatedName = UPDATED_MEMBER;
     const updatedClass = 'updatedClass';
     const param = {
       name: updatedName,
@@ -272,7 +273,7 @@ afterAll(async () => {
     MEMBER_1,
     MEMBER_2,
     MEMBER_3,
-    MEMBER_TO_UPDATE,
+    UPDATED_MEMBER,
     AK,
     ADING_1,
     ADING_2,
