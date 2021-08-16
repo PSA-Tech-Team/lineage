@@ -18,4 +18,16 @@ const addPairing = async (akId: string, adingId: string, semester: string) => {
   return result;
 };
 
-export { addPairing };
+const deletePairing = async (pairingId: string) => {
+  const response = await fetch(`/api/pairings`, {
+    method: 'DELETE',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ id: pairingId }),
+  });
+  const result: PairingApiResult = await response.json();
+  return result;
+}
+
+export { addPairing, deletePairing };

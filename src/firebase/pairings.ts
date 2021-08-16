@@ -182,7 +182,7 @@ export const deletePairing = async (pairingId: string) => {
 
   return {
     success: true,
-    message: 'Pairing successfully added',
+    message: 'Pairing successfully deleted',
     pairing: pairingResponse,
   };
 };

@@ -27,6 +27,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { deletePairing } from '../client/pairingsService';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
@@ -70,23 +71,17 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
    * Callback when deleting a pairing from table
    * @param pairing pairing to delete
    */
-  const deletePairing = async (pairing: Pairing) => {
+  const removePairing = async (pairing: Pairing) => {
     // Delete pairing from database
     setSubmitting(true);
-    await fetch(`/api/pairings`, {
-      method: 'DELETE',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ id: pairing.id }),
-    });
+    const { success, message } = await deletePairing(pairing.id);
 
     // Send toast and refresh
     await refresh();
     toast({
-      title: 'Delete successful',
-      description: 'Pairing successfully deleted.',
-      status: 'info',
+      title: success ? 'Success' : 'Error',
+      description: message,
+      status: success ? 'info' : 'error',
     });
     setSubmitting(false);
   };
@@ -160,7 +155,7 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
                           isFullWidth
                           colorScheme="red"
                           disabled={isSubmitting}
-                          onClick={async () => await deletePairing(pairing)}
+                          onClick={async () => await removePairing(pairing)}
                         >
                           {isSubmitting ? 'Deleting...' : 'Yes, delete'}
                         </Button>
