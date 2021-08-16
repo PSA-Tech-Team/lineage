@@ -172,7 +172,8 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       });
     }
 
-    await refreshTables();
+    // Update state of members
+    setMembersList(membersList.filter((m) => m.id !== member.id));
   };
 
   if (userLoading || user === null) {
