@@ -169,4 +169,13 @@ describe('addPairing()', () => {
   });
 });
 
-export {};
+
+describe('deletePairing()', () => {
+  it('should return unsuccessful if specified pairing is not found', async () => {
+    expect(true).toBe(false);  // TODO: write test
+  });
+
+  it('should return successful when pairing is deleted and update docs accordingly', async () => {
+    expect(true).toBe(false);  // TODO: write test
+  });
+});
