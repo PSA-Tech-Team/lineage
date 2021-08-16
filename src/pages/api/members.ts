@@ -39,10 +39,15 @@ const apiCreateMember = async (
   return res.status(status).send(result);
 };
 
-const apiUpdateMember = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiUpdateMember = async (
+  req: NextApiRequest,
+  res: NextApiResponse<MemberApiResult>
+) => {
   const member: Member = await req.body;
-  await updateMember(member);
-  return res.status(200).send({});
+  const result = await updateMember(member.id, member);
+  const status = result.success ? 200 : 500;
+
+  return res.status(status).send(result);
 };
 
 const apiDeleteMember = async (
