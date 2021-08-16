@@ -29,6 +29,7 @@ import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
 import { isBoardMember, isEditor } from '../fixtures/Editors';
+import { deleteMember } from '../client/membersService';
 
 interface EditPageProps {
   members: Member[];
@@ -155,19 +156,21 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     if (!member.id) return;
 
     // Delete member from database
-    await fetch(`/api/members`, {
-      method: 'DELETE',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ id: member.id }),
-    });
+    const response = await deleteMember(member.id);
 
-    toast({
-      title: 'Deletion complete',
-      status: 'info',
-      description: `${member.name} has been deleted.`,
-    });
+    if (response.success) {
+      toast({
+        title: 'Deletion complete',
+        status: 'info',
+        description: `${member.name} has been deleted.`,
+      });
+    } else {
+      toast({
+        title: 'Error',
+        status: 'error',
+        description: response.message,
+      });
+    }
 
     await refreshTables();
   };
@@ -199,10 +202,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Heading variant="h3" my={5}>
             Add member
           </Heading>
-          <MemberForm
-            members={membersList}
-            setMembers={setMembersList}
-          />
+          <MemberForm members={membersList} setMembers={setMembersList} />
         </Container>
 
         {/* Pairing column */}

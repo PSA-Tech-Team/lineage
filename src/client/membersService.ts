@@ -24,4 +24,17 @@ const addMember = async (
   return result;
 };
 
-export { addMember };
+const deleteMember = async (memberId: string) => {
+  const response = await fetch(`/api/members`, {
+    method: 'DELETE',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ id: memberId }),
+  });
+
+  const result: MemberApiResult = await response.json();
+  return result;
+};
+
+export { addMember, deleteMember };

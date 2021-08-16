@@ -45,7 +45,10 @@ const apiUpdateMember = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).send({});
 };
 
-const apiDeleteMember = async (req: NextApiRequest, res: NextApiResponse<MemberApiResult>) => {
+const apiDeleteMember = async (
+  req: NextApiRequest,
+  res: NextApiResponse<MemberApiResult>
+) => {
   // Delete a single member
   const memberId: string = await req.body.id;
 
