@@ -1,6 +1,6 @@
 import { Member } from '../fixtures/Members';
 import { deletePairing, PAIRINGS_COL } from './pairings';
-import { db } from './config';
+import { db, fb } from './config';
 
 export const MEMBERS_COL = 'members';
 
@@ -112,25 +112,75 @@ export const deleteMember = async (memberId: string) => {
 
   const memberSnap = await memberRef.get();
 
-  if (!memberSnap.exists) return;
+  if (!memberSnap.exists) {
+    return {
+      success: false,
+      message: `Member with id ${memberId} does not exist.`,
+    };
+  }
+
+  const { name, classOf, adings, aks }: any = memberSnap.data();
+  const memberResponse: Member = {
+    id: memberSnap.id,
+    name,
+    classOf,
+    adings,
+    aks,
+  };
 
   // Get all pairings associated with that member
   const pairingsCol = db.collection(PAIRINGS_COL);
-  const deletedWasAk = await pairingsCol.where('ak', '==', memberRef).get();
+  const deletedMemberWasAk = await pairingsCol
+    .where('ak', '==', memberRef)
+    .get();
 
-  const deletedWasAding = await pairingsCol
+  const deletedMemberWasAding = await pairingsCol
     .where('ading', '==', memberRef)
     .get();
 
-  // Delete the pairings
-  deletedWasAk.forEach(async (pairing) => await deletePairing(pairing.id));
-  deletedWasAding.forEach(async (pairing) => await deletePairing(pairing.id));
+  // Update `ak` field in member documents who had the deleted member as an ak
+  // deletedMemberWasAk.forEach(
+  //   async (pairing) =>
+  //     await pairingsCol.doc(pairing.id).update({
+  //       aks: fb.firestore.FieldValue.increment(-1),
+  //     })
+  // );
 
-  // TODO: update `ak` field in member documents who had the deleted member as an ak
-  // TODO: update `ading` field in member documents who had the deleted member as an ading
+  await Promise.all(deletedMemberWasAk.docs.map(async (doc) => {
+    const adingRef = doc.data().ading;
+    return adingRef.update({
+      aks: fb.firestore.FieldValue.increment(-1),
+    });
+  }));
+  // Update `ading` field in member documents who had the deleted member as an ading
+  // deletedMemberWasAding.forEach(
+  //   async (pairing) =>
+  //     await pairingsCol.doc(pairing.id).update({
+  //       adings: fb.firestore.FieldValue.increment(-1),
+  //     })
+  // );
+  await Promise.all(deletedMemberWasAding.docs.map(async (doc) => {
+    const akRef = doc.data().ak;
+    return akRef.update({
+      adings: fb.firestore.FieldValue.increment(-1),
+    });
+  }));
+
+  // Delete the pairings
+  deletedMemberWasAk.forEach(
+    async (pairing) => await deletePairing(pairing.id)
+  );
+  deletedMemberWasAding.forEach(
+    async (pairing) => await deletePairing(pairing.id)
+  );
 
   // Delete member from database
   await memberRef.delete();
 
-  // TODO: return something
+  return {
+    success: true,
+    message: 'Member was successfully deleted',
+    member: memberResponse,
+  };
 };
+

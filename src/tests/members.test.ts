@@ -98,7 +98,7 @@ describe('deleteMember()', () => {
 
     // Ensure that the member is correctly added into the database
     expect(member).not.toBeUndefined();
-    expect(member?.name).toEqual(MEMBER_1);
+    expect(member?.name).toEqual(MEMBER_3);
     expect(member?.classOf).toEqual(CLASS_OF);
     expect(member?.aks).toEqual(INITIAL_COUNT);
     expect(member?.adings).toEqual(INITIAL_COUNT);
@@ -115,7 +115,7 @@ describe('deleteMember()', () => {
 
     // Ensure member was successfully deleted
     expect(deletedMember).not.toBeUndefined();
-    expect(deletedMember?.name).toEqual(MEMBER_1);
+    expect(deletedMember?.name).toEqual(MEMBER_3);
     expect(deletedMember?.classOf).toEqual(CLASS_OF);
     expect(deletedMember?.aks).toEqual(INITIAL_COUNT);
     expect(deletedMember?.adings).toEqual(INITIAL_COUNT);
@@ -193,9 +193,11 @@ describe('deleteMember()', () => {
 });
 
 afterAll(async () => {
+  const testMembers = [MEMBER_1, MEMBER_2, MEMBER_3, AK, ADING_1, ADING_2];
+
   // Delete all test members
   const deleteMemberQuery = await memberCollection
-    .where('name', 'in', [MEMBER_1, MEMBER_2, MEMBER_3, AK, ADING_1, ADING_2])
+    .where('name', 'in', testMembers)
     .get();
   await Promise.all(
     deleteMemberQuery.docs.map((doc) => memberCollection.doc(doc.id).delete())
