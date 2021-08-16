@@ -277,6 +277,9 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
             <TabPanel>
               <PairingsTable
                 pairings={pairingsList}
+                setPairings={setPairingsList}
+                members={membersList}
+                setMembers={setMembersList}
                 loading={loadingPairs}
                 refresh={refreshTables}
               />
