@@ -129,7 +129,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     }
 
     // Update member in database
-    const { success, message, /* member */ } = await updateMember(updated);
+    const { success, message, member } = await updateMember(updated);
 
     // Send toast
     toast({
@@ -138,9 +138,23 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       description: message,
     });
 
-    // TODO: update member directly in state
-    // Refresh to reflect changes
-    await refreshTables();
+    if (success) {
+      // Update member in state
+      const updatedMembers = [...membersList];
+      updatedMembers[i] = member!;
+      setMembersList(updatedMembers);
+
+      // Update affected pairings
+      const updatedPairings = [...pairingsList];
+      updatedPairings.forEach((p) => {
+        if (p.ak.id === updated.id) {
+          p.ak = member!;
+        } else if (p.ading.id === updated.id) {
+          p.ading = member!;
+        }
+      });
+      setPairingsList(updatedPairings);
+    }
   };
 
   /**
