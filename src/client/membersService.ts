@@ -1,4 +1,4 @@
-import { CreateMemberResult } from '../pages/api/types/members';
+import { MemberApiResult } from '../pages/api/types/members';
 
 const MEMBERS_ENDPOINT = '/api/members';
 
@@ -20,7 +20,7 @@ const addMember = async (
       aks,
     }),
   });
-  const result: CreateMemberResult = await response.json();
+  const result: MemberApiResult = await response.json();
   return result;
 };
 
