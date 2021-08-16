@@ -1,8 +1,9 @@
-import { addMember, MEMBERS_COL } from '../firebase/member';
+import { addMember, deleteMember, MEMBERS_COL } from '../firebase/member';
 import { db, fb } from '../firebase/config';
 
 const MEMBER_1 = 'Member1';
 const MEMBER_2 = 'Member2';
+const MEMBER_3 = 'Member3';
 const INITIAL_COUNT = 0;
 const CLASS_OF = '2023';
 const collection = db.collection(MEMBERS_COL);
@@ -85,6 +86,46 @@ describe('addMember()', () => {
 
 describe('deleteMember()', () => {
   it('should successfully delete a member of valid ID', async () => {
-    expect(true).toBe(false); // TODO: complete test
+    // Add member to database
+    const initialMemberCount = (await collection.get()).size;
+
+    const param = {
+      name: MEMBER_3,
+      classOf: CLASS_OF,
+      adings: INITIAL_COUNT,
+      aks: INITIAL_COUNT,
+    };
+
+    const addResult = await addMember(param);
+    expect(addResult).not.toBeUndefined();
+    const { success, member } = addResult;
+    expect(success).toBe(true);
+
+    const memberCountAfterAdd = (await collection.get()).size;
+    expect(memberCountAfterAdd).toEqual(initialMemberCount + 1);
+
+    // Ensure that the member is correctly added into the database
+    expect(member).not.toBeUndefined();
+    expect(member?.name).toEqual(MEMBER_1);
+    expect(member?.classOf).toEqual(CLASS_OF);
+    expect(member?.aks).toEqual(INITIAL_COUNT);
+    expect(member?.adings).toEqual(INITIAL_COUNT);
+    
+    // Delete member from database
+    const deleteResult = await deleteMember(member!.id);
+    expect(deleteResult).not.toBeUndefined();
+
+    const { success: deleteSuccess, member: deletedMember } = deleteResult;
+    expect(deleteSuccess).toBe(true);
+
+    const memberCountAfterDeletion = (await collection.get()).size;
+    expect(memberCountAfterDeletion).toEqual(initialMemberCount);
+    
+    // Ensure member was successfully deleted
+    expect(deletedMember).not.toBeUndefined();
+    expect(deletedMember?.name).toEqual(MEMBER_1);
+    expect(deletedMember?.classOf).toEqual(CLASS_OF);
+    expect(deletedMember?.aks).toEqual(INITIAL_COUNT);
+    expect(deletedMember?.adings).toEqual(INITIAL_COUNT);
   });
 });
