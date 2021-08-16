@@ -1,6 +1,7 @@
 import { db, fb } from '../firebase/config';
 import { addMember, MEMBERS_COL } from '../firebase/member';
 import { addPairing, deletePairing, PAIRINGS_COL } from '../firebase/pairings';
+import { Member } from '../fixtures/Members';
 
 const pairingsCollection = db.collection(PAIRINGS_COL);
 const membersCollection = db.collection(MEMBERS_COL);
@@ -17,7 +18,9 @@ const createMemberFromName = (name: string) => ({
 });
 
 describe('addPairing()', () => {
-  const testMembers = ['Ate', 'Kuya', 'Ading1', 'Ading2', 'Ading3'].map(createMemberFromName);
+  const testMembers = ['Ate', 'Kuya', 'Ading1', 'Ading2', 'Ading3'].map(
+    createMemberFromName
+  );
   let testMemberDocs: any[] = []; // array of Firestore documents
   let testPairingIds: (string | undefined)[] = [];
 
@@ -166,24 +169,29 @@ describe('addPairing()', () => {
     await Promise.all(
       testPairingIds.map((id) => pairingsCollection.doc(id).delete())
     );
-
-    // Cleanup Firebase
-    return await Promise.all(fb.apps.map((app) => app.delete()));
   });
 });
 
 describe('deletePairing()', () => {
   const testMemberNames = ['foo', 'bar'].map(createMemberFromName);
+  let testMemberDocs: Member[] = [];
   let testPairingId: string;
-  
+
   beforeAll(async () => {
     // Create members
-    const testMemberResults = await Promise.all(testMemberNames.map((param) => addMember(param)));
+    const testMemberResults = await Promise.all(
+      testMemberNames.map((param) => addMember(param))
+    );
     const testMembers = testMemberResults.map((result) => result.member!);
-    const [ fooDoc, barDoc ] = testMembers;
+    testMemberDocs = testMembers;
+    const [fooDoc, barDoc] = testMembers;
 
-    // Add pairing
-    const testPairingResult = await addPairing(fooDoc.id, barDoc.id, SEMESTER_ASSIGNED);
+    // Add pairing, where `foo` is AK and `bar` is ading
+    const testPairingResult = await addPairing(
+      fooDoc.id,
+      barDoc.id,
+      SEMESTER_ASSIGNED
+    );
     testPairingId = testPairingResult.pairing!.id;
   });
 
@@ -191,7 +199,7 @@ describe('deletePairing()', () => {
     const pairingCountBefore = (await pairingsCollection.get()).size;
 
     // Add invalid pairing
-    const invalidId = '';
+    const invalidId = 'invalid id';
     const result = await deletePairing(invalidId);
     expect(result).not.toBeUndefined();
     expect(result.success).toBe(false);
@@ -202,6 +210,13 @@ describe('deletePairing()', () => {
 
   it('should return successful when pairing is deleted and update docs accordingly', async () => {
     const pairingCountBefore = (await pairingsCollection.get()).size;
+    const [ fooDoc, barDoc ] = testMemberDocs;
+
+    const fooQuery = membersCollection.doc(fooDoc.id);
+    const barQuery = membersCollection.doc(barDoc.id);
+
+    const fooDataBefore: any = (await fooQuery.get()).data();
+    const barDataBefore: any = (await barQuery.get()).data();
 
     // Delete pairing
     const result = await deletePairing(testPairingId);
@@ -211,9 +226,32 @@ describe('deletePairing()', () => {
     const { success, pairing } = result;
     expect(success).toBe(true);
     expect(pairing).not.toBeUndefined();
-    expect(pairing.id).toEqual(testPairingId);
-    
+    expect(pairing!.id).toEqual(testPairingId);
+
     const pairingCountAfter = (await pairingsCollection.get()).size;
     expect(pairingCountAfter).toEqual(pairingCountBefore - 1);
+
+    // Ensure member document fields are decremented properly
+    const fooDataAfter: any = (await fooQuery.get()).data();
+    const barDataAfter: any = (await barQuery.get()).data();
+
+    expect(fooDataAfter.adings).toEqual(fooDataBefore.adings - 1);
+    expect(fooDataAfter.aks).toEqual(fooDataBefore.aks);
+
+    expect(barDataAfter.adings).toEqual(barDataBefore.adings);
+    expect(barDataAfter.aks).toEqual(barDataBefore.aks - 1);
   });
+
+  afterAll(async () => {
+    // Delete test members
+    const testMemberIds = testMemberDocs.map((doc) => doc?.id);
+    await Promise.all(
+      testMemberIds.map((id) => membersCollection.doc(id).delete())
+    );
+  });
+});
+
+afterAll(async () => {
+  // Cleanup Firebase
+  return await Promise.all(fb.apps.map((app) => app.delete()));
 });
