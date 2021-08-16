@@ -172,8 +172,41 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
       });
     }
 
-    // Update state of members
-    setMembersList(membersList.filter((m) => m.id !== member.id));
+    // Get member documents to update
+    const memberIdsToDecrementAks: string[] = [];
+    const memberIdsToDecrementAdings: string[] = [];
+    const filteredPairings = pairingsList.filter((p) => {
+      if (p.ak.id === member.id) {
+        memberIdsToDecrementAks.push(p.ading.id);
+        return false;
+      } else if (p.ading.id === member.id) {
+        memberIdsToDecrementAdings.push(p.ak.id);
+        return false;
+      }
+      return true;
+    });
+
+    const convertMemberIdToIndex = (id: string) =>
+      membersList.findIndex((m) => m.id === id);
+    const memberIndexesToDecrementAks = memberIdsToDecrementAks.map(
+      convertMemberIdToIndex
+    );
+    const memberIndexesToDecrementAdings = memberIdsToDecrementAdings.map(
+      convertMemberIdToIndex
+    );
+
+    // Update member documents
+    const updatedMembers = [...membersList];
+    for (const index of memberIndexesToDecrementAks) {
+      updatedMembers[index].aks -= 1;
+    }
+    for (const index of memberIndexesToDecrementAdings) {
+      updatedMembers[index].adings -= 1;
+    }
+
+    // Set state to updated documents
+    setMembersList(updatedMembers.filter(({ id }) => id !== member.id));
+    setPairingsList(filteredPairings);
   };
 
   if (userLoading || user === null) {
