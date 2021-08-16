@@ -1,4 +1,4 @@
-import { CreateMemberResult } from '../pages/api/types/members';
+import { MemberApiResult } from '../pages/api/types/members';
 
 const MEMBERS_ENDPOINT = '/api/members';
 
@@ -20,8 +20,21 @@ const addMember = async (
       aks,
     }),
   });
-  const result: CreateMemberResult = await response.json();
+  const result: MemberApiResult = await response.json();
   return result;
 };
 
-export { addMember };
+const deleteMember = async (memberId: string) => {
+  const response = await fetch(`/api/members`, {
+    method: 'DELETE',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ id: memberId }),
+  });
+
+  const result: MemberApiResult = await response.json();
+  return result;
+};
+
+export { addMember, deleteMember };

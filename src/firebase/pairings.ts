@@ -1,5 +1,5 @@
 import { MEMBERS_COL } from './member';
-import { db } from './config';
+import { db, fb } from './config';
 import { Pairing } from '../fixtures/Pairings';
 import { Member } from '../fixtures/Members';
 
@@ -88,8 +88,8 @@ export const addPairing = async (
   }
 
   // Update members to have additional AK/ading
-  await akRef.update({ adings: akDoc.data()?.adings + 1 });
-  await adingRef.update({ aks: adingDoc.data()?.aks + 1 });
+  await akRef.update({ adings: fb.firestore.FieldValue.increment(1) });
+  await adingRef.update({ aks: fb.firestore.FieldValue.increment(1) });
 
   const akData: any = (await akRef.get()).data();
   const adingData: any = (await adingRef.get()).data();
