@@ -139,26 +139,14 @@ export const deleteMember = async (memberId: string) => {
     .get();
 
   // Update `ak` field in member documents who had the deleted member as an ak
-  // deletedMemberWasAk.forEach(
-  //   async (pairing) =>
-  //     await pairingsCol.doc(pairing.id).update({
-  //       aks: fb.firestore.FieldValue.increment(-1),
-  //     })
-  // );
-
   await Promise.all(deletedMemberWasAk.docs.map(async (doc) => {
     const adingRef = doc.data().ading;
     return adingRef.update({
       aks: fb.firestore.FieldValue.increment(-1),
     });
   }));
+  
   // Update `ading` field in member documents who had the deleted member as an ading
-  // deletedMemberWasAding.forEach(
-  //   async (pairing) =>
-  //     await pairingsCol.doc(pairing.id).update({
-  //       adings: fb.firestore.FieldValue.increment(-1),
-  //     })
-  // );
   await Promise.all(deletedMemberWasAding.docs.map(async (doc) => {
     const akRef = doc.data().ak;
     return akRef.update({

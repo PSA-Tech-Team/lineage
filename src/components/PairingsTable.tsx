@@ -26,16 +26,28 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { deletePairing } from '../client/pairingsService';
+import { Member } from '../fixtures/Members';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
   pairings: Pairing[];
+  setPairings: Dispatch<SetStateAction<Pairing[]>>;
+  members: Member[],
+  setMembers: Dispatch<SetStateAction<Member[]>>;
   loading: boolean;
   refresh: () => Promise<void>;
 }
 
-const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
+const PairingsTable = ({
+  pairings,
+  setPairings,
+  members,
+  setMembers,
+  loading,
+  refresh,
+}: PairingsTableProps) => {
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const toast = useToast();
 
@@ -70,24 +82,37 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
    * Callback when deleting a pairing from table
    * @param pairing pairing to delete
    */
-  const deletePairing = async (pairing: Pairing) => {
+  const removePairing = async (pairing: Pairing) => {
     // Delete pairing from database
     setSubmitting(true);
-    await fetch(`/api/pairings`, {
-      method: 'DELETE',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ id: pairing.id }),
+    const { success, message } = await deletePairing(pairing.id);
+
+    // Display toast
+    toast({
+      title: success ? 'Success' : 'Error',
+      description: message,
+      status: success ? 'info' : 'error',
     });
 
-    // Send toast and refresh
-    await refresh();
-    toast({
-      title: 'Delete successful',
-      description: 'Pairing successfully deleted.',
-      status: 'info',
-    });
+    // Refresh state when successful
+    if (success) {
+      // Get ids of member documents to update
+      const [ akId, adingId ] = [ pairing.ak.id, pairing.ading.id ];
+      
+      // Update member documents
+      const updatedMembers = [ ...members ];
+      updatedMembers.forEach((member) => {
+        if (member.id === akId) {
+          member.adings -= 1;
+        } else if (member.id === adingId) {
+          member.aks -= 1;
+        }
+      });
+
+      // Update state
+      setMembers(updatedMembers);
+      setPairings(pairings.filter((p) => p.id !== pairing.id));
+    }
     setSubmitting(false);
   };
 
@@ -160,7 +185,7 @@ const PairingsTable = ({ pairings, loading, refresh }: PairingsTableProps) => {
                           isFullWidth
                           colorScheme="red"
                           disabled={isSubmitting}
-                          onClick={async () => await deletePairing(pairing)}
+                          onClick={async () => await removePairing(pairing)}
                         >
                           {isSubmitting ? 'Deleting...' : 'Yes, delete'}
                         </Button>
