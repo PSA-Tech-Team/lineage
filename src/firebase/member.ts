@@ -52,7 +52,7 @@ export const addMember = async (member: {
 
   return {
     success: true,
-    message: `Successfully added ${member.name}`,
+    message: `Successfully added "${member.name}"`,
     member: memberResponse,
   };
 };
@@ -123,7 +123,7 @@ export const updateMember = async (id: string, param: UpdateMemberFields) => {
 
   return {
     success: true,
-    message: `Member ${memberResponse.name} was successfully updated`,
+    message: `Member "${memberResponse.name}" was successfully updated`,
     member: memberResponse,
   };
 };
