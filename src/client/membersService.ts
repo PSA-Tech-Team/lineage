@@ -1,3 +1,4 @@
+import { Member } from '../fixtures/Members';
 import { MemberApiResult } from '../pages/api/types/members';
 
 const MEMBERS_ENDPOINT = '/api/members';
@@ -24,6 +25,18 @@ const addMember = async (
   return result;
 };
 
+const updateMember = async (updated: Member) => {
+  const response = await fetch(`/api/members`, {
+    method: 'PUT',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify(updated),
+  });
+  const result: MemberApiResult = await response.json();
+  return result;
+};
+
 const deleteMember = async (memberId: string) => {
   const response = await fetch(`/api/members`, {
     method: 'DELETE',
@@ -37,4 +50,4 @@ const deleteMember = async (memberId: string) => {
   return result;
 };
 
-export { addMember, deleteMember };
+export { addMember, updateMember, deleteMember };

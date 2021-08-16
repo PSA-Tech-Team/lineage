@@ -29,7 +29,7 @@ import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import { useRouter } from 'next/router';
 import { isBoardMember, isEditor } from '../fixtures/Editors';
-import { deleteMember } from '../client/membersService';
+import { deleteMember, updateMember } from '../client/membersService';
 
 interface EditPageProps {
   members: Member[];
@@ -129,23 +129,32 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     }
 
     // Update member in database
-    await fetch(`/api/members`, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(updated),
-    });
+    const { success, message, member } = await updateMember(updated);
 
     // Send toast
     toast({
-      title: 'Success!',
-      status: 'success',
-      description: `"${updated.name}" successfully updated`,
+      title: success ? 'Success!' : 'Error',
+      status: success ? 'success' : 'error',
+      description: message,
     });
 
-    // Refresh to reflect changes
-    await refreshTables();
+    if (success) {
+      // Update member in state
+      const updatedMembers = [...membersList];
+      updatedMembers[i] = member!;
+      setMembersList(updatedMembers);
+
+      // Update affected pairings
+      const updatedPairings = [...pairingsList];
+      updatedPairings.forEach((p) => {
+        if (p.ak.id === updated.id) {
+          p.ak = member!;
+        } else if (p.ading.id === updated.id) {
+          p.ading = member!;
+        }
+      });
+      setPairingsList(updatedPairings);
+    }
   };
 
   /**
