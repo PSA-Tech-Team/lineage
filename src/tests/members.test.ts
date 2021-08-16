@@ -1,4 +1,9 @@
-import { addMember, deleteMember, MEMBERS_COL, updateMember } from '../firebase/member';
+import {
+  addMember,
+  deleteMember,
+  MEMBERS_COL,
+  updateMember,
+} from '../firebase/member';
 import { db, fb } from '../firebase/config';
 import { addPairing, PAIRINGS_COL } from '../firebase/pairings';
 
@@ -89,7 +94,7 @@ describe('updateMember()', () => {
       name: MEMBER_TO_UPDATE,
       classOf: CLASS_OF,
       aks: INITIAL_COUNT,
-      adings: INITIAL_COUNT
+      adings: INITIAL_COUNT,
     });
 
     memberToUpdateId = result.member!.id;
@@ -97,8 +102,8 @@ describe('updateMember()', () => {
 
   it('should return unsuccessful if member with ID does not exist', async () => {
     // Try updating member of invalid ID
-    const result = await updateMember({
-      id: memberToUpdateId,
+    const invalidId = 'an invalid id';
+    const result = await updateMember(invalidId, {
       name: 'a new name',
       classOf: `${CLASS_OF}1`,
     });
@@ -109,39 +114,42 @@ describe('updateMember()', () => {
     expect(success).toBe(false);
 
     // Check that member is still the same
-    const memberToUpdateData = (await memberCollection.doc(memberToUpdateId).get()).data();
+    const memberToUpdateData: any = (
+      await memberCollection.doc(memberToUpdateId).get()
+    ).data();
     const { name, classOf } = memberToUpdateData;
     expect(name).toEqual(MEMBER_TO_UPDATE);
     expect(classOf).toEqual(CLASS_OF);
   });
-  
+
   it('should allow editing of name and class', async () => {
     const updatedName = 'updatedName';
     const updatedClass = 'updatedClass';
     const param = {
-      id: memberToUpdateId,
       name: updatedName,
-      classOf: updatedClass
+      classOf: updatedClass,
     };
-    
+
     // Update member with new fields
-    const result = await updateMember(param);
+    const result = await updateMember(memberToUpdateId, param);
     expect(result).not.toBeUndefined();
-    
+
     // Ensure response is correct
     const { success, member } = result;
     expect(success).toBe(true);
-    
+
     expect(member).not.toBeUndefined();
-    expect(member.name).toEqual(updatedName);
-    expect(member.classOf).toEqual(updatedClass);
+    expect(member!.name).toEqual(updatedName);
+    expect(member!.classOf).toEqual(updatedClass);
 
     // Ensure that the document in database is updated
-    const updatedMemberData: any = (await memberCollection.doc(memberToUpdateId).get()).data();
+    const updatedMemberData: any = (
+      await memberCollection.doc(memberToUpdateId).get()
+    ).data();
     expect(updatedMemberData.name).toEqual(updatedName);
     expect(updatedMemberData.classOf).toEqual(updatedClass);
   });
-})
+});
 
 describe('deleteMember()', () => {
   it('should successfully delete a member of valid ID', async () => {
@@ -260,7 +268,15 @@ describe('deleteMember()', () => {
 });
 
 afterAll(async () => {
-  const testMembers = [MEMBER_1, MEMBER_2, MEMBER_3, AK, ADING_1, ADING_2];
+  const testMembers = [
+    MEMBER_1,
+    MEMBER_2,
+    MEMBER_3,
+    MEMBER_TO_UPDATE,
+    AK,
+    ADING_1,
+    ADING_2,
+  ];
 
   // Delete all test members
   const deleteMemberQuery = await memberCollection

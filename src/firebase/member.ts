@@ -83,24 +83,49 @@ export const getMembers = async () => {
   return members;
 };
 
+interface UpdateMemberFields {
+  name?: string;
+  classOf?: string;
+}
+
 /**
  * Updates member's data
  * @param member member to update
  */
-export const updateMember = async (member: Member) => {
-  const doc = db.collection(MEMBERS_COL).doc(member.id);
+export const updateMember = async (id: string, param: UpdateMemberFields) => {
+  const memberRef = db.collection(MEMBERS_COL).doc(id);
+  const memberSnap = await memberRef.get();
 
-  await doc.get().then(async (d) => {
-    if (d.exists) {
-      // Member Objects are given their `id` as a property when fetched
-      // from database. We don't need the id when updating Members, so
-      // we remove them before updating their values.
-      const idRemoved: any = { ...member };
-      delete idRemoved.id;
+  if (!memberSnap.exists) {
+    return {
+      success: false,
+      message: `Member of id ${id} does not exist`,
+    };
+  }
 
-      await doc.update(idRemoved);
-    }
-  });
+  try {
+    await memberRef.update(param);
+  } catch (e) {
+    return {
+      success: false,
+      message: 'An error occurred while trying to update member',
+    };
+  }
+
+  const memberData: any = memberSnap.data();
+  const memberResponse: Member = {
+    id: memberRef.id,
+    name: param.name ? param.name : memberData.name,
+    classOf: param.classOf ? param.classOf : memberData.classOf,
+    aks: memberData.aks,
+    adings: memberData.adings,
+  };
+
+  return {
+    success: true,
+    message: `Member ${memberResponse.name} was successfully updated`,
+    member: memberResponse,
+  };
 };
 
 /**
@@ -109,7 +134,6 @@ export const updateMember = async (member: Member) => {
  */
 export const deleteMember = async (memberId: string) => {
   const memberRef = db.collection(MEMBERS_COL).doc(memberId);
-
   const memberSnap = await memberRef.get();
 
   if (!memberSnap.exists) {
@@ -139,20 +163,24 @@ export const deleteMember = async (memberId: string) => {
     .get();
 
   // Update `ak` field in member documents who had the deleted member as an ak
-  await Promise.all(deletedMemberWasAk.docs.map(async (doc) => {
-    const adingRef = doc.data().ading;
-    return adingRef.update({
-      aks: fb.firestore.FieldValue.increment(-1),
-    });
-  }));
-  
+  await Promise.all(
+    deletedMemberWasAk.docs.map(async (doc) => {
+      const adingRef = doc.data().ading;
+      return adingRef.update({
+        aks: fb.firestore.FieldValue.increment(-1),
+      });
+    })
+  );
+
   // Update `ading` field in member documents who had the deleted member as an ading
-  await Promise.all(deletedMemberWasAding.docs.map(async (doc) => {
-    const akRef = doc.data().ak;
-    return akRef.update({
-      adings: fb.firestore.FieldValue.increment(-1),
-    });
-  }));
+  await Promise.all(
+    deletedMemberWasAding.docs.map(async (doc) => {
+      const akRef = doc.data().ak;
+      return akRef.update({
+        adings: fb.firestore.FieldValue.increment(-1),
+      });
+    })
+  );
 
   // Delete the pairings
   deletedMemberWasAk.forEach(
@@ -171,4 +199,3 @@ export const deleteMember = async (memberId: string) => {
     member: memberResponse,
   };
 };
-
