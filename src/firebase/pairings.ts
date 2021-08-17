@@ -146,8 +146,12 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
     };
   }
 
+  const fieldsToUpdate = {
+    semesterAssigned: param.semesterAssigned,
+  };
+
   try {
-    await pairingRef.update(param);
+    await pairingRef.update(fieldsToUpdate);
   } catch (e) {
     return {
       success: false,

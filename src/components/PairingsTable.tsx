@@ -27,14 +27,14 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { deletePairing } from '../client/pairingsService';
+import { deletePairing, updatePairing } from '../client/pairingsService';
 import { Member } from '../fixtures/Members';
 import { Pairing } from '../fixtures/Pairings';
 
 interface PairingsTableProps {
   pairings: Pairing[];
   setPairings: Dispatch<SetStateAction<Pairing[]>>;
-  members: Member[],
+  members: Member[];
   setMembers: Dispatch<SetStateAction<Member[]>>;
   loading: boolean;
   refresh: () => Promise<void>;
@@ -61,21 +61,32 @@ const PairingsTable = ({
     pairing: Pairing
   ) => {
     if (semesterAssigned === pairing.semesterAssigned) return;
+    if (!Boolean(semesterAssigned)) {
+      toast({
+        title: 'Error',
+        description: 'Semester assigned cannot be empty. Please refresh.',
+        status: 'error',
+      });
+      return;
+    }
 
-    await fetch(`/api/pairings`, {
-      method: 'PUT',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ ...pairing, semesterAssigned }),
-    });
-    await refresh();
+    const result = await updatePairing({ ...pairing, semesterAssigned });
+    const { success, message, pairing: updatedPairing } = result;
 
     toast({
-      title: 'Success!',
-      description: 'Pairing successfully updated',
-      status: 'success',
+      title: success ? 'Success!' : 'Error',
+      description: message,
+      status: success ? 'success' : 'error',
     });
+
+    const updatedPairings = [...pairings];
+    for (const p of updatedPairings) {
+      if (p.id === updatedPairing?.id) {
+        p.semesterAssigned = updatedPairing.semesterAssigned;
+        break;
+      }
+    }
+    setPairings(updatedPairings);
   };
 
   /**
@@ -97,10 +108,10 @@ const PairingsTable = ({
     // Refresh state when successful
     if (success) {
       // Get ids of member documents to update
-      const [ akId, adingId ] = [ pairing.ak.id, pairing.ading.id ];
-      
+      const [akId, adingId] = [pairing.ak.id, pairing.ading.id];
+
       // Update member documents
-      const updatedMembers = [ ...members ];
+      const updatedMembers = [...members];
       updatedMembers.forEach((member) => {
         if (member.id === akId) {
           member.adings -= 1;
