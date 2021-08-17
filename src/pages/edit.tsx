@@ -123,7 +123,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
         title: 'Error',
         status: 'error',
         description:
-          'Name must be non-empty. Class must be exactly 4 digits long',
+          'Name must be non-empty. Class must be exactly 4 digits long. Please refresh.',
       });
       return;
     }

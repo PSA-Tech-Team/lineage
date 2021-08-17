@@ -39,10 +39,14 @@ const apiCreatePairing = async (
   return res.status(status).send(result);
 };
 
-const apiUpdatePairing = async (req: NextApiRequest, res: NextApiResponse) => {
+const apiUpdatePairing = async (
+  req: NextApiRequest,
+  res: NextApiResponse<PairingApiResult>
+) => {
   const updatedPairing: Pairing = req.body;
-  await updatePairing(updatedPairing);
-  return res.status(200).send({});
+  const result = await updatePairing(updatedPairing.id, updatedPairing);
+  const status = result.success ? 200 : 500;
+  return res.status(status).send(result);
 };
 
 const apiDeletePairing = async (

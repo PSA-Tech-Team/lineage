@@ -1,6 +1,6 @@
 import { db, fb } from '../firebase/config';
 import { addMember, MEMBERS_COL } from '../firebase/member';
-import { addPairing, deletePairing, PAIRINGS_COL } from '../firebase/pairings';
+import { addPairing, deletePairing, PAIRINGS_COL, updatePairing } from '../firebase/pairings';
 import { Member } from '../fixtures/Members';
 
 const pairingsCollection = db.collection(PAIRINGS_COL);
@@ -171,6 +171,66 @@ describe('addPairing()', () => {
     );
   });
 });
+
+describe('updatePairing()', () => {
+  const testMemberNames = ['testAte', 'testAding'];
+  const updatedSemesterAssigned = '2021';
+  let testMemberDocs: any[] = [];
+  let testPairingId: string;
+
+  beforeAll(async () => {
+    // Add members
+    const testMembers = testMemberNames.map(createMemberFromName);
+    const testMemberResults = await Promise.all(testMembers.map((m) => addMember(m)));
+    testMemberDocs = testMemberResults.map((result) => result.member);
+    const [testAteDoc, testAdingDoc] = testMemberDocs;
+
+    // Add pairing
+    const testPairingResult = await addPairing(testAteDoc?.id, testAdingDoc?.id, SEMESTER_ASSIGNED);
+    testPairingId = testPairingResult.pairing!.id;
+  });
+
+  it('should return unsuccessful if pairing with ID does not exist', async () => {
+    // Update pairing of invalid ID
+    const invalidId = 'an invalid id';
+    const result = await updatePairing(invalidId, { semesterAssigned: updatedSemesterAssigned });
+
+    // Ensure response is correct
+    expect(result).not.toBeUndefined();
+    expect(result.success).toBe(false);
+    expect(result.pairing).toBeUndefined();
+  });
+  
+  it('should update pairing correctly', async () => {
+    // Update pairing with new fields
+    const param = { semesterAssigned: updatedSemesterAssigned };
+    const result = await updatePairing(testPairingId, param);
+
+    // Ensure response is correct
+    expect(result).not.toBeUndefined();
+    const { success, pairing } = result;
+    expect(success).toBe(true);
+
+    expect(pairing).not.toBeUndefined();
+    expect(pairing!.id).toEqual(testPairingId);
+    expect(pairing!.semesterAssigned).toEqual(updatedSemesterAssigned);
+
+    // Ensure that document in database is updated
+    const updatedPairingData = (await pairingsCollection.doc(testPairingId).get()).data();
+    expect(updatedPairingData!.semesterAssigned).toEqual(updatedSemesterAssigned);
+  });
+
+  afterAll(async () => {
+    // Delete test members
+    const testMemberIds = testMemberDocs.map((doc) => doc?.id);
+    await Promise.all(
+      testMemberIds.map((id) => membersCollection.doc(id).delete())
+    );
+
+    // Delete pairing
+    await pairingsCollection.doc(testPairingId).delete();
+  })
+})
 
 describe('deletePairing()', () => {
   const testMemberNames = ['foo', 'bar'].map(createMemberFromName);
