@@ -173,7 +173,7 @@ describe('addPairing()', () => {
 });
 
 describe('updatePairing()', () => {
-  const testMemberNames = ['testAte, testAding'];
+  const testMemberNames = ['testAte', 'testAding'];
   const updatedSemesterAssigned = '2021';
   let testMemberDocs: any[] = [];
   let testPairingId: string;
@@ -182,7 +182,7 @@ describe('updatePairing()', () => {
     // Add members
     const testMembers = testMemberNames.map(createMemberFromName);
     const testMemberResults = await Promise.all(testMembers.map((m) => addMember(m)));
-    let testMemberDocs = testMemberResults.map((result) => result.member);
+    testMemberDocs = testMemberResults.map((result) => result.member);
     const [testAteDoc, testAdingDoc] = testMemberDocs;
 
     // Add pairing
@@ -212,12 +212,12 @@ describe('updatePairing()', () => {
     expect(success).toBe(true);
 
     expect(pairing).not.toBeUndefined();
-    expect(pairing.id).toEqual(testPairingId);
-    expect(pairing.semesterAssigned).toEqual(updatedSemesterAssigned);
+    expect(pairing!.id).toEqual(testPairingId);
+    expect(pairing!.semesterAssigned).toEqual(updatedSemesterAssigned);
 
     // Ensure that document in database is updated
     const updatedPairingData = (await pairingsCollection.doc(testPairingId).get()).data();
-    expect(updatedPairingData.semesterAssigned).toEqual(updatedSemesterAssigned);
+    expect(updatedPairingData!.semesterAssigned).toEqual(updatedSemesterAssigned);
   });
 
   afterAll(async () => {
@@ -226,6 +226,9 @@ describe('updatePairing()', () => {
     await Promise.all(
       testMemberIds.map((id) => membersCollection.doc(id).delete())
     );
+
+    // Delete pairing
+    await pairingsCollection.doc(testPairingId).delete();
   })
 })
 

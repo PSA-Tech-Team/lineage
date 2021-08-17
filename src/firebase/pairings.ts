@@ -127,21 +127,51 @@ export const addPairing = async (
   };
 };
 
+interface UpdatePairingFields {
+  semesterAssigned?: string;
+}
+
 /**
  * Updates pairing with new assigned semester
  * @param pairing pairing to update
  */
-export const updatePairing = async (pairing: Pairing) => {
-  const doc = db.collection(PAIRINGS_COL).doc(pairing.id);
-  const { semesterAssigned } = pairing;
+export const updatePairing = async (id: string, param: UpdatePairingFields) => {
+  const pairingRef = db.collection(PAIRINGS_COL).doc(id);
+  const pairingSnap = await pairingRef.get();
 
-  const docSnap = await doc.get();
-  if (docSnap.exists) {
-    const idRemoved: any = { ...docSnap.data(), semesterAssigned };
-    delete idRemoved.id;
-
-    await doc.update(idRemoved);
+  if (!pairingSnap.exists) {
+    return {
+      success: false,
+      message: `Pairing of id ${id} does not exist`,
+    };
   }
+
+  try {
+    await pairingRef.update(param);
+  } catch (e) {
+    return {
+      success: false,
+      message: 'An error occurred while trying to update pairing',
+    };
+  }
+
+  const pairingData: any = pairingSnap.data();
+  const { ak: akRef, ading: adingRef } = pairingData;
+  const akData: any = (await akRef.get()).data();
+  const adingData: any = (await adingRef.get()).data();
+
+  const pairingResponse: Pairing = {
+    id: pairingRef.id,
+    ak: convertFirestoreDocsToPairing(akRef, akData),
+    ading: convertFirestoreDocsToPairing(adingRef, adingData),
+    semesterAssigned: param.semesterAssigned,
+  };
+
+  return {
+    success: true,
+    message: 'Pairing successfully updated.',
+    pairing: pairingResponse,
+  };
 };
 
 /**
