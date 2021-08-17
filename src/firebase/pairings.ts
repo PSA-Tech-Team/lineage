@@ -3,7 +3,8 @@ import { db, fb } from './config';
 import { Pairing } from '../fixtures/Pairings';
 import { Member } from '../fixtures/Members';
 
-export const PAIRINGS_COL = 'pairings';
+export const PAIRINGS_COL =
+  process.env.NODE_ENV === 'test' ? 'pairingsTest' : 'pairings';
 
 const convertFirestoreDocsToPairing = (memberRef: any, memberData: any) => ({
   id: memberRef.id,

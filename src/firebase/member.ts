@@ -2,7 +2,8 @@ import { Member } from '../fixtures/Members';
 import { deletePairing, PAIRINGS_COL } from './pairings';
 import { db, fb } from './config';
 
-export const MEMBERS_COL = 'members';
+export const MEMBERS_COL =
+  process.env.NODE_ENV === 'test' ? 'membersTest' : 'members';
 
 /**
  * Add member to database
