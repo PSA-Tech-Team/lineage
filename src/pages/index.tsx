@@ -17,19 +17,10 @@ const Index = () => {
   }
 
   return (
-    <Container height="100vh">
+    <Container height="100vh" bgGradient={`linear(to-l, #6A82FB, #FC5C7D)`}>
       <Hero />
       <Main>
-        <Text textAlign="center">
-          A visualizer for AKA (Ate, Kuya, Ading) families.
-        </Text>
-
         <Flex w="100%">
-          <Link href="/lineages">
-            <Button w="40%" colorScheme="teal">
-              View lineages
-            </Button>
-          </Link>
           <Spacer />
           <Link href="/login">
             <Button w="40%">{Boolean(user) ? user.email : 'Log in'}</Button>
