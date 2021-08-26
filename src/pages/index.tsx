@@ -1,7 +1,7 @@
-import { Text, Grid, Box } from '@chakra-ui/react';
+import { Grid, Box } from '@chakra-ui/react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Hero from '../components/Hero';
-import { Footer } from '../components/Footer';
+import Footer from '../components/Footer';
 import LandingPageCard from '../components/LandingPageCard';
 import Splash from '../components/Splash';
 import { auth } from '../firebase/config';
@@ -21,7 +21,7 @@ const Index = () => {
         bgColor="#F6F7F9"
         w="100%"
         py="4rem"
-        px={{ base: '0', lg: '3rem' }}
+        px={{ base: '0', md: '3rem' }}
         templateColumns={{ base: '100%', md: '1fr 1fr' }}
         textAlign="center"
       >
@@ -42,11 +42,7 @@ const Index = () => {
           altText="View dashboard"
         />
       </Grid>
-      <Footer>
-        <Text textAlign="center">
-          © {new Date().getFullYear()} Philippine Student Association UIUC
-        </Text>
-      </Footer>
+      <Footer />
     </Box>
   );
 };
