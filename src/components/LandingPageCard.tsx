@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, Text } from '@chakra-ui/react';
 import Link from 'next/link';
 import { BACKGROUND_GRADIENT } from '../themes/colors';
 
@@ -7,6 +7,8 @@ interface LandingPageCardProps {
   description: string;
   href: string;
   buttonText: string;
+  svg: string;
+  altText: string;
 }
 
 const LandingPageCard = ({
@@ -14,9 +16,14 @@ const LandingPageCard = ({
   description,
   href,
   buttonText,
+  svg,
+  altText,
 }: LandingPageCardProps) => {
   return (
     <Box mx="5rem" p="4rem" bgColor="white" boxShadow="lg" borderRadius={20}>
+      <Center>
+        <img src={svg} alt={altText} />
+      </Center>
       <Heading as="h2" fontWeight="black" mt="1rem" mb="0.5rem">
         {title}
       </Heading>

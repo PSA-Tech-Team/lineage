@@ -30,12 +30,16 @@ const Index = () => {
           description="Explore the AKA families of PSA UIUC through fully interactive family trees."
           href="/lineages"
           buttonText="View lineages"
+          svg="tree.svg"
+          altText="View lineages"
         />
         <LandingPageCard
           title="For board"
           description="View and change every member and pairing in PSA to prepare for the next AKA season."
           href="/edit"
           buttonText="View dashboard"
+          svg="pencil.svg"
+          altText="View dashboard"
         />
       </Grid>
       <Footer>
