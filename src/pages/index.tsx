@@ -21,8 +21,8 @@ const Index = () => {
         bgColor="#F6F7F9"
         w="100%"
         py="4rem"
-        px="3rem"
-        templateColumns={{ base: '100%', lg: '1fr 1fr' }}
+        px={{ base: '0', lg: '3rem' }}
+        templateColumns={{ base: '100%', md: '1fr 1fr' }}
         textAlign="center"
       >
         <LandingPageCard

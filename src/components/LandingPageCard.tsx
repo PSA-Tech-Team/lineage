@@ -20,9 +20,18 @@ const LandingPageCard = ({
   altText,
 }: LandingPageCardProps) => {
   return (
-    <Box mx="5rem" p="4rem" bgColor="white" boxShadow="lg" borderRadius={20}>
+    <Box
+      mx={{ base: '5vh', lg: '5rem' }}
+      mb="2rem"
+      p="4rem"
+      bgColor="white"
+      boxShadow="lg"
+      borderRadius={20}
+    >
       <Center>
-        <img src={svg} alt={altText} />
+        <Box maxWidth="70%">
+          <img src={svg} alt={altText} />
+        </Box>
       </Center>
       <Heading as="h2" fontWeight="black" mt="1rem" mb="0.5rem">
         {title}
@@ -40,7 +49,7 @@ const LandingPageCard = ({
           }}
           shadow="lg"
           mt="2rem"
-          w="40%"
+          minW="40%"
         >
           {buttonText}
         </Button>
