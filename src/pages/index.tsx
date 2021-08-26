@@ -1,40 +1,49 @@
-import { Text, Grid } from '@chakra-ui/react';
+import { Text, Grid, Box } from '@chakra-ui/react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { Hero } from '../components/Hero';
-import { Container } from '../components/Container';
-import { DarkModeSwitch } from '../components/DarkModeSwitch';
+import Hero from '../components/Hero';
 import { Footer } from '../components/Footer';
+import LandingPageCard from '../components/LandingPageCard';
 import Splash from '../components/Splash';
 import { auth } from '../firebase/config';
-import LandingPageCard from '../components/LandingPageCard';
+import { BACKGROUND_GRADIENT } from '../themes/colors';
 
 const Index = () => {
-  const [user, loading] = useAuthState(auth);
+  const [, loading] = useAuthState(auth);
 
   if (loading) {
     return <Splash />;
   }
 
   return (
-    <Container pt="10vh" bgGradient={`linear(to-l, #6A82FB, #FC5C7D)`}>
-      <DarkModeSwitch />
+    <Box w="100%" pt="10vh" bgGradient={BACKGROUND_GRADIENT}>
       <Hero />
       <Grid
         bgColor="#F6F7F9"
         w="100%"
         py="4rem"
-        templateColumns="1fr 1fr"
+        px="3rem"
+        templateColumns={{ base: '100%', lg: '1fr 1fr' }}
         textAlign="center"
       >
-        <LandingPageCard title="For visitors" />
-        <LandingPageCard title="For board" />
+        <LandingPageCard
+          title="For visitors"
+          description="Explore the AKA families of PSA UIUC through fully interactive family trees."
+          href="/lineages"
+          buttonText="View lineages"
+        />
+        <LandingPageCard
+          title="For board"
+          description="View and change every member and pairing in PSA to prepare for the next AKA season."
+          href="/edit"
+          buttonText="View dashboard"
+        />
       </Grid>
       <Footer>
-        <Text>
+        <Text textAlign="center">
           © {new Date().getFullYear()} Philippine Student Association UIUC
         </Text>
       </Footer>
-    </Container>
+    </Box>
   );
 };
 
