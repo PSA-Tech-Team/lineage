@@ -9,7 +9,7 @@ const Splash = () => {
       justifyContent="center"
       alignItems="center"
     >
-      <Heading as="h1" fontSize="7vw" fontWeight="light">
+      <Heading as="h1" fontSize="7vw" fontWeight="black">
         Lineage
       </Heading>
     </Container>
