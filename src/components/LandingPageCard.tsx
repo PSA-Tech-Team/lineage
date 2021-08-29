@@ -23,7 +23,7 @@ const LandingPageCard = ({
     <Box
       mx={{ base: '5vh', lg: '5rem' }}
       mb="2rem"
-      p="4rem"
+      p={{ base: '2rem', lg: '5rem' }}
       bgColor="white"
       boxShadow="lg"
       borderRadius={20}
