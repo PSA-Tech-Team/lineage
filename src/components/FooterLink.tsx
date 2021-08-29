@@ -7,7 +7,7 @@ interface FooterLinkProps {
 }
 
 const FooterLink = ({ href, children }: FooterLinkProps) => (
-  <NextLink href={href}>
+  <NextLink href={href} passHref>
     <Link fontSize="lg" fontWeight="light" my="3px">
       {children}
     </Link>
