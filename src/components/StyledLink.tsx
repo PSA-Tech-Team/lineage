@@ -1,12 +1,12 @@
 import { Link } from '@chakra-ui/layout';
 import NextLink from 'next/link';
 
-interface FooterLinkProps {
+interface StyledLink {
   href: string;
   children: React.ReactNode;
 }
 
-const FooterLink = ({ href, children }: FooterLinkProps) => (
+const StyledLink = ({ href, children }: StyledLink) => (
   <NextLink href={href} passHref>
     <Link fontSize="lg" fontWeight="light" my="3px">
       {children}
@@ -14,4 +14,4 @@ const FooterLink = ({ href, children }: FooterLinkProps) => (
   </NextLink>
 );
 
-export default FooterLink;
+export default StyledLink;

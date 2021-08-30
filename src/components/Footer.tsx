@@ -1,5 +1,5 @@
 import { Box, Center, Grid, Heading, Text } from '@chakra-ui/react';
-import FooterLink from './FooterLink';
+import StyledLink from './StyledLink';
 
 const Footer = () => (
   <footer>
@@ -28,12 +28,12 @@ const Footer = () => (
             Links
           </Heading>
           <Grid templateColumns={{ base: '100%', md: '1fr 1fr' }}>
-            <FooterLink href="/lineages">Lineages</FooterLink>
-            <FooterLink href="/edit">Dashboard</FooterLink>
-            <FooterLink href="https://github.com/renzol2/lineage">
+            <StyledLink href="/lineages">Lineages</StyledLink>
+            <StyledLink href="/edit">Dashboard</StyledLink>
+            <StyledLink href="https://github.com/renzol2/lineage">
               GitHub
-            </FooterLink>
-            <FooterLink href="http://psauiuc.org/">PSA UIUC</FooterLink>
+            </StyledLink>
+            <StyledLink href="http://psauiuc.org/">PSA UIUC</StyledLink>
           </Grid>
         </Box>
       </Center>
