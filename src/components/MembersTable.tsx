@@ -109,7 +109,7 @@ const MembersTable = ({
               {/* Actions */}
               <Td>
                 <HStack>
-                  <Button size="xs" colorScheme="teal">
+                  <Button size="xs" colorScheme="blue">
                     <LinkIcon />
                   </Button>
                   <Popover>

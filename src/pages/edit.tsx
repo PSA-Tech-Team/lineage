@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import {
   Box,
-  Button,
   Container,
   Flex,
   Grid,
@@ -27,9 +26,12 @@ import { GetStaticProps } from 'next';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
+import GradientButton from '../components/GradientButton';
 import { useRouter } from 'next/router';
 import { isBoardMember, isEditor } from '../fixtures/Editors';
 import { deleteMember, updateMember } from '../client/membersService';
+
+// TODO: organize imports
 
 interface EditPageProps {
   members: Member[];
@@ -229,15 +231,14 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
           <Link href="/">Lineage</Link>
         </Heading>
         <Spacer />
-        <Button
-          colorScheme="teal"
+        <GradientButton
           disabled={navDisabled}
           onClick={() => setNavDisabled(true)}
         >
           <Link href="/lineages">
             {navDisabled ? 'Loading...' : 'View lineages'}
           </Link>
-        </Button>
+        </GradientButton>
       </Flex>
       <Grid templateColumns={['100%', '50% 50%']}>
         {/* Member column */}
