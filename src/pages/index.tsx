@@ -1,19 +1,10 @@
 import { Grid, Box } from '@chakra-ui/react';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
 import LandingPageCard from '../components/LandingPageCard';
-import Splash from '../components/Splash';
-import { auth } from '../firebase/config';
 import { BACKGROUND_GRADIENT } from '../themes/colors';
 
 const Index = () => {
-  const [, loading] = useAuthState(auth);
-
-  if (loading) {
-    return <Splash />;
-  }
-
   return (
     <Box w="100%" pt="10vh" bgGradient={BACKGROUND_GRADIENT}>
       <Hero />
