@@ -10,6 +10,12 @@ const GradientButton = (props: ButtonProps) => {
       _hover={{
         boxShadow: '0 0 1px 2px silver, 0 1px 1px rgba(0, 0, 0, .15)',
       }}
+      _focus={{
+        opacity: '80%',
+      }}
+      _active={{
+        opacity: '70%',
+      }}
       {...props}
     >
       {props.children}

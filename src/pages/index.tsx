@@ -2,14 +2,14 @@ import { Grid, Box } from '@chakra-ui/react';
 import Hero from '../components/Hero';
 import Footer from '../components/Footer';
 import LandingPageCard from '../components/LandingPageCard';
-import { BACKGROUND_GRADIENT } from '../themes/colors';
+import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
 
 const Index = () => {
   return (
     <Box w="100%" pt="10vh" bgGradient={BACKGROUND_GRADIENT}>
       <Hero />
       <Grid
-        bgColor="#F6F7F9"
+        bgColor={BACKGROUND_GREY}
         w="100%"
         py="4rem"
         px={{ base: '0', md: '3rem' }}
