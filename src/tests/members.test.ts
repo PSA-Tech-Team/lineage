@@ -1,6 +1,7 @@
 import {
   addMember,
   deleteMember,
+  getMembers,
   MEMBERS_COL,
   updateMember,
 } from '../firebase/member';
@@ -21,6 +22,14 @@ const INITIAL_COUNT = 0;
 const CLASS_OF = '2023';
 const memberCollection = db.collection(MEMBERS_COL);
 const pairingCollection = db.collection(PAIRINGS_COL);
+
+describe('getMembers()', () => {
+  it('should return the correct number of members for a semester', async () => {
+    const expectedMemberCount = (await memberCollection.where('classOf', '==', '2023').get()).size;
+    const actualMemberCount = await getMembers(CLASS_OF);
+    expect(actualMemberCount).toBe(expectedMemberCount);
+  });
+});
 
 describe('addMember()', () => {
   it('should add the passed-in member to the database', async () => {
