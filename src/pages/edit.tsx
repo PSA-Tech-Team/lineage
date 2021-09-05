@@ -22,7 +22,7 @@ import MembersTable from '../components/MembersTable';
 import PairingForm from '../components/PairingForm';
 import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
-import { getPairings } from '../firebase/pairings';
+import { getAllPairings } from '../firebase/pairings';
 import { GetStaticProps } from 'next';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase/config';
@@ -304,7 +304,7 @@ export const getStaticProps: GetStaticProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getAllMembers();
-  const pairings: Pairing[] = await getPairings();
+  const pairings: Pairing[] = await getAllPairings();
 
   return {
     props: {
