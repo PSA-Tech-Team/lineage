@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import MemberForm from '../components/MemberForm';
-import { getMembers } from '../firebase/member';
+import { getAllMembers } from '../firebase/member';
 import { Member } from '../fixtures/Members';
 import MembersTable from '../components/MembersTable';
 import PairingForm from '../components/PairingForm';
@@ -303,7 +303,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
 export const getStaticProps: GetStaticProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
-  const members: Member[] = await getMembers();
+  const members: Member[] = await getAllMembers();
   const pairings: Pairing[] = await getPairings();
 
   return {

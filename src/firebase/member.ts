@@ -59,29 +59,41 @@ export const addMember = async (member: {
 };
 
 /**
- * Returns all members from database
+ * Returns members from the database by class
+ * @param classOf the class of members to fetch
+ * @returns array of Members
  */
-export const getMembers = async () => {
+export const getMembers = async (classOf: string | null | undefined) => {
   let collection = db.collection(MEMBERS_COL);
   let members: Member[] = [];
 
-  await collection.get().then((snapshot) => {
-    let docs = snapshot.docs;
+  const snapshot = await (classOf
+    ? collection.where('classOf', '==', classOf).get()
+    : collection.get());
 
-    for (let member of docs) {
-      const { name, classOf, adings, aks } = member.data();
+  const docs = snapshot.docs;
 
-      members.push({
-        id: member.id,
-        name,
-        classOf,
-        adings,
-        aks,
-      });
-    }
-  });
+  for (const member of docs) {
+    const { name, classOf, adings, aks } = member.data();
+
+    members.push({
+      id: member.id,
+      name,
+      classOf,
+      adings,
+      aks,
+    });
+  }
 
   return members;
+};
+
+/**
+ * Returns all members in the database
+ * @returns array of all Members
+ */
+export const getAllMembers = async () => {
+  return await getMembers(null);
 };
 
 interface UpdateMemberFields {
