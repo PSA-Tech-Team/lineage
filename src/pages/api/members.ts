@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   addMember,
   deleteMember,
+  getAllMembers,
   getMembers,
   updateMember,
 } from '../../firebase/member';
@@ -24,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const apiGetMembers = async (res: NextApiResponse) => {
-  const members = await getMembers();
+  const members = await getAllMembers();
   return res.status(200).json(members);
 };
 
