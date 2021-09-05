@@ -14,10 +14,15 @@ const convertFirestoreDocsToPairing = (memberRef: any, memberData: any) => ({
 /**
  * Returns all pairings from database
  */
-export const getPairings = async () => {
+export const getPairings = async (semester: string | null | undefined) => {
   const pairingsCollection = db.collection(PAIRINGS_COL);
 
-  const pairingsColRef = await pairingsCollection.get();
+  const pairingsColRef = await (semester
+    ? pairingsCollection.where('semesterAssigned', '==', semester).get()
+    : pairingsCollection.get()
+  );
+
+
   const pairings: Pairing[] = [];
 
   for (const pairingSnapshot of pairingsColRef.docs) {
@@ -43,6 +48,10 @@ export const getPairings = async () => {
 
   return pairings;
 };
+
+export const getAllPairings = async () => {
+  return await getPairings(null);
+}
 
 /**
  * Adds a pairing to the database
