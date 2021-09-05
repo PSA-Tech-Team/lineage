@@ -14,8 +14,8 @@ import SearchModal from '../components/SearchModal';
 import OptionsDrawer from '../components/OptionsDrawer';
 import { SettingsIcon } from '@chakra-ui/icons';
 import { Member } from '../fixtures/Members';
-import { getMembers } from '../firebase/member';
-import { getPairings } from '../firebase/pairings';
+import { getAllMembers } from '../firebase/member';
+import { getAllPairings } from '../firebase/pairings';
 import {  GetStaticProps } from 'next';
 
 interface LineagesPageProps {
@@ -145,8 +145,8 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const members: Member[] = await getMembers();
-  const pairings: Pairing[] = await getPairings();
+  const members: Member[] = await getAllMembers();
+  const pairings: Pairing[] = await getAllPairings();
 
   return {
     props: {

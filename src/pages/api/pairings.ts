@@ -4,6 +4,7 @@ import {
   addPairing,
   updatePairing,
   deletePairing,
+  getAllPairings,
 } from '../../firebase/pairings';
 import { Pairing } from '../../fixtures/Pairings';
 import { PairingApiResult } from './types/pairings';
@@ -11,7 +12,7 @@ import { PairingApiResult } from './types/pairings';
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
-      return await apiGetPairings(res);
+      return await apiGetPairings(req, res);
     case 'POST':
       return await apiCreatePairing(req, res);
     case 'PUT':
@@ -23,8 +24,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-const apiGetPairings = async (res: NextApiResponse) => {
-  const pairings = await getPairings();
+const apiGetPairings = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { semesterAssigned } = req.query;
+  let pairings: Pairing[];
+  if (typeof semesterAssigned === 'string') {
+    pairings = await getPairings(semesterAssigned);
+  } else {
+    pairings = await getAllPairings();
+  }
   return res.status(200).json(pairings);
 };
 

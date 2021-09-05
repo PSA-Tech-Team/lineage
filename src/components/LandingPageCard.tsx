@@ -27,6 +27,7 @@ const LandingPageCard = ({
       bgColor="white"
       boxShadow="lg"
       borderRadius={20}
+      color="black"
     >
       <Center>
         <Box maxWidth="70%">
