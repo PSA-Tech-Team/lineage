@@ -1,4 +1,4 @@
-import { Box, Center, Grid, Heading, Text } from '@chakra-ui/react';
+import { Box, Center, Grid, Heading, Image, Text } from '@chakra-ui/react';
 import StyledLink from './StyledLink';
 
 const Footer = () => (
@@ -10,6 +10,11 @@ const Footer = () => (
     >
       <Center>
         <Box color="whitesmoke" w={{ base: '85%', md: '60%' }}>
+          <Image
+            src="/psa_logo.png"
+            alt="Philippine Student Association UIUC Logo"
+            w="50%"
+          />
           <Heading as="h3" fontWeight="black">
             Lineage
           </Heading>
@@ -17,6 +22,7 @@ const Footer = () => (
           <Text fontWeight="light">
             A visualizer for AKA (Ate, Kuya, Ading) families.
           </Text>
+
           <Text fontWeight="light">
             © {new Date().getFullYear()} Philippine Student Association
           </Text>
