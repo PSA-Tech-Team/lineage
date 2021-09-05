@@ -8,6 +8,10 @@ import {
 import { db, fb } from '../firebase/config';
 import { addPairing, PAIRINGS_COL } from '../firebase/pairings';
 
+// Names for `getMembers()` tests
+const NAMES_2023 = ['foo', 'bar', 'xyz'];
+const NAMES_2024 = ['abc', 'ijk', 'woo'];
+
 // Names for `addMember()` tests
 const [MEMBER_1, MEMBER_2, MEMBER_3] = ['member1', 'member2', 'member3'];
 
@@ -24,10 +28,49 @@ const memberCollection = db.collection(MEMBERS_COL);
 const pairingCollection = db.collection(PAIRINGS_COL);
 
 describe('getMembers()', () => {
-  it('should return the correct number of members for a semester', async () => {
-    const expectedMemberCount = (await memberCollection.where('classOf', '==', '2023').get()).size;
-    const actualMemberCount = await getMembers(CLASS_OF);
-    expect(actualMemberCount).toBe(expectedMemberCount);
+  it('should return the correct members for a semester', async () => {
+    // Add all members to database
+    await Promise.all(
+      [...NAMES_2023, ...NAMES_2024].map((name) =>
+        addMember({ name, classOf: CLASS_OF, aks: 0, adings: 0 })
+      )
+    );
+
+    // Fetch members for specific class
+    const expectedMemberDocs = (
+      await memberCollection.where('classOf', '==', CLASS_OF).get()
+    ).docs;
+
+    const actualMemberDocs = await getMembers(CLASS_OF);
+    
+    // Ensure same length
+    expect(actualMemberDocs.length).toBe(expectedMemberDocs.length);
+
+    // Sort IDs
+    const sortId = (id1: string, id2: string) => {
+      if (id1 < id2) {
+        return -1;
+      } else if (id1 > id2) {
+        return 1;
+      } else {
+        return 0;
+      }
+    };
+
+    // Sort each result by ID
+    expectedMemberDocs.sort((m1, m2) => sortId(m1.id, m2.id));
+    actualMemberDocs.sort((m1, m2) => sortId(m1.id, m2.id));
+
+    // Ensure that sorted members are the same
+    for (let i = 0; i < actualMemberDocs.length; i++) {
+      const expected = expectedMemberDocs[i];
+      const actual = actualMemberDocs[i];
+
+      expect(expected.id).toEqual(actual.id);
+      expect(expected.data().name).toEqual(actual.name);
+      expect(expected.data().aks).toEqual(actual.aks);
+      expect(expected.data().adings).toEqual(actual.adings);
+    }
   });
 });
 
