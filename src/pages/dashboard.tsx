@@ -4,16 +4,23 @@ import {
   Grid,
   Heading,
   StackDivider,
-  Text,
   VStack,
 } from '@chakra-ui/layout';
 import { useBreakpointValue } from '@chakra-ui/media-query';
 import GradientButton from '../components/GradientButton';
 import StyledLink from '../components/StyledLink';
+import useAuth from '../hooks/useAuth';
 import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
+import Splash from '../components/Splash';
 
 const DashboardPage = () => {
+  const { loadSplash } = useAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
+
+  if (loadSplash) {
+    return <Splash />;
+  }
+
   return (
     <Box w="100%" minH="100vh">
       <Grid
@@ -60,7 +67,7 @@ const DashboardPage = () => {
             </>
           )}
         </Box>
-        <Box bgColor={BACKGROUND_GREY} minH="100vh">
+        <Box bgColor={BACKGROUND_GREY} minH="100vh" p="1rem">
           <Heading>Hello</Heading>
         </Box>
       </Grid>
