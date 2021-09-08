@@ -23,13 +23,10 @@ import PairingsTable from '../components/PairingsTable';
 import { Pairing } from '../fixtures/Pairings';
 import { getAllPairings } from '../firebase/pairings';
 import { GetStaticProps } from 'next';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../firebase/config';
 import Splash from '../components/Splash';
 import GradientButton from '../components/GradientButton';
-import { useRouter } from 'next/router';
-import { isBoardMember, isEditor } from '../fixtures/Editors';
 import { deleteMember, updateMember } from '../client/membersService';
+import useAuth from '../hooks/useAuth';
 
 // TODO: organize imports
 
@@ -42,8 +39,7 @@ interface EditPageProps {
  * Page to view and edit the PSA member database
  */
 const EditPage = ({ members, pairings }: EditPageProps) => {
-  const router = useRouter();
-  const [user, userLoading] = useAuthState(auth);
+  const { loadSplash } = useAuth();
   const [membersList, setMembersList] = useState<Member[]>([]);
   const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -56,23 +52,6 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setMembersList(members);
     setPairingsList(pairings);
   }, []);
-
-  // FIXME: temporary, this client side redirect should be handled on server side
-  useEffect(() => {
-    if (userLoading) return;
-    if (user === null) {
-      router.push('/login');
-      return;
-    }
-
-    // Checks if PSA board member or is allowed to edit
-    const isValidEmail = isEditor(user.email) || isBoardMember(user.email);
-    const isValidUser = user !== null && isValidEmail;
-
-    if (!isValidUser) {
-      router.push('/login');
-    }
-  }, [user, userLoading]);
 
   /**
    * Refresh the members list from database
@@ -220,7 +199,7 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
     setPairingsList(filteredPairings);
   };
 
-  if (userLoading || user === null) {
+  if (loadSplash) {
     return <Splash />;
   }
 
