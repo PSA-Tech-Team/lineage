@@ -101,14 +101,16 @@ const DashboardPage = () => {
           )}
         </Box>
         <Box bgColor={BACKGROUND_GREY} minH="100vh" py="1rem" px="2rem">
-          <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
-            <Spacer />
-            <StyledLink href="/lineages">View</StyledLink>
-            <Link href="/login">
-              <GradientButton ml="1rem">{userFirstName}</GradientButton>
-            </Link>
-          </Flex>
-          <Heading mb="2rem">
+          {!isMobile && (
+            <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
+              <Spacer />
+              <StyledLink href="/lineages">View</StyledLink>
+              <Link href="/login">
+                <GradientButton ml="1rem">{userFirstName}</GradientButton>
+              </Link>
+            </Flex>
+          )}
+          <Heading mb="3rem">
             <span style={{ fontWeight: 'lighter' }}>Hello,</span>{' '}
             {userFirstName}
           </Heading>
