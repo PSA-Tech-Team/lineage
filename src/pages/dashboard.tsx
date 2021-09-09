@@ -1,17 +1,12 @@
 import { AddIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Grid,
-  Heading,
-  StackDivider,
-  VStack,
-} from '@chakra-ui/layout';
+import { Box, Grid, Heading, StackDivider, VStack } from '@chakra-ui/layout';
 import { useBreakpointValue } from '@chakra-ui/media-query';
 import GradientButton from '../components/GradientButton';
 import StyledLink from '../components/StyledLink';
 import useAuth from '../hooks/useAuth';
 import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
 import Splash from '../components/Splash';
+import Link from 'next/link';
 
 const DashboardPage = () => {
   const { loadSplash } = useAuth();
@@ -40,7 +35,7 @@ const DashboardPage = () => {
             fontSize="3xl"
             pb="1"
           >
-            Lineage
+            <Link href="/">Lineage</Link>
           </Heading>
           {!isMobile && (
             <>
