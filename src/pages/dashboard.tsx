@@ -73,7 +73,7 @@ const DashboardPage = () => {
           )}
         </Box>
         <Box bgColor={BACKGROUND_GREY} minH="100vh" py="1rem" px="2rem">
-          <Flex direction="row" alignItems="center" my="0.5rem">
+          <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
             <Spacer />
             <StyledLink href="/lineages">View</StyledLink>
             <Link href="/login">
