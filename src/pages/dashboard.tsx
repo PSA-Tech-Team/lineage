@@ -6,7 +6,6 @@ import {
   Heading,
   Spacer,
   StackDivider,
-  Text,
   VStack,
 } from '@chakra-ui/layout';
 import { useBreakpointValue } from '@chakra-ui/media-query';
@@ -16,6 +15,35 @@ import useAuth from '../hooks/useAuth';
 import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
 import Splash from '../components/Splash';
 import Link from 'next/link';
+import DashboardCard from '../components/DashboardCard';
+
+const NAVIGATION = [
+  {
+    title: 'Create new member/pairing',
+    description: 'Add new entry to database',
+    href: '/dashboard',
+  },
+  {
+    title: 'View members',
+    description: 'View all registered PSA members by class',
+    href: '/dashboard',
+  },
+  {
+    title: 'View pairings',
+    description: 'View all registered AKA pairings by semester',
+    href: '/dashboard',
+  },
+  {
+    title: 'View lineages',
+    description: 'Browse through AKA family trees',
+    href: '/dashboard',
+  },
+  {
+    title: 'View issues',
+    description: 'View pending administrative changes to be made',
+    href: '/dashboard',
+  },
+];
 
 const DashboardPage = () => {
   const { user, loadSplash } = useAuth();
@@ -80,10 +108,22 @@ const DashboardPage = () => {
               <GradientButton ml="1rem">{userFirstName}</GradientButton>
             </Link>
           </Flex>
-          <Heading>
+          <Heading mb="2rem">
             <span style={{ fontWeight: 'lighter' }}>Hello,</span>{' '}
             {userFirstName}
           </Heading>
+          <Grid
+            templateColumns={{ base: '100%', md: 'repeat(3, 1fr)' }}
+            gap={6}
+          >
+            {NAVIGATION.map(({ title, description, href }) => (
+              <DashboardCard
+                title={title}
+                description={description}
+                href={href}
+              />
+            ))}
+          </Grid>
         </Box>
       </Grid>
     </Box>
