@@ -38,7 +38,7 @@ const useAuth = () => {
     }
   }, [user, userLoading]);
 
-  return { isValidUser, userLoading, loadSplash: userLoading || !isValidUser };
+  return { user, isValidUser, userLoading, loadSplash: userLoading || !isValidUser };
 };
 
 export default useAuth;
