@@ -64,8 +64,8 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
                 divider={<StackDivider borderColor="gray.200" w="75%" />}
               >
                 {/* TODO: turn these into linked boxes */}
-                <StyledLink href="">Home</StyledLink>
-                <StyledLink href="">Members</StyledLink>
+                <StyledLink href="/dashboard">Home</StyledLink>
+                <StyledLink href="/dashboard/members">Members</StyledLink>
                 <StyledLink href="">Pairings</StyledLink>
               </VStack>
             </aside>

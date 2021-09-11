@@ -7,7 +7,7 @@ const NAVIGATION = YEARS.map((year) => ({
   title: `Class of ${year}`,
   description: `View members from class of ${year}`,
   href: '/dashboard/members',
-}))
+}));
 
 const DashboardPage = () => {
   return (

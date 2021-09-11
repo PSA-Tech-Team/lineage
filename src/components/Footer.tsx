@@ -1,4 +1,5 @@
 import { Box, Center, Grid, Heading, Image, Text } from '@chakra-ui/react';
+import { BACKGROUND_GRADIENT } from '../themes/colors';
 import StyledLink from './StyledLink';
 
 const Footer = () => (
@@ -6,7 +7,8 @@ const Footer = () => (
     <Grid
       w="100%"
       templateColumns={{ base: '100%', md: '1fr 1fr' }}
-      py={{ base: '2rem', md: '8rem' }}
+      py={{ base: '2rem', md: '7rem' }}
+      bgGradient={BACKGROUND_GRADIENT}
     >
       <Center>
         <Box color="whitesmoke" w={{ base: '85%', md: '60%' }}>

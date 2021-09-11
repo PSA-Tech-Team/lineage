@@ -12,7 +12,7 @@ const NAVIGATION = [
   {
     title: 'View members',
     description: 'View all registered PSA members by class',
-    href: '/dashboard',
+    href: '/dashboard/members',
   },
   {
     title: 'View pairings',
