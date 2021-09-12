@@ -127,17 +127,15 @@ const MembersTablePage = ({ members }: { members: Member[] }) => {
     // setPairingsList(filteredPairings);
   };
 
-  const refresh = async () => [];
-
   return (
     <DashboardWrapper>
-      <Heading>{year}</Heading>
+      <Heading mb="3rem" fontWeight="light" fontSize="3xl">
+        View members / {year}
+      </Heading>
       <MembersTable
         membersList={membersList}
         changeMember={changeMember}
         removeMember={removeMember}
-        refresh={refresh}
-        loading={false}
       />
     </DashboardWrapper>
   );
@@ -149,16 +147,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (typeof year === 'string') {
     members = await getMembers(year);
   }
-
-  members.sort((m1, m2) => {
-    if (m1.name < m2.name) {
-      return -1;
-    } else if (m1.name > m2.name) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
 
   return {
     props: {

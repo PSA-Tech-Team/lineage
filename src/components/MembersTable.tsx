@@ -5,7 +5,6 @@ import {
   Editable,
   EditableInput,
   EditablePreview,
-  Flex,
   Heading,
   HStack,
   Popover,
@@ -15,8 +14,6 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
-  Spacer,
-  Spinner,
   Table,
   TableCaption,
   Tbody,
@@ -30,8 +27,6 @@ import { useState } from 'react';
 import { Member } from '../fixtures/Members';
 
 interface MembersTableProps {
-  refresh: () => Promise<Member[]>;
-  loading: boolean;
   membersList: Member[];
   changeMember: (member: Member, i: number) => Promise<void>;
   removeMember: (member: Member, i: number) => Promise<void>;
@@ -41,8 +36,6 @@ interface MembersTableProps {
  * Table to display PSA members
  */
 const MembersTable = ({
-  refresh,
-  loading,
   membersList,
   changeMember,
   removeMember,
@@ -50,21 +43,7 @@ const MembersTable = ({
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   return (
     <Box>
-      <Flex my={5} alignItems="center" minW="100%">
-        <Heading variant="h3">View members</Heading>
-
-        <Spacer />
-
-        {/* Loading */}
-        {loading && <Spinner mr={3} />}
-
-        {/* Refresh */}
-        <Button onClick={refresh} my={5} disabled={loading}>
-          Refresh
-        </Button>
-      </Flex>
-
-      <Table maxW="100vw" overflowX="scroll">
+      <Table>
         <TableCaption>PSA Members</TableCaption>
         <Thead>
           <Tr>

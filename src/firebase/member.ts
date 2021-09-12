@@ -68,8 +68,8 @@ export const getMembers = async (classOf: string | null | undefined) => {
   let members: Member[] = [];
 
   const snapshot = await (classOf
-    ? collection.where('classOf', '==', classOf).get()
-    : collection.get());
+    ? collection.where('classOf', '==', classOf).orderBy('name').get()
+    : collection.orderBy('name').get());
 
   const docs = snapshot.docs;
 

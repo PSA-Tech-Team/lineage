@@ -42,7 +42,6 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
   const { loadSplash } = useAuth();
   const [membersList, setMembersList] = useState<Member[]>([]);
   const [pairingsList, setPairingsList] = useState<Pairing[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [loadingPairs, setLoadingPairs] = useState<boolean>(false);
   const [navDisabled, setNavDisabled] = useState<boolean>(false);
   const toast = useToast();
@@ -57,12 +56,10 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
    * Refresh the members list from database
    */
   const refreshMembers = async () => {
-    setLoading(true);
 
     const fetchedMembers = await (await fetch(`/api/members`)).json();
 
     setMembersList(fetchedMembers);
-    setLoading(false);
     return fetchedMembers;
   };
 
@@ -256,8 +253,6 @@ const EditPage = ({ members, pairings }: EditPageProps) => {
               <MembersTable
                 membersList={membersList}
                 changeMember={changeMember}
-                loading={loading}
-                refresh={refreshMembers}
                 removeMember={removeMember}
               />
             </TabPanel>
