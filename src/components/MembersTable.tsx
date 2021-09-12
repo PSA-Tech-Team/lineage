@@ -1,4 +1,4 @@
-import { DeleteIcon, LinkIcon } from '@chakra-ui/icons';
+import { DeleteIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -109,9 +109,6 @@ const MembersTable = ({
               {/* Actions */}
               <Td>
                 <HStack>
-                  <Button size="xs" colorScheme="blue">
-                    <LinkIcon />
-                  </Button>
                   <Popover>
                     <PopoverTrigger>
                       <Button size="xs" colorScheme="red">

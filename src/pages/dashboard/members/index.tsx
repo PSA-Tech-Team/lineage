@@ -6,10 +6,10 @@ import { YEARS } from '../../../fixtures/Semesters';
 const NAVIGATION = YEARS.map((year) => ({
   title: `Class of ${year}`,
   description: `View members from class of ${year}`,
-  href: '/dashboard/members',
+  href: `/dashboard/members/${year}`,
 }));
 
-const DashboardPage = () => {
+const MembersViewPage = () => {
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
@@ -24,4 +24,4 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;
+export default MembersViewPage;
