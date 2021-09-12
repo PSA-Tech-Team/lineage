@@ -33,7 +33,6 @@ const NAVIGATION = [
 
 const DashboardPage = () => {
   const { user } = useAuth();
-
   const userFirstName: string = user?.displayName.split(' ')[0];
   return (
     <DashboardWrapper>

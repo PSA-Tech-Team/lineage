@@ -27,7 +27,7 @@ const Index = () => {
         <LandingPageCard
           title="For board"
           description="View and change every member and pairing in PSA to prepare for the next AKA season."
-          href="/edit"
+          href="/dashboard"
           buttonText="View dashboard"
           svg="pencil.svg"
           altText="View dashboard"

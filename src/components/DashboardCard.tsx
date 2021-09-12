@@ -11,7 +11,7 @@ interface DashboardCardProps {
 
 const DashboardCard = ({ title, description, href }: DashboardCardProps) => {
   return (
-    <NextLink href={href}>
+    <NextLink href={href} passHref>
       <LinkBox
         bgColor="white"
         p="2rem"

@@ -44,28 +44,30 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
             <Link href="/">Lineage</Link>
           </Heading>
           {!isMobile && (
-            <aside>
-              <GradientButton
-                my="1.2rem"
-                w="60%"
-                leftIcon={<AddIcon fontSize="small" />}
-                borderRadius="12px"
-                boxShadow="md"
-              >
-                New
-              </GradientButton>
-              <VStack
-                ml="1"
-                align="stretch"
-                spacing="2"
-                divider={<StackDivider borderColor="gray.200" w="75%" />}
-              >
-                {/* TODO: turn these into linked boxes */}
-                <StyledLink href="/dashboard">Home</StyledLink>
-                <StyledLink href="/dashboard/members">Members</StyledLink>
-                <StyledLink href="">Pairings</StyledLink>
-              </VStack>
-            </aside>
+            <Skeleton isLoaded={!loadSplash}>
+              <aside>
+                <GradientButton
+                  my="1.2rem"
+                  w="60%"
+                  leftIcon={<AddIcon fontSize="small" />}
+                  borderRadius="12px"
+                  boxShadow="md"
+                >
+                  New
+                </GradientButton>
+                <VStack
+                  ml="1"
+                  align="stretch"
+                  spacing="2"
+                  divider={<StackDivider borderColor="gray.200" w="75%" />}
+                >
+                  {/* TODO: turn these into linked boxes */}
+                  <StyledLink href="/dashboard">Home</StyledLink>
+                  <StyledLink href="/dashboard/members">Members</StyledLink>
+                  <StyledLink href="">Pairings</StyledLink>
+                </VStack>
+              </aside>
+            </Skeleton>
           )}
         </Box>
         <Box bgColor={BACKGROUND_GREY} minH="100vh" py="1rem" px="2rem">
