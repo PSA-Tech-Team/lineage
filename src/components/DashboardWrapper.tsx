@@ -13,18 +13,15 @@ import GradientButton from './GradientButton';
 import StyledLink from './StyledLink';
 import useAuth from '../hooks/useAuth';
 import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
-import Splash from './Splash';
 import Link from 'next/link';
+import { Skeleton } from '@chakra-ui/skeleton';
 
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   const { user, loadSplash } = useAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-  if (loadSplash) {
-    return <Splash />;
-  }
+  const userFirstName: string = user?.displayName.split(' ')[0];
 
-  const userFirstName: string = user.displayName.split(' ')[0];
   return (
     <Box w="100%" minH="100vh">
       <Grid
@@ -73,15 +70,17 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
         </Box>
         <Box bgColor={BACKGROUND_GREY} minH="100vh" py="1rem" px="2rem">
           {!isMobile && (
-            <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
-              <Spacer />
-              <StyledLink href="/lineages">View</StyledLink>
-              <Link href="/login">
-                <GradientButton ml="1rem">{userFirstName}</GradientButton>
-              </Link>
-            </Flex>
+            <Skeleton isLoaded={!loadSplash}>
+              <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
+                <Spacer />
+                <StyledLink href="/lineages">View</StyledLink>
+                <Link href="/login">
+                  <GradientButton ml="1rem">{userFirstName}</GradientButton>
+                </Link>
+              </Flex>
+            </Skeleton>
           )}
-          {children}
+          <Skeleton isLoaded={!loadSplash}>{children}</Skeleton>
         </Box>
       </Grid>
     </Box>

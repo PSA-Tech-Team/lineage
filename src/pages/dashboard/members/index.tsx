@@ -12,7 +12,7 @@ const NAVIGATION = YEARS.map((year) => ({
 const DashboardPage = () => {
   return (
     <DashboardWrapper>
-      <Heading mb="3rem" fontWeight="light">
+      <Heading mb="3rem" fontWeight="light" fontSize="3xl">
         View members
       </Heading>
       <Grid templateColumns={{ base: '100%', md: 'repeat(3, 1fr)' }} gap={6}>
