@@ -9,24 +9,19 @@ const NAVIGATION = YEARS.map((year) => ({
   href: `/dashboard/members/${year}`,
 }));
 
-const MembersViewPage = () => {
+const PairingsViewPage = () => {
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
-        View members
+        View pairings
       </Heading>
       <Grid templateColumns={{ base: '100%', md: 'repeat(3, 1fr)' }} gap={6}>
         {NAVIGATION.map(({ title, description, href }) => (
-          <DashboardCard
-            key={href}
-            title={title}
-            description={description}
-            href={href}
-          />
+          <DashboardCard title={title} description={description} href={href} />
         ))}
       </Grid>
     </DashboardWrapper>
   );
 };
 
-export default MembersViewPage;
+export default PairingsViewPage;
