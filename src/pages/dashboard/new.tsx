@@ -1,5 +1,5 @@
 import { Container, Grid, Heading } from '@chakra-ui/layout';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import { useState } from 'react';
 import DashboardWrapper from '../../components/DashboardWrapper';
 import MemberForm from '../../components/MemberForm';
@@ -46,7 +46,7 @@ const CreateEntryPage = ({ members, pairings }: CreateEntryPageProps) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getAllMembers();
@@ -57,9 +57,6 @@ export const getStaticProps: GetStaticProps = async () => {
       members,
       pairings,
     },
-    // TODO: learn more about incremental static regeneration .. but hopefully this helps
-    // https://nextjs.org/docs/basic-features/data-fetching#incremental-static-regeneration
-    revalidate: 5, // in seconds
   };
 };
 
