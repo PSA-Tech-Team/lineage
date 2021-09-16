@@ -1,11 +1,11 @@
 import { Grid, Heading } from '@chakra-ui/layout';
 import DashboardCard from '../../../components/DashboardCard';
 import DashboardWrapper from '../../../components/DashboardWrapper';
-import { SEMESTERS, YEARS } from '../../../fixtures/Semesters';
+import { SEMESTERS } from '../../../fixtures/Semesters';
 
 const NAVIGATION = SEMESTERS.map((sem) => ({
-  title: `Class of ${sem}`,
-  description: `View members from class of ${sem}`,
+  title: `Pairings from ${sem}`,
+  description: `View AKA pairings from ${sem}`,
   href: `/dashboard/pairings/${encodeURIComponent(sem)}`,
 }));
 
