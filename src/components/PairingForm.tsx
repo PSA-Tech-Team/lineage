@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Checkbox,
   Flex,
   Select,
@@ -13,6 +12,7 @@ import { addPairing } from '../client/pairingsService';
 import { Member } from '../fixtures/Members';
 import { Pairing } from '../fixtures/Pairings';
 import { SEMESTERS } from '../fixtures/Semesters';
+import GradientButton from './GradientButton';
 import SearchModal from './SearchModal';
 
 interface PairingFormProps {
@@ -167,14 +167,14 @@ const PairingForm = ({
 
       {/* Submit */}
       <Flex>
-        <Button
+        <GradientButton
           mt={2}
           colorScheme="teal"
           onClick={submitPairing}
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Creating pairing...' : 'Create pairing'}
-        </Button>
+        </GradientButton>
       </Flex>
     </Box>
   );

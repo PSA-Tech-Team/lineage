@@ -192,7 +192,7 @@ const OptionsDrawer = ({
               disabled={navDisabled}
               onClick={() => setNavDisabled(true)}
             >
-              <Link href="/edit">
+              <Link href="/dashboard">
                 {navDisabled ? 'Loading...' : 'Edit lineages'}
               </Link>
             </Button>

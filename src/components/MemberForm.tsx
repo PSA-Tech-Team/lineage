@@ -1,5 +1,4 @@
 import {
-  Button,
   Checkbox,
   Flex,
   FormControl,
@@ -15,6 +14,7 @@ import * as yup from 'yup';
 import { addMember } from '../client/membersService';
 import { Member } from '../fixtures/Members';
 import { YEARS } from '../fixtures/Semesters';
+import GradientButton from './GradientButton';
 
 const memberSchema = yup.object().shape({
   name: yup.string().required(),
@@ -78,7 +78,7 @@ const MemberForm = ({ members, setMembers }: MemberFormProps) => {
           });
 
           // Add member to state
-          if (member !== undefined) setMembers([ ...members, member ]);
+          if (member !== undefined) setMembers([...members, member]);
         } else {
           toast({
             title: 'Error',
@@ -152,14 +152,9 @@ const MemberForm = ({ members, setMembers }: MemberFormProps) => {
           </Checkbox>
 
           <Flex>
-            <Button
-              mt={4}
-              colorScheme="teal"
-              isLoading={isSubmitting}
-              type="submit"
-            >
+            <GradientButton mt={4} isLoading={isSubmitting} type="submit">
               Submit
-            </Button>
+            </GradientButton>
           </Flex>
         </Form>
       )}
