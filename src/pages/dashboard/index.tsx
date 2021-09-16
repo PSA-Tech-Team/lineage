@@ -17,7 +17,7 @@ const NAVIGATION = [
   {
     title: 'View pairings',
     description: 'View all registered AKA pairings by semester',
-    href: '/dashboard',
+    href: '/dashboard/pairings',
   },
   {
     title: 'View lineages',
