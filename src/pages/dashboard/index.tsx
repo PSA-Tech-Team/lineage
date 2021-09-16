@@ -22,12 +22,12 @@ const NAVIGATION = [
   {
     title: 'View lineages',
     description: 'Browse through AKA family trees',
-    href: '/dashboard',
+    href: '/lineages',
   },
   {
     title: 'View issues',
     description: 'View pending administrative changes to be made',
-    href: '/dashboard',
+    href: 'https://github.com/renzol2/lineage/issues',
   },
 ];
 

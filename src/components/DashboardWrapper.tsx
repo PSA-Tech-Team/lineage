@@ -33,6 +33,7 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
           xl: '15% 85%',
         }}
       >
+        {/* Sidebar */}
         <Box borderRight="1px" borderColor="lightgray" p="1rem">
           <Heading
             as="h1"
@@ -72,7 +73,15 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
             </Skeleton>
           )}
         </Box>
-        <Box bgColor={BACKGROUND_GREY} minH="100vh" py="1rem" px="2rem">
+
+        {/* Main body */}
+        <Box
+          as="main"
+          bgColor={BACKGROUND_GREY}
+          minH="100vh"
+          py="1rem"
+          px="2rem"
+        >
           {!isMobile && (
             <Skeleton isLoaded={!loadSplash}>
               <Flex as="nav" direction="row" alignItems="center" my="0.5rem">
