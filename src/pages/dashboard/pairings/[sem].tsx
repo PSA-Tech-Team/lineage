@@ -1,17 +1,20 @@
 import { Heading } from '@chakra-ui/layout';
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { getPairings } from "../../../firebase/pairings";
-import { Pairing } from "../../../fixtures/Pairings";
+import { GetServerSideProps } from 'next';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
+import { getPairings } from '../../../firebase/pairings';
+import { Pairing } from '../../../fixtures/Pairings';
 import DashboardWrapper from '../../../components/DashboardWrapper';
 import PairingsTable from '../../../components/PairingsTable';
 import { useToast } from '@chakra-ui/toast';
 import { deletePairing, updatePairing } from '../../../client/pairingsService';
-
+import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
+import { SearchIcon } from '@chakra-ui/icons';
+import { Member } from '../../../fixtures/Members';
 
 const PairingsTablePage = ({ pairings }: { pairings: Pairing[] }) => {
   const [pairingsList, setPairingsList] = useState(pairings);
+  const [nameQuery, setNameQuery] = useState<string>('');
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const router = useRouter();
   const toast = useToast();
@@ -22,7 +25,7 @@ const PairingsTablePage = ({ pairings }: { pairings: Pairing[] }) => {
    * @param semesterAssigned new semester assigned
    * @param pairing pairing to update
    */
-   const onChangePairing = async (
+  const onChangePairing = async (
     semesterAssigned: string,
     pairing: Pairing
   ) => {
@@ -93,20 +96,52 @@ const PairingsTablePage = ({ pairings }: { pairings: Pairing[] }) => {
     setSubmitting(false);
   };
 
+  const filterPairings = (pairing: Pairing) => {
+    const hasMemberName = (member: Member) => {
+      const hasName = member.name
+        .toLowerCase()
+        .includes(nameQuery.toLowerCase());
+      const hasYear = member.classOf.includes(nameQuery);
+
+      return hasName || hasYear;
+    };
+
+    const hasAk = hasMemberName(pairing.ak);
+    const hasAding = hasMemberName(pairing.ading);
+    const hasSemester = pairing.semesterAssigned
+      ?.toLowerCase()
+      .includes(nameQuery.toLowerCase());
+
+    return (
+      hasAk || hasAding || (hasSemester === undefined ? true : hasSemester)
+    );
+  };
+
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
         View pairings / {sem}
       </Heading>
+      <InputGroup my={4}>
+        <InputLeftElement
+          pointerEvents="none"
+          children={<SearchIcon color="gray.300" />}
+        />
+        <Input
+          placeholder="Search pairings"
+          size="md"
+          onChange={(e) => setNameQuery(e.target.value)}
+        />
+      </InputGroup>
       <PairingsTable
-        pairings={pairingsList}
+        pairings={pairingsList.filter(filterPairings)}
         onChangePairing={onChangePairing}
         removePairing={removePairing}
         loading={isSubmitting}
       />
     </DashboardWrapper>
-  )
-}
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const sem = context.query.sem;

@@ -1,3 +1,5 @@
+import { SearchIcon } from '@chakra-ui/icons';
+import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import { Heading } from '@chakra-ui/layout';
 import { useToast } from '@chakra-ui/toast';
 import { GetServerSideProps } from 'next';
@@ -11,6 +13,7 @@ import { Member } from '../../../fixtures/Members';
 
 const MembersTablePage = ({ members }: { members: Member[] }) => {
   const [membersList, setMembersList] = useState(members);
+  const [nameQuery, setNameQuery] = useState<string>('');
   const router = useRouter();
   const toast = useToast();
   const { year } = router.query;
@@ -127,13 +130,31 @@ const MembersTablePage = ({ members }: { members: Member[] }) => {
     // setPairingsList(filteredPairings);
   };
 
+  const filterMembers = (member: Member) => {
+    const hasName = member.name.toLowerCase().includes(nameQuery.toLowerCase());
+    const hasYear = member.classOf.includes(nameQuery);
+
+    return hasName || hasYear;
+  };
+
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
         View members / {year}
       </Heading>
+      <InputGroup my={4}>
+        <InputLeftElement
+          pointerEvents="none"
+          children={<SearchIcon color="gray.300" />}
+        />
+        <Input
+          placeholder="Search members"
+          size="md"
+          onChange={(e) => setNameQuery(e.target.value)}
+        />
+      </InputGroup>
       <MembersTable
-        membersList={membersList}
+        membersList={membersList.filter(filterMembers)}
         changeMember={changeMember}
         removeMember={removeMember}
       />
