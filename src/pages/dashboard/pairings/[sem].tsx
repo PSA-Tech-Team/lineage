@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/layout';
+import { Heading, Link } from '@chakra-ui/layout';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -11,6 +11,7 @@ import { deletePairing, updatePairing } from '../../../client/pairingsService';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Member } from '../../../fixtures/Members';
+import NextLink from 'next/link';
 
 const PairingsTablePage = ({ pairings }: { pairings: Pairing[] }) => {
   const [pairingsList, setPairingsList] = useState(pairings);
@@ -120,7 +121,10 @@ const PairingsTablePage = ({ pairings }: { pairings: Pairing[] }) => {
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
-        View pairings / {sem}
+        <Link as={NextLink} href="/dashboard/pairings">
+          View pairings
+        </Link>{' '}
+        / {sem}
       </Heading>
       <InputGroup my={4}>
         <InputLeftElement
