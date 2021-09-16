@@ -7,7 +7,7 @@ const NAVIGATION = [
   {
     title: 'Create new member/pairing',
     description: 'Add new entry to database',
-    href: '/dashboard',
+    href: '/dashboard/new',
   },
   {
     title: 'View members',

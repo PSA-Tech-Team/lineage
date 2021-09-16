@@ -15,6 +15,7 @@ import useAuth from '../hooks/useAuth';
 import { BACKGROUND_GRADIENT, BACKGROUND_GREY } from '../themes/colors';
 import Link from 'next/link';
 import { Skeleton } from '@chakra-ui/skeleton';
+import router from 'next/router';
 
 const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   const { user, loadSplash } = useAuth();
@@ -41,7 +42,7 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
             fontSize="3xl"
             pb="1"
           >
-            <Link href="/">Lineage</Link>
+            <Link href="/dashboard">Lineage</Link>
           </Heading>
           {!isMobile && (
             <Skeleton isLoaded={!loadSplash}>
@@ -52,6 +53,7 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
                   leftIcon={<AddIcon fontSize="small" />}
                   borderRadius="12px"
                   boxShadow="md"
+                  onClick={() => router.push('/dashboard/new')}
                 >
                   New
                 </GradientButton>

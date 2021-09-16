@@ -37,7 +37,7 @@ const Footer = () => (
           </Heading>
           <Grid templateColumns={{ base: '100%', md: '1fr 1fr' }}>
             <StyledLink href="/lineages">Lineages</StyledLink>
-            <StyledLink href="/edit">Dashboard</StyledLink>
+            <StyledLink href="/dashboard">Dashboard</StyledLink>
             <StyledLink href="https://github.com/renzol2/lineage">
               GitHub
             </StyledLink>
