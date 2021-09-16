@@ -1,6 +1,6 @@
 import { SearchIcon } from '@chakra-ui/icons';
 import { Input, InputGroup, InputLeftElement } from '@chakra-ui/input';
-import { Heading } from '@chakra-ui/layout';
+import { Heading, Link } from '@chakra-ui/layout';
 import { useToast } from '@chakra-ui/toast';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -10,6 +10,7 @@ import DashboardWrapper from '../../../components/DashboardWrapper';
 import MembersTable from '../../../components/MembersTable';
 import { getMembers } from '../../../firebase/member';
 import { Member } from '../../../fixtures/Members';
+import NextLink from 'next/link';
 
 const MembersTablePage = ({ members }: { members: Member[] }) => {
   const [membersList, setMembersList] = useState(members);
@@ -140,7 +141,13 @@ const MembersTablePage = ({ members }: { members: Member[] }) => {
   return (
     <DashboardWrapper>
       <Heading mb="3rem" fontWeight="light" fontSize="3xl">
-        View members / {year}
+        <Link
+          as={NextLink}
+          href="/dashboard/members"
+        >
+          View members
+        </Link>{' '}
+        / {year}
       </Heading>
       <InputGroup my={4}>
         <InputLeftElement
