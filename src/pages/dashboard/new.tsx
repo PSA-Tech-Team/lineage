@@ -1,4 +1,10 @@
 import { Container, Grid, Heading } from '@chakra-ui/layout';
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+} from '@chakra-ui/react';
 import { GetStaticProps } from 'next';
 import { useState } from 'react';
 import DashboardWrapper from '../../components/DashboardWrapper';
@@ -42,6 +48,20 @@ const CreateEntryPage = ({ members, pairings }: CreateEntryPageProps) => {
           />
         </Container>
       </Grid>
+      <Alert status="warning" mt="2rem">
+        <AlertIcon />
+        <AlertTitle>Warning</AlertTitle>
+        <AlertDescription>
+          Currently, this page will "forget" the members and pairings that you
+          add when you leave the page. (Your changes are still saved in the
+          database). This is true for the lineages page as well. However, the
+          member/pairing individual pages (per year/semester) will be constantly
+          up-to-date. This inconvenience is due to a technical difficulty that
+          is being worked on. If you need to leave the page and would like it to
+          be updated, please message or email Renzo Ledesma
+          (renzol2@illinois.edu).
+        </AlertDescription>
+      </Alert>
     </DashboardWrapper>
   );
 };
