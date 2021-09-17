@@ -1,5 +1,5 @@
 import { Container, Grid, Heading } from '@chakra-ui/layout';
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import { useState } from 'react';
 import DashboardWrapper from '../../components/DashboardWrapper';
 import MemberForm from '../../components/MemberForm';
@@ -46,7 +46,7 @@ const CreateEntryPage = ({ members, pairings }: CreateEntryPageProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   // FIXME: use server side authentication to prevent unnecessary reads
   // https://dev.to/theranbrig/server-side-authentication-with-nextjs-and-firebase-354m
   const members: Member[] = await getAllMembers();
@@ -57,6 +57,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
       members,
       pairings,
     },
+    revalidate: 10,
   };
 };
 
