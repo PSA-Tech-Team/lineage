@@ -1,5 +1,6 @@
 export const EDITORS = [
   'renzol2@illinois.edu',
+  'amg12@illinois.edu',
 ];
 
 export const isEditor = (email: string) => {
