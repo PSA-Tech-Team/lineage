@@ -1,5 +1,5 @@
 # Lineage
 
-A visualizer for AKA (Ate, Kuya, Ading) families.
+A visualizer for AKA (Ate, Kuya, Kapatid Ading) families.
 
-© 2021 Philippine Student Association UIUC
+© 2024 Philippine Student Association UIUC
