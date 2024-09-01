@@ -21,7 +21,7 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   const { user, loadSplash } = useAuth();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-  const userFirstName: string = user?.displayName.split(' ')[0];
+  const userFirstName: string = user?.displayName?.split(' ')[0];
 
   return (
     <Box w="100%" minH="100vh">
