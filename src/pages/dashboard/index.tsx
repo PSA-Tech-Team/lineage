@@ -33,7 +33,8 @@ const NAVIGATION = [
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const userFirstName: string = user?.displayName.split(' ')[0];
+  // const userFirstName: string = user?.displayName.split(' ')[0];
+  const userFirstName: string = user?.displayName ? user.displayName.split(' ')[0] : 'User';
   return (
     <DashboardWrapper>
       <Heading mb="3rem">

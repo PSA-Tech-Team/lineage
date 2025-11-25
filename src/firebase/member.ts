@@ -1,6 +1,7 @@
 import { Member } from '../fixtures/Members';
 import { deletePairing, PAIRINGS_COL } from './pairings';
-import { db, fb } from './config';
+import { db } from './config';
+import { getDocs, doc, addDoc, query, where, collection as getCollection, getDoc, deleteDoc} from 'firebase/firestore';
 
 export const MEMBERS_COL =
   process.env.NODE_ENV === 'test' ? 'membersTest' : 'members';
@@ -15,13 +16,18 @@ export const addMember = async (member: {
   aks: number;
   adings: number;
 }) => {
-  const collection = db.collection(MEMBERS_COL);
+  // const collection = db.collection(MEMBERS_COL);
+  const collection = getCollection(db, MEMBERS_COL);
   let result;
 
-  const duplicateMemberQuery = collection
-    .where('name', '==', member.name)
-    .where('classOf', '==', member.classOf);
-  const duplicateMemberResult = await duplicateMemberQuery.get();
+  // const duplicateMemberQuery = collection
+  //   .where('name', '==', member.name)
+  //   .where('classOf', '==', member.classOf);
+  const duplicateMemberQuery = query(collection,
+    where('name', '==', member.name),
+    where('classOf', '==', member.classOf)
+  );
+  const duplicateMemberResult = await getDocs(duplicateMemberQuery);
 
   // Prevent duplicate members from being created
   if (!duplicateMemberResult.empty) {
@@ -33,7 +39,8 @@ export const addMember = async (member: {
 
   // Add member to database
   try {
-    result = await collection.add(member);
+    // result = await collection.add(member);
+    result = await addDoc(collection, member);
   } catch (e) {
     return {
       success: false,
@@ -42,7 +49,8 @@ export const addMember = async (member: {
     };
   }
 
-  const resultData: any = (await result.get()).data();
+  // const resultData: any = (await result).data();
+  const resultData: any = member;
   const memberResponse: Member = {
     id: result.id,
     name: resultData.name,
@@ -51,6 +59,7 @@ export const addMember = async (member: {
     adings: resultData.adings,
   };
 
+  console.log("================================= true asf", resultData.name);
   return {
     success: true,
     message: `Successfully added "${member.name}"`,
@@ -64,17 +73,38 @@ export const addMember = async (member: {
  * @returns array of Members
  */
 export const getMembers = async (classOf: string | null | undefined) => {
-  let collection = db.collection(MEMBERS_COL);
+  // let collection = db.collection(MEMBERS_COL);
+  let collection = getCollection(db, MEMBERS_COL);
   let members: Member[] = [];
 
-  const snapshot = await (classOf
-    ? collection.where('classOf', '==', classOf).orderBy('name').get()
-    : collection.orderBy('name').get());
+  // const snapshot = await (classOf
+  //   ? collection.where('classOf', '==', classOf).orderBy('name').get()
+  //   : collection.orderBy('name').get());
+  const q = classOf
+    ? query(
+        collection,
+        where('classOf', '==', classOf)
+      )
+    : query(collection);
 
-  const docs = snapshot.docs;
+  // const docs = snapshot.docs;
+  const docs = await getDocs(q);
 
-  for (const member of docs) {
-    const { name, classOf, adings, aks } = member.data();
+  // for (const member of docs) {
+  //   const { name, classOf, adings, aks } = member.data();
+
+  //   members.push({
+  //     id: member.id,
+  //     name,
+  //     classOf,
+  //     adings,
+  //     aks,
+  //   });
+  // }
+
+  docs.forEach((member) => {
+    const data: any = member.data();
+    const { name, classOf, adings, aks } = data;
 
     members.push({
       id: member.id,
@@ -83,7 +113,7 @@ export const getMembers = async (classOf: string | null | undefined) => {
       adings,
       aks,
     });
-  }
+  });
 
   return members;
 };
@@ -106,8 +136,10 @@ interface UpdateMemberFields {
  * @param member member to update
  */
 export const updateMember = async (id: string, param: UpdateMemberFields) => {
-  const memberRef = db.collection(MEMBERS_COL).doc(id);
-  const memberSnap = await memberRef.get();
+  // const memberRef = db.collection(MEMBERS_COL).doc(id);
+  const memberRef = doc(db, MEMBERS_COL, id);
+  // const memberSnap = await memberRef.get();
+  const memberSnap = await getDoc(memberRef);
 
   if (!memberSnap.exists) {
     return {
@@ -117,7 +149,8 @@ export const updateMember = async (id: string, param: UpdateMemberFields) => {
   }
 
   try {
-    await memberRef.update(param);
+    // await memberRef.update(param);
+
   } catch (e) {
     return {
       success: false,
@@ -146,8 +179,10 @@ export const updateMember = async (id: string, param: UpdateMemberFields) => {
  * @param memberId id of member to delete
  */
 export const deleteMember = async (memberId: string) => {
-  const memberRef = db.collection(MEMBERS_COL).doc(memberId);
-  const memberSnap = await memberRef.get();
+  // const memberRef = db.collection(MEMBERS_COL).doc(memberId);
+  const memberRef = doc(db, MEMBERS_COL, memberId);
+  // const memberSnap = await memberRef.get();
+  const memberSnap = await getDoc(memberRef);
 
   if (!memberSnap.exists) {
     return {
@@ -166,21 +201,32 @@ export const deleteMember = async (memberId: string) => {
   };
 
   // Get all pairings associated with that member
-  const pairingsCol = db.collection(PAIRINGS_COL);
-  const deletedMemberWasAk = await pairingsCol
-    .where('ak', '==', memberRef)
-    .get();
+  // const pairingsCol = db.collection(PAIRINGS_COL);
+  const pairingsCol = getCollection(db, PAIRINGS_COL);
+  // const deletedMemberWasAk = await pairingsCol
+  //   .where('ak', '==', memberRef)
+  //   .get();
 
-  const deletedMemberWasAding = await pairingsCol
-    .where('ading', '==', memberRef)
-    .get();
+  // const deletedMemberWasAding = await pairingsCol
+  //   .where('ading', '==', memberRef)
+  //   .get();
+  const deletedMemberWasAkQuery = query(pairingsCol,
+    where('ak', '==', memberRef)
+  );
+  const deletedMemberWasAk = await getDocs(deletedMemberWasAkQuery);
+
+  const deletedMemberWasAdingQuery = query(pairingsCol,
+    where('ading', '==', memberRef)
+  );
+  const deletedMemberWasAding = await getDocs(deletedMemberWasAdingQuery);
 
   // Update `ak` field in member documents who had the deleted member as an ak
   await Promise.all(
     deletedMemberWasAk.docs.map(async (doc) => {
       const adingRef = doc.data().ading;
       return adingRef.update({
-        aks: fb.firestore.FieldValue.increment(-1),
+        // aks: fb.firestore.FieldValue.increment(-1),
+        aks: adingRef.aks - 1,
       });
     })
   );
@@ -190,7 +236,8 @@ export const deleteMember = async (memberId: string) => {
     deletedMemberWasAding.docs.map(async (doc) => {
       const akRef = doc.data().ak;
       return akRef.update({
-        adings: fb.firestore.FieldValue.increment(-1),
+        // adings: fb.firestore.FieldValue.increment(-1),
+        adings: akRef.adings - 1,
       });
     })
   );
@@ -204,7 +251,8 @@ export const deleteMember = async (memberId: string) => {
   );
 
   // Delete member from database
-  await memberRef.delete();
+  // await memberRef.delete();
+  await deleteDoc(memberRef);
 
   return {
     success: true,

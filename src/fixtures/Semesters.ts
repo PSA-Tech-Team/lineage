@@ -1,6 +1,6 @@
 const seasons = ['Spring', 'Fall'];
-const MIN_YEAR = 2017;
-const MAX_YEAR = 2025;
+const MIN_YEAR = 2020;
+const MAX_YEAR = 3000;
 export const YEARS = [...Array(MAX_YEAR - MIN_YEAR + 1).keys()].map(
   (year) => year + MIN_YEAR
 );
