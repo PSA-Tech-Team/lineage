@@ -145,15 +145,22 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const members: Member[] = await getAllMembers();
-  const pairings: Pairing[] = await getAllPairings();
+  try {
+    const members: Member[] = await getAllMembers();
+    const pairings: Pairing[] = await getAllPairings();
 
-  return {
-    props: {
-      members,
-      pairings,
-    },
-  };
+    return {
+      props: {
+        members,
+        pairings,
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching lineage data:', error);
+    return {
+      notFound: true,
+    };
+  }
 }
 
 export default LineagesPage;
