@@ -16,7 +16,7 @@ import { SettingsIcon } from '@chakra-ui/icons';
 import { Member } from '../fixtures/Members';
 import { getAllMembers } from '../firebase/member';
 import { getAllPairings } from '../firebase/pairings';
-import {  GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 
 interface LineagesPageProps {
   members: Member[];
@@ -144,7 +144,7 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const members: Member[] = await getAllMembers();
   const pairings: Pairing[] = await getAllPairings();
 
