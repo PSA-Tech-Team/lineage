@@ -45,16 +45,16 @@ const Login = () => {
           </AlertDescription>
         </Alert>
         <Text my="10px">Current user: {user?.email}</Text>
-        <VStack spacing={2}>
+        <VStack spacing={2} width="100%">
           <Button
-            isFullWidth
+            width="100%"
             disabled={Boolean(user)}
             onClick={async () => await signInWithGoogle()}
           >
             Log in with Google
           </Button>
           <Button
-            isFullWidth
+            width="100%"
             disabled={!Boolean(user)}
             onClick={async () => await signOut()}
           >

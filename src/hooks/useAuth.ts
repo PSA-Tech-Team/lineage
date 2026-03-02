@@ -26,7 +26,7 @@ const useAuth = () => {
     }
 
     // Checks if PSA board member or is allowed to edit
-    const isValidEmail = isEditor(user.email) || isBoardMember(user.email);
+    const isValidEmail = (user?.email && (isEditor(user.email) || isBoardMember(user.email))) || false;
     const isValidUser = user !== null && isValidEmail;
 
     if (!isValidUser) {
