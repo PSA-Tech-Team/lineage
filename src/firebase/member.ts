@@ -59,7 +59,6 @@ export const addMember = async (member: {
     adings: resultData.adings,
   };
 
-  console.log("================================= true asf", resultData.name);
   return {
     success: true,
     message: `Successfully added "${member.name}"`,
@@ -220,38 +219,38 @@ export const deleteMember = async (memberId: string) => {
   );
   const deletedMemberWasAding = await getDocs(deletedMemberWasAdingQuery);
 
-  // Update `ak` field in member documents who had the deleted member as an ak
-  await Promise.all(
-    deletedMemberWasAk.docs.map(async (doc) => {
-      const adingRef = doc.data().ading;
-      return adingRef.update({
-        // aks: fb.firestore.FieldValue.increment(-1),
-        aks: adingRef.aks - 1,
-      });
-    })
-  );
+  // Fetch ading members for AK pairings and update in parallel
+  const akUpdatePromises = deletedMemberWasAk.docs.map(async (pairingDoc) => {
+    const adingRef = pairingDoc.data().ading;
+    const adingSnap = await getDoc(adingRef);
+    if (adingSnap.exists()) {
+      return updateDoc(adingRef, { aks: adingSnap.data().aks - 1 });
+    }
+  });
 
-  // Update `ading` field in member documents who had the deleted member as an ading
-  await Promise.all(
-    deletedMemberWasAding.docs.map(async (doc) => {
-      const akRef = doc.data().ak;
-      return akRef.update({
-        // adings: fb.firestore.FieldValue.increment(-1),
-        adings: akRef.adings - 1,
-      });
-    })
-  );
+  // Fetch AK members for ading pairings and update in parallel
+  const adingUpdatePromises = deletedMemberWasAding.docs.map(async (pairingDoc) => {
+    const akRef = pairingDoc.data().ak;
+    const akSnap = await getDoc(akRef);
+    if (akSnap.exists()) {
+      return updateDoc(akRef, { adings: akSnap.data().adings - 1 });
+    }
+  });
 
-  // Delete the pairings
-  deletedMemberWasAk.forEach(
-    async (pairing) => await deletePairing(pairing.id)
-  );
-  deletedMemberWasAding.forEach(
-    async (pairing) => await deletePairing(pairing.id)
-  );
+  // Delete all pairings in parallel
+  const deletePairingPromises = [
+    ...deletedMemberWasAk.docs.map((pairing) => deletePairing(pairing.id)),
+    ...deletedMemberWasAding.docs.map((pairing) => deletePairing(pairing.id)),
+  ];
+
+  // Wait for all operations to complete
+  await Promise.all([
+    ...akUpdatePromises,
+    ...adingUpdatePromises,
+    ...deletePairingPromises,
+  ]);
 
   // Delete member from database
-  // await memberRef.delete();
   await deleteDoc(memberRef);
 
   return {

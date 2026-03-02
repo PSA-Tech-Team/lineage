@@ -16,13 +16,8 @@ const convertFirestoreDocsToPairing = (memberRef: any, memberData: any) => ({
  * Returns all pairings from database
  */
 export const getPairings = async (semester: string | null | undefined) => {
-  // const pairingsCollection = db.collection(PAIRINGS_COL);
   const pairingsCollection = getCollection(db, PAIRINGS_COL);
 
-  // const pairingsColRef = await (semester
-  //   ? pairingsCollection.where('semesterAssigned', '==', semester).get()
-  //   : pairingsCollection.get()
-  // );
   const pairingsColRef = await getDocs(semester
     ? query(pairingsCollection,
       where('semesterAssigned', '==', semester)
@@ -30,13 +25,14 @@ export const getPairings = async (semester: string | null | undefined) => {
     : pairingsCollection
   );
 
-
   const pairings: Pairing[] = [];
+  const memberRefs = new Map<string, Promise<any>>();
 
+  // First pass: collect all unique member references and batch fetch them
+  const memberFetchPromises: Promise<any>[] = [];
+  
   for (const pairingSnapshot of pairingsColRef.docs) {
     const pairingData = pairingSnapshot.data();
-    const semesterAssigned = pairingData.semesterAssigned;
-
     const rawAk = pairingData.ak;
     const rawAding = pairingData.ading;
 
@@ -44,9 +40,40 @@ export const getPairings = async (semester: string | null | undefined) => {
     const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
     const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
 
-    const akSnap = await getDoc(akRef);
-    const adingSnap = await getDoc(adingRef);
-    // Turn Firestore references into JSON  
+    // Use refs as cache keys
+    const akId = typeof rawAk === 'string' ? rawAk : akRef.id;
+    const adingId = typeof rawAding === 'string' ? rawAding : adingRef.id;
+
+    if (!memberRefs.has(akId)) {
+      memberRefs.set(akId, getDoc(akRef));
+      memberFetchPromises.push(memberRefs.get(akId)!);
+    }
+    if (!memberRefs.has(adingId)) {
+      memberRefs.set(adingId, getDoc(adingRef));
+      memberFetchPromises.push(memberRefs.get(adingId)!);
+    }
+  }
+
+  // Wait for all member fetches in parallel
+  await Promise.all(memberFetchPromises);
+
+  // Second pass: build pairings with cached data
+  for (const pairingSnapshot of pairingsColRef.docs) {
+    const pairingData = pairingSnapshot.data();
+    const semesterAssigned = pairingData.semesterAssigned;
+
+    const rawAk = pairingData.ak;
+    const rawAding = pairingData.ading;
+
+    const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
+    const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
+
+    const akId = typeof rawAk === 'string' ? rawAk : akRef.id;
+    const adingId = typeof rawAding === 'string' ? rawAding : adingRef.id;
+
+    const akSnap = await memberRefs.get(akId)!;
+    const adingSnap = await memberRefs.get(adingId)!;
+
     const ak: Member = convertFirestoreDocsToPairing(akRef, akSnap.data());
     const ading: Member = convertFirestoreDocsToPairing(adingRef, adingSnap.data());
 
@@ -56,31 +83,7 @@ export const getPairings = async (semester: string | null | undefined) => {
       ading,
       semesterAssigned,
     });
-
-  };
-  console.log(pairings);
-
-  // for (const pairingSnapshot of pairingsColRef.docs) {
-  //   const pairingData = pairingSnapshot.data();
-  //   const { semesterAssigned, ak: akRef, ading: adingRef } = pairingData;
-
-  //   const akData = (await akRef.get()).data();
-  //   const adingData = (await adingRef.get()).data();
-
-  //   // Turn Firestore references into JSON
-  //   const ak: Member = convertFirestoreDocsToPairing(akRef, akData);
-  //   const ading: Member = convertFirestoreDocsToPairing(adingRef, adingData);
-
-  //   const pairing: Pairing = {
-  //     id: pairingSnapshot.id,
-  //     ak,
-  //     ading,
-  //     semesterAssigned,
-  //   };
-
-  //   pairings.push(pairing);
-  // }
-
+  }
 
   return pairings;
 };
@@ -109,19 +112,16 @@ export const addPairing = async (
   }
 
 
-  // // const membersCollection = db.collection(MEMBERS_COL);
-  // const membersCollection = getCollection(db, MEMBERS_COL);
   const membersCollection = getCollection(db, MEMBERS_COL);
 
-  // // Get doc refs to members
-  // // const akRef = membersCollection.doc(akId);
   const akRef = doc(membersCollection, akId);
-  // // const akDoc = await akRef.get();
-  const akDocSnap = await getDoc(akRef);
-  // // const adingRef = membersCollection.doc(adingId);
   const adingRef = doc(membersCollection, adingId);
-  // // const adingDoc = await adingRef.get();
-  const adingDocSnap = await getDoc(adingRef);
+  
+  // Fetch both members in parallel
+  const [akDocSnap, adingDocSnap] = await Promise.all([
+    getDoc(akRef),
+    getDoc(adingRef)
+  ]);
 
   // // Check that members do exist
   if (!akDocSnap.exists() || !adingDocSnap.exists()) {
@@ -185,20 +185,10 @@ interface UpdatePairingFields {
  * @param pairing pairing to update
  */
 export const updatePairing = async (id: string, param: UpdatePairingFields) => {
-  // const pairingRef = db.collection(PAIRINGS_COL).doc(id);
   const pairingRef = doc(db, PAIRINGS_COL, id);
-  // const pairingSnap = await pairingRef.get();
-  const pairingSnap = await getDocs(query(getCollection(db, PAIRINGS_COL),
-    where('__name__', '==', id)
-  ));
+  const pairingSnap = await getDoc(pairingRef);
 
-  // if (!pairingSnap.exists) {
-  //   return {
-  //     success: false,
-  //     message: `Pairing of id ${id} does not exist`,
-  //   };
-  // }
-  if (pairingSnap.empty) {
+  if (!pairingSnap.exists()) {
     return {
       success: false,
       message: `Pairing of id ${id} does not exist`,
@@ -210,7 +200,6 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
   };
 
   try {
-    // await pairingRef.update(fieldsToUpdate);
     await updateDoc(pairingRef, fieldsToUpdate);
   } catch (e) {
     return {
@@ -219,11 +208,16 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
     };
   }
 
-  // const pairingData: any = pairingSnap.data();
-  const pairingData: any = pairingSnap.docs[0].data();
+  const pairingData: any = pairingSnap.data();
   const { ak: akRef, ading: adingRef } = pairingData;
-  const akData: any = (await akRef.get()).data();
-  const adingData: any = (await adingRef.get()).data();
+  
+  // Fetch both members in parallel
+  const [akSnap, adingSnap] = await Promise.all([
+    getDoc(akRef),
+    getDoc(adingRef)
+  ]);
+  const akData: any = akSnap.data();
+  const adingData: any = adingSnap.data();
 
   const pairingResponse: Pairing = {
     id: pairingRef.id,
@@ -244,41 +238,29 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
  * @param pairingId id of pairing
  */
 export const deletePairing = async (pairingId: string) => {
-  // const doc = db.collection(PAIRINGS_COL).doc(pairingId);
   const pairingsDoc = doc(db, PAIRINGS_COL, pairingId);
+  const docSnap = await getDoc(pairingsDoc);
 
-  // const docSnap = await doc.get();
-  // if (!docSnap.exists) {
-  //   return {
-  //     success: false,
-  //     message: `Pairing of id ${pairingId} does not exist.`,
-  //   };
-  // }
-  if (!(await getDocs(query(getCollection(db, PAIRINGS_COL),
-    where('__name__', '==', pairingId)
-  ))).empty) {
+  if (!docSnap.exists()) {
     return {
       success: false,
       message: `Pairing of id ${pairingId} does not exist.`,
     };
   }
 
-  const docSnap = await getDocs(query(getCollection(db, PAIRINGS_COL),
-    where('__name__', '==', pairingId)
-  ));
-
 
   // Delete document from database
-  // await doc.delete();
   await deleteDoc(pairingsDoc);
 
   // Update members in pairing
-  // const akRef = await docSnap.data()?.ak;
-  const akRef = docSnap.docs[0].data()?.ak;
-  // const adingRef = await docSnap.data()?.ading;
-  const adingRef = docSnap.docs[0].data()?.ading;
-  const akSnap = await akRef.get();
-  const adingSnap = await adingRef.get();
+  const akRef = docSnap.data()?.ak;
+  const adingRef = docSnap.data()?.ading;
+  
+  // Fetch both members in parallel
+  const [akSnap, adingSnap] = await Promise.all([
+    getDoc(akRef),
+    getDoc(adingRef)
+  ]);
 
   const pairingResponse: Pairing = {
     // id: docSnap.id,
@@ -287,18 +269,19 @@ export const deletePairing = async (pairingId: string) => {
     ading: convertFirestoreDocsToPairing(adingRef, adingSnap.data()),
   };
 
-  if (akSnap.exists) {
-    // await akRef.update({ adings: fb.firestore.FieldValue.increment(-1) });
-    await Promise.all([
-      updateDoc(akRef, { adings: akSnap.data().adings - 1 }),
-    ]);
+  // Update both members in parallel
+  const updatePromises = [];
+  if (akSnap.exists()) {
+    updatePromises.push(
+      updateDoc(akRef, { adings: akSnap.data().adings - 1 })
+    );
   }
-  if (adingSnap.exists) {
-    // await adingRef.update({ aks: fb.firestore.FieldValue.increment(-1) });
-    await Promise.all([
-      updateDoc(adingRef, { aks: adingSnap.data().aks - 1 }),
-    ]);
+  if (adingSnap.exists()) {
+    updatePromises.push(
+      updateDoc(adingRef, { aks: adingSnap.data().aks - 1 })
+    );
   }
+  await Promise.all(updatePromises);
 
   return {
     success: true,
