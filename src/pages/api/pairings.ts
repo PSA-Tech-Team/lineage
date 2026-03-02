@@ -25,43 +25,62 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 const apiGetPairings = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { semesterAssigned } = req.query;
-  let pairings: Pairing[];
-  if (typeof semesterAssigned === 'string') {
-    pairings = await getPairings(semesterAssigned);
-  } else {
-    pairings = await getAllPairings();
+  try {
+    const { semesterAssigned } = req.query;
+    let pairings: Pairing[];
+    if (typeof semesterAssigned === 'string') {
+      pairings = await getPairings(semesterAssigned);
+    } else {
+      pairings = await getAllPairings();
+    }
+    return res.status(200).json(pairings);
+  } catch (error) {
+    console.error('Error fetching pairings:', error);
+    return res.status(500).json({ error: 'Failed to fetch pairings' });
   }
-  return res.status(200).json(pairings);
 };
 
 const apiCreatePairing = async (
   req: NextApiRequest,
   res: NextApiResponse<PairingApiResult>
 ) => {
-  const { akId, adingId, semester } = req.body;
-  const result: PairingApiResult = await addPairing(akId, adingId, semester);
-  const status = result.success ? 200 : 400;
-
-  return res.status(status).send(result);
+  try {
+    const { akId, adingId, semester } = req.body;
+    const result: PairingApiResult = await addPairing(akId, adingId, semester);
+    const status = result.success ? 200 : 400;
+    return res.status(status).send(result);
+  } catch (error) {
+    console.error('Error creating pairing:', error);
+    return res.status(500).json({ success: false, message: 'Failed to create pairing' });
+  }
 };
 
 const apiUpdatePairing = async (
   req: NextApiRequest,
   res: NextApiResponse<PairingApiResult>
 ) => {
-  const updatedPairing: Pairing = req.body;
-  const result = await updatePairing(updatedPairing.id, updatedPairing);
-  const status = result.success ? 200 : 500;
-  return res.status(status).send(result);
+  try {
+    const updatedPairing: Pairing = req.body;
+    const result = await updatePairing(updatedPairing.id, updatedPairing);
+    const status = result.success ? 200 : 500;
+    return res.status(status).send(result);
+  } catch (error) {
+    console.error('Error updating pairing:', error);
+    return res.status(500).json({ success: false, message: 'Failed to update pairing' });
+  }
 };
 
 const apiDeletePairing = async (
   req: NextApiRequest,
   res: NextApiResponse<PairingApiResult>
 ) => {
-  const { id: pairingId } = req.body;
-  const result = await deletePairing(pairingId);
-  const status = result.success ? 200 : 500;
-  return res.status(status).send(result);
+  try {
+    const { id: pairingId } = req.body;
+    const result = await deletePairing(pairingId);
+    const status = result.success ? 200 : 500;
+    return res.status(status).send(result);
+  } catch (error) {
+    console.error('Error deleting pairing:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete pairing' });
+  }
 };

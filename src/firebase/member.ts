@@ -148,8 +148,7 @@ export const updateMember = async (id: string, param: UpdateMemberFields) => {
   }
 
   try {
-    // await memberRef.update(param);
-
+    await updateDoc(memberRef, param as any);
   } catch (e) {
     return {
       success: false,
