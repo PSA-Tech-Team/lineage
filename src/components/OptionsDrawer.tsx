@@ -139,7 +139,7 @@ const OptionsDrawer = ({
               <Button
                 key={fn}
                 onClick={() => setPathFn(fn.toLowerCase())}
-                isFullWidth
+                width="100%"
                 m={1}
                 variant={pathFn === fn.toLowerCase() ? 'solid' : 'outline'}
               >

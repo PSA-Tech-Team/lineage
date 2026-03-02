@@ -91,7 +91,7 @@ const PairingsTable = ({
                         Are you sure you want to delete this pairing?
                       </Text>
                       <Button
-                        isFullWidth
+                        width="full"
                         colorScheme="red"
                         disabled={loading}
                         onClick={async () => await removePairing(pairing)}

@@ -66,7 +66,7 @@ const SearchModal = ({ members, onSelect, buttonColorScheme = undefined }: Searc
                   }}
                   my={1}
                   variant="ghost"
-                  isFullWidth
+                  width="100%"
                   textAlign="left"
                 >
                   <Text>{`${member.name} (${member.classOf})`}</Text>
