@@ -121,14 +121,14 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
       />
 
       {/* Tree view */}
-      <Box bgColor="gray.100" height="90vh" ref={treeParentRef}>
+      <Box bgColor="gray.100" height="90vh" ref={treeParentRef} overflow="hidden" position="relative">
         <Tree
           data={getLineage(lineageId, members, pairings, searchAdings)}
           orientation={vertical ? 'vertical' : 'horizontal'}
           // @ts-ignore
           pathFunc={pathFn}
           transitionDuration={400}
-          enableLegacyTransitions={useTransitions}
+          enableLegacyTransitions={false}
           separation={{
             siblings: siblingSeparation,
             nonSiblings: nonSibSeparation,
