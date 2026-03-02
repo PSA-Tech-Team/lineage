@@ -18,61 +18,45 @@ const convertFirestoreDocsToPairing = (memberRef: any, memberData: any) => ({
 export const getPairings = async (semester: string | null | undefined) => {
   const pairingsCollection = getCollection(db, PAIRINGS_COL);
 
-  const pairingsColRef = await getDocs(semester
-    ? query(pairingsCollection,
-      where('semesterAssigned', '==', semester)
-    )
-    : pairingsCollection
+  const pairingsColRef = await getDocs(
+    semester
+      ? query(pairingsCollection, where('semesterAssigned', '==', semester))
+      : pairingsCollection
   );
 
   const pairings: Pairing[] = [];
-  const memberRefs = new Map<string, Promise<any>>();
 
-  // First pass: collect all unique member references and batch fetch them
-  const memberFetchPromises: Promise<any>[] = [];
-  
-  for (const pairingSnapshot of pairingsColRef.docs) {
-    const pairingData = pairingSnapshot.data();
-    const rawAk = pairingData.ak;
-    const rawAding = pairingData.ading;
-
-    // Normalize: if stored as string id, convert to DocumentReference
-    const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
-    const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
-
-    // Use refs as cache keys
-    const akId = typeof rawAk === 'string' ? rawAk : akRef.id;
-    const adingId = typeof rawAding === 'string' ? rawAding : adingRef.id;
-
-    if (!memberRefs.has(akId)) {
-      memberRefs.set(akId, getDoc(akRef));
-      memberFetchPromises.push(memberRefs.get(akId)!);
-    }
-    if (!memberRefs.has(adingId)) {
-      memberRefs.set(adingId, getDoc(adingRef));
-      memberFetchPromises.push(memberRefs.get(adingId)!);
-    }
+  // Fetch all members in parallel for efficiency
+  interface PairingData {
+    ak: string | any;
+    ading: string | any;
   }
 
-  // Wait for all member fetches in parallel
-  await Promise.all(memberFetchPromises);
-
-  // Second pass: build pairings with cached data
-  for (const pairingSnapshot of pairingsColRef.docs) {
-    const pairingData = pairingSnapshot.data();
-    const semesterAssigned = pairingData.semesterAssigned;
-
+  const memberFetchPromises: Promise<any>[] = pairingsColRef.docs.reduce((acc: Promise<any>[], pairingSnapshot) => {
+    const pairingData = pairingSnapshot.data() as PairingData;
     const rawAk = pairingData.ak;
     const rawAding = pairingData.ading;
 
     const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
     const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
 
-    const akId = typeof rawAk === 'string' ? rawAk : akRef.id;
-    const adingId = typeof rawAding === 'string' ? rawAding : adingRef.id;
+    return [...acc, getDoc(akRef), getDoc(adingRef)];
+  }, []);
 
-    const akSnap = await memberRefs.get(akId)!;
-    const adingSnap = await memberRefs.get(adingId)!;
+  const memberSnaps = await Promise.all(memberFetchPromises);
+  let memberIndex = 0;
+
+  // Build pairings with fresh member data
+  for (const pairingSnapshot of pairingsColRef.docs) {
+    const pairingData = pairingSnapshot.data();
+    const rawAk = pairingData.ak;
+    const rawAding = pairingData.ading;
+
+    const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
+    const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
+
+    const akSnap = memberSnaps[memberIndex++];
+    const adingSnap = memberSnaps[memberIndex++];
 
     const ak: Member = convertFirestoreDocsToPairing(akRef, akSnap.data());
     const ading: Member = convertFirestoreDocsToPairing(adingRef, adingSnap.data());
@@ -81,7 +65,7 @@ export const getPairings = async (semester: string | null | undefined) => {
       id: pairingSnapshot.id,
       ak,
       ading,
-      semesterAssigned,
+      semesterAssigned: pairingData.semesterAssigned,
     });
   }
 
@@ -182,7 +166,8 @@ interface UpdatePairingFields {
 
 /**
  * Updates pairing with new assigned semester
- * @param pairing pairing to update
+ * @param id pairing id to update
+ * @param param fields to update
  */
 export const updatePairing = async (id: string, param: UpdatePairingFields) => {
   const pairingRef = doc(db, PAIRINGS_COL, id);
@@ -195,21 +180,20 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
     };
   }
 
-  const fieldsToUpdate = {
-    semesterAssigned: param.semesterAssigned,
-  };
-
   try {
-    await updateDoc(pairingRef, fieldsToUpdate);
+    await updateDoc(pairingRef, param as any);
   } catch (e) {
+    console.error('Error updating pairing:', e);
     return {
       success: false,
       message: 'An error occurred while trying to update pairing',
     };
   }
 
-  const pairingData: any = pairingSnap.data();
-  const { ak: akRef, ading: adingRef } = pairingData;
+  // Fetch fresh data after update to ensure consistency
+  const updatedPairingSnap = await getDoc(pairingRef);
+  const updatedPairingData: any = updatedPairingSnap.data();
+  const { ak: akRef, ading: adingRef } = updatedPairingData;
   
   // Fetch both members in parallel
   const [akSnap, adingSnap] = await Promise.all([
@@ -223,7 +207,7 @@ export const updatePairing = async (id: string, param: UpdatePairingFields) => {
     id: pairingRef.id,
     ak: convertFirestoreDocsToPairing(akRef, akData),
     ading: convertFirestoreDocsToPairing(adingRef, adingData),
-    semesterAssigned: param.semesterAssigned,
+    semesterAssigned: updatedPairingData.semesterAssigned,
   };
 
   return {
