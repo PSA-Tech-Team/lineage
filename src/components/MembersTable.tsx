@@ -106,7 +106,7 @@ const MembersTable = ({
                             This will delete all pairings with ${member.name} as well.`}
                         </Text>
                         <Button
-                          isFullWidth
+                          width="100%"
                           colorScheme="red"
                           onClick={async () => {
                             setSubmitting(true);
