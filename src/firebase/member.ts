@@ -1,7 +1,7 @@
 import { Member } from '../fixtures/Members';
 import { deletePairing, PAIRINGS_COL } from './pairings';
 import { db } from './config';
-import { getDocs, doc, addDoc, query, where, collection as getCollection, getDoc, deleteDoc} from 'firebase/firestore';
+import { getDocs, doc, addDoc, query, where, collection as getCollection, getDoc, deleteDoc, updateDoc} from 'firebase/firestore';
 
 export const MEMBERS_COL =
   process.env.NODE_ENV === 'test' ? 'membersTest' : 'members';
@@ -224,7 +224,7 @@ export const deleteMember = async (memberId: string) => {
     const adingRef = pairingDoc.data().ading;
     const adingSnap = await getDoc(adingRef);
     if (adingSnap.exists()) {
-      return updateDoc(adingRef, { aks: adingSnap.data().aks - 1 });
+      return updateDoc(adingRef, { aks: (adingSnap.data() as any).aks - 1 });
     }
   });
 
@@ -233,7 +233,7 @@ export const deleteMember = async (memberId: string) => {
     const akRef = pairingDoc.data().ak;
     const akSnap = await getDoc(akRef);
     if (akSnap.exists()) {
-      return updateDoc(akRef, { adings: akSnap.data().adings - 1 });
+      return updateDoc(akRef, { adings: (akSnap.data() as any).adings - 1 });
     }
   });
 

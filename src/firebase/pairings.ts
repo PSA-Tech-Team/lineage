@@ -273,12 +273,12 @@ export const deletePairing = async (pairingId: string) => {
   const updatePromises = [];
   if (akSnap.exists()) {
     updatePromises.push(
-      updateDoc(akRef, { adings: akSnap.data().adings - 1 })
+      updateDoc(akRef, { adings: (akSnap.data() as any).adings - 1 })
     );
   }
   if (adingSnap.exists()) {
     updatePromises.push(
-      updateDoc(adingRef, { aks: adingSnap.data().aks - 1 })
+      updateDoc(adingRef, { aks: (adingSnap.data() as any).aks - 1 })
     );
   }
   await Promise.all(updatePromises);
