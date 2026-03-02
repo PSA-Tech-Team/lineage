@@ -16,60 +16,76 @@ const convertFirestoreDocsToPairing = (memberRef: any, memberData: any) => ({
  * Returns all pairings from database
  */
 export const getPairings = async (semester: string | null | undefined) => {
-  const pairingsCollection = getCollection(db, PAIRINGS_COL);
+  try {
+    const pairingsCollection = getCollection(db, PAIRINGS_COL);
 
-  const pairingsColRef = await getDocs(
-    semester
-      ? query(pairingsCollection, where('semesterAssigned', '==', semester))
-      : pairingsCollection
-  );
+    const pairingsColRef = await getDocs(
+      semester
+        ? query(pairingsCollection, where('semesterAssigned', '==', semester))
+        : pairingsCollection
+    );
 
-  const pairings: Pairing[] = [];
+    const pairings: Pairing[] = [];
 
-  // Fetch all members in parallel for efficiency
-  interface PairingData {
-    ak: string | any;
-    ading: string | any;
+    if (pairingsColRef.empty) {
+      console.log('No pairings found');
+      return pairings;
+    }
+
+    // Fetch all members in parallel for efficiency
+    const memberFetchPromises: Promise<any>[] = pairingsColRef.docs.reduce(
+      (acc: Promise<any>[], pairingSnapshot) => {
+        const pairingData = pairingSnapshot.data();
+        const rawAk = pairingData.ak;
+        const rawAding = pairingData.ading;
+
+        const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
+        const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
+
+        return [...acc, getDoc(akRef), getDoc(adingRef)];
+      },
+      []
+    );
+
+    const memberSnaps = await Promise.all(memberFetchPromises);
+    let memberIndex = 0;
+
+    // Build pairings with fresh member data
+    for (const pairingSnapshot of pairingsColRef.docs) {
+      const pairingData = pairingSnapshot.data();
+      const rawAk = pairingData.ak;
+      const rawAding = pairingData.ading;
+
+      const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
+      const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
+
+      const akSnap = memberSnaps[memberIndex++];
+      const adingSnap = memberSnaps[memberIndex++];
+
+      if (!akSnap?.exists() || !adingSnap?.exists()) {
+        console.warn(
+          `Pairing ${pairingSnapshot.id}: missing member data (ak exists: ${akSnap?.exists()}, ading exists: ${adingSnap?.exists()})`
+        );
+        continue;
+      }
+
+      const ak: Member = convertFirestoreDocsToPairing(akRef, akSnap.data());
+      const ading: Member = convertFirestoreDocsToPairing(adingRef, adingSnap.data());
+
+      pairings.push({
+        id: pairingSnapshot.id,
+        ak,
+        ading,
+        semesterAssigned: pairingData.semesterAssigned,
+      });
+    }
+
+    console.log(`Retrieved ${pairings.length} pairings`);
+    return pairings;
+  } catch (error) {
+    console.error('Error in getPairings:', error);
+    throw error;
   }
-
-  const memberFetchPromises: Promise<any>[] = pairingsColRef.docs.reduce((acc: Promise<any>[], pairingSnapshot) => {
-    const pairingData = pairingSnapshot.data() as PairingData;
-    const rawAk = pairingData.ak;
-    const rawAding = pairingData.ading;
-
-    const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
-    const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
-
-    return [...acc, getDoc(akRef), getDoc(adingRef)];
-  }, []);
-
-  const memberSnaps = await Promise.all(memberFetchPromises);
-  let memberIndex = 0;
-
-  // Build pairings with fresh member data
-  for (const pairingSnapshot of pairingsColRef.docs) {
-    const pairingData = pairingSnapshot.data();
-    const rawAk = pairingData.ak;
-    const rawAding = pairingData.ading;
-
-    const akRef = typeof rawAk === 'string' ? doc(db, MEMBERS_COL, rawAk) : rawAk;
-    const adingRef = typeof rawAding === 'string' ? doc(db, MEMBERS_COL, rawAding) : rawAding;
-
-    const akSnap = memberSnaps[memberIndex++];
-    const adingSnap = memberSnaps[memberIndex++];
-
-    const ak: Member = convertFirestoreDocsToPairing(akRef, akSnap.data());
-    const ading: Member = convertFirestoreDocsToPairing(adingRef, adingSnap.data());
-
-    pairings.push({
-      id: pairingSnapshot.id,
-      ak,
-      ading,
-      semesterAssigned: pairingData.semesterAssigned,
-    });
-  }
-
-  return pairings;
 };
 
 export const getAllPairings = async () => {
