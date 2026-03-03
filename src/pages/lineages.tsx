@@ -92,7 +92,7 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
         </Button>
 
         {/* Select lineage */}
-        <SearchModal members={members} onSelect={changeLineage} />
+        <SearchModal members={sortedMembers} onSelect={changeLineage} />
 
         {/* Open options */}
         <Button onClick={onOpen} variant="outline">
