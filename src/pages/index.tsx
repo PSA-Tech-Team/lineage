@@ -18,7 +18,7 @@ const Index = () => {
       >
         <LandingPageCard
           title="For visitors"
-          description="Explore the AKA families of PSA UIUC through fully interactive family trees."
+          description="Explore the AKKA families of PSA UIUC through fully interactive family trees."
           href="/lineages"
           buttonText="View lineages"
           svg="tree.svg"
@@ -26,7 +26,7 @@ const Index = () => {
         />
         <LandingPageCard
           title="For board"
-          description="View and change every member and pairing in PSA to prepare for the next AKA season."
+          description="View and change every member and pairing in PSA to prepare for the next AKKA season."
           href="/dashboard"
           buttonText="View dashboard"
           svg="pencil.svg"

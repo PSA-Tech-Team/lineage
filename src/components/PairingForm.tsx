@@ -23,7 +23,7 @@ interface PairingFormProps {
 }
 
 /**
- * Form to create new AKA pairings between PSA members
+ * Form to create new AKKA pairings between PSA members
  */
 const PairingForm = ({
   members,

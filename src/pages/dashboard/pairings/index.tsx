@@ -5,7 +5,7 @@ import { SEMESTERS } from '../../../fixtures/Semesters';
 
 const NAVIGATION = SEMESTERS.map((sem) => ({
   title: `Pairings from ${sem}`,
-  description: `View AKA pairings from ${sem}`,
+  description: `View AKKA pairings from ${sem}`,
   href: `/dashboard/pairings/${encodeURIComponent(sem)}`,
 }));
 
