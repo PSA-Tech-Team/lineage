@@ -28,7 +28,9 @@ interface LineagesPageProps {
  */
 const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   // FIXME: for now, setting default lineage to that of first member in list
-  const defaultLineageId: string | null = members.length ? members[0].id : null;
+  // const defaultLineageId: string | null = members.length ? members[0].id : null;
+  const sortedMembers = [...members].sort(memberComparator);
+  const defaultLineageId: string | null = sortedMembers.length ? sortedMembers[0].id : null;
 
   if (defaultLineageId === null) {
     return (
@@ -143,6 +145,16 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
     </Box>
   );
 };
+
+export const memberComparator = (a: Member, b: Member) => {
+  if (a.name < b.name) {
+    return -1;
+  } else if (a.name > b.name) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
 export const getServerSideProps: GetServerSideProps = async () => {
   try {
