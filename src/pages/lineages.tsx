@@ -30,7 +30,22 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
   // FIXME: for now, setting default lineage to that of first member in list
   // const defaultLineageId: string | null = members.length ? members[0].id : null;
   const sortedMembers = [...members].sort(memberComparator);
+  // make the default person a 50/50 chance to be Alexander Yabes or Sybau Ramos
+  const alexander = sortedMembers.find((member) => member.name === "Alexander Yabes");
+  const sybau = sortedMembers.find((member) => member.name === "Sybau Ramos");
+  const random = Math.random();
+  if (alexander && sybau) {
+    if (random < 0.5) {
+      // set default to alexander
+      sortedMembers.unshift(sortedMembers.splice(sortedMembers.indexOf(alexander), 1)[0]);
+    } else {
+      // set default to sybau
+      sortedMembers.unshift(sortedMembers.splice(sortedMembers.indexOf(sybau), 1)[0]);
+    }
+  }
   const defaultLineageId: string | null = sortedMembers.length ? sortedMembers[0].id : null;
+  // const defaultLineageId: string | null = alexander ? alexander.id : (sortedMembers.length ? sortedMembers[0].id : null);
+  // const defaultLineageId: string | null = sortedMembers.length ? sortedMembers[0].id : null;
 
   if (defaultLineageId === null) {
     return (
@@ -147,7 +162,7 @@ const LineagesPage = ({ members, pairings }: LineagesPageProps) => {
 };
 
 export const memberComparator = (a: Member, b: Member) => {
-  if (a.name < b.name) {
+  if (a.name < b.name ) {
     return -1;
   } else if (a.name > b.name) {
     return 1;
