@@ -22,7 +22,7 @@ const Footer = () => (
           </Heading>
 
           <Text fontWeight="light">
-            A visualizer for AKKA (Ate, Kuya, Kapatid, Ading) families.
+            A visualizer for AKKA (Ate, Kuya, Kapatid, Ading) families. Shoutout to Webmaster Renzo 2023.
           </Text>
 
           <Text fontWeight="light">
