@@ -41,7 +41,7 @@ const Login = () => {
           <AlertIcon />
           <AlertTitle>Alert!</AlertTitle>
           <AlertDescription>
-            Only PSA UIUC board officers can edit AKA pairings
+            Only PSA UIUC board officers can edit AKKA pairings
           </AlertDescription>
         </Alert>
         <Text my="10px">Current user: {user?.email}</Text>

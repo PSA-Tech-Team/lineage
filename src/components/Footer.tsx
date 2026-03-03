@@ -22,7 +22,7 @@ const Footer = () => (
           </Heading>
 
           <Text fontWeight="light">
-            A visualizer for AKA (Ate, Kuya, Ading) families.
+            A visualizer for AKKA (Ate, Kuya, Kapatid, Ading) families.
           </Text>
 
           <Text fontWeight="light">
@@ -38,7 +38,7 @@ const Footer = () => (
           <Grid templateColumns={{ base: '100%', md: '1fr 1fr' }}>
             <StyledLink href="/lineages">Lineages</StyledLink>
             <StyledLink href="/dashboard">Dashboard</StyledLink>
-            <StyledLink href="https://github.com/renzol2/lineage">
+            <StyledLink href="https://github.com/PSA-Tech-Team/lineage">
               GitHub
             </StyledLink>
             <StyledLink href="http://psauiuc.org/">PSA UIUC</StyledLink>

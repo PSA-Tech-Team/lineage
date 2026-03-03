@@ -42,7 +42,7 @@ const PairingsTable = ({
 }: PairingsTableProps) => {
   return (
     <Table>
-      <TableCaption>PSA AKA Pairings</TableCaption>
+      <TableCaption>PSA AKKA Pairings</TableCaption>
       <Thead>
         <Tr>
           <Th>AK name</Th>

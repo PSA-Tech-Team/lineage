@@ -16,18 +16,18 @@ const NAVIGATION = [
   },
   {
     title: 'View pairings',
-    description: 'View all registered AKA pairings by semester',
+    description: 'View all registered AKKA pairings by semester',
     href: '/dashboard/pairings',
   },
   {
     title: 'View lineages',
-    description: 'Browse through AKA family trees',
+    description: 'Browse through AKKA family trees',
     href: '/lineages',
   },
   {
     title: 'View issues',
     description: 'View pending administrative changes to be made',
-    href: 'https://github.com/renzol2/lineage/issues',
+    href: 'https://github.com/PSA-Tech-Team/lineage/issues',
   },
 ];
 

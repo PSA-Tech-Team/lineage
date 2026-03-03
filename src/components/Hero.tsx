@@ -9,7 +9,7 @@ const Hero = ({ title }: { title: string }) => (
           {title}
         </Heading>
         <Text fontSize="xl" fontWeight="light">
-          A visualizer for AKA (Ate, Kuya, Ading) families.
+          A visualizer for AKKA (Ate, Kuya, Kapatid, Ading) families.
         </Text>
         <Link href="/lineages">
           <Button

@@ -58,8 +58,8 @@ const CreateEntryPage = ({ members, pairings }: CreateEntryPageProps) => {
           member/pairing individual pages (per year/semester) will be constantly
           up-to-date. This inconvenience is due to a technical difficulty that
           is being worked on. If you need to leave the page and would like it to
-          be updated, please message or email Renzo Ledesma
-          (renzol2@illinois.edu).
+          be updated, please message or email Webmaster 
+          (webmaster@psauiuc.org).
         </AlertDescription>
       </Alert>
     </DashboardWrapper>
